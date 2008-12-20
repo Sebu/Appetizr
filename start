@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+APP_DIR = File.dirname(__FILE__)
+$:.unshift APP_DIR + '/lib'
+
+require 'boot'
+
+
