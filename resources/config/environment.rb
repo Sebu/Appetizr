@@ -1,0 +1,3 @@
+
+
+INDIGO_ENV = 'development'

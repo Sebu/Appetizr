@@ -1,0 +1,15 @@
+
+development:
+  adapter: sqlite3
+  database: resources/db/computer.sqlite3
+
+test:
+
+production:
+  adapter: mysql
+  database: xadm
+  username: "xadm_user"
+  password: ""
+  host: localhost
+  socket: /var/run/mysqld/mysqld.sock
+

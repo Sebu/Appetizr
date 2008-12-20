@@ -1,0 +1,8 @@
+
+development:
+  adapter: sqlite3
+  database: resources/db/adm.sqlite3
+
+test:
+
+production:

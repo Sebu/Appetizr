@@ -1,0 +1,20 @@
+
+
+de:
+  scanner:  
+    no_connection: 'keine verbindung zum scanner'
+  message: 
+    one: '1 wurst'
+    other: "{{count}} wursts"
+  main:
+    title: 'rubyAdm vom seb geschraubt'
+
+en:
+  scanner:
+    no_connection: 'no connection to scanner'
+  message: 
+    one: '1 message'
+    other: "{{count}} messages"
+  main:
+    title: 'rubyAdm screwed by seb'
+
