@@ -46,12 +46,11 @@ class Account < UserAccountDB
 
   def locked
     #get lock state?
-    self[:locked]
+    self[:locked] 
   end
 
-
   def after_initialize
-    self.locked ||= get_lockstate(self.account)
+   self.locked ||= get_lockstate(self.account)
   end
 
 end

@@ -8,8 +8,16 @@ require 'controller'
 require 'application'
 require 'main_helper'
 
+require 'main'
+
 class MainController  
   include Controller
+
+  def show
+    @model_name = :main
+    @main = Main.new
+    render
+  end
 
   def user_list_format(a)
     a.tr(" ","\n")
@@ -17,6 +25,14 @@ class MainController
 
   def drag_users(pc)
     [pc.User,pc.Color]
+  end
+
+  def drop_pool(*args)
+    @pool_store = args
+  end
+
+  def drag_pool()
+    @pool_store
   end
 
   def drop_free(user, color)
@@ -35,8 +51,6 @@ class MainController
   def cbutton_click(w, pc)
     if @test_table.model
       key_register(pc)
-    else 
-      key_clear(pc)
     end
   end
 
@@ -62,7 +76,7 @@ class MainController
   def feld1_return(w)
 #   Base.log.debug "creating model for :test_table #{@main.account_text}"
     users = @main.account_text.split(',').each { |n| n.strip! }
-    accounts = Account.find_accounts(users) # User.find_accounts_by_barcodes(users) #
+    accounts =  Account.find_accounts(users) # User.find_accounts_by_barcodes(users) #
     fill_accounts(accounts)
   end
 
