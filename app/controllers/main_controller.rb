@@ -39,9 +39,17 @@ class MainController
   end
 
   def drop_users(pc, user, color)
-    pc.User=user
-    pc.Color=color
-    pc.save!
+    old_user, old_color = pc.User, pc.Color
+    command do
+      pc.User=user
+      pc.Color=color
+      pc.save!
+    end.un do
+      pc.User = old_user
+      pc.Color = old_color
+      pc.save!
+    end.run
+
   end
 
   def code_to_color(code)
@@ -55,18 +63,35 @@ class MainController
   end
 
   def key_register(pc)
-    new_users = ""
-    @test_table.model.rows.each { |a| new_users += "#{a.account} " } if @test_table.model
-    pc.User = new_users.strip
-    pc.Color = 1
-    pc.save!
-    @test_table.model = nil
+    old_user, old_color = pc.User, pc.Color
+    old_model = @test_table.model
+    command do
+      new_users = []
+      @test_table.model.rows.collect { |a| new_users << a.account } if @test_table.model
+      pc.Color = 1
+      pc.User = new_users.join(" ")
+      pc.save!
+      @test_table.model = nil
+    end.un do
+      pc.Color = old_color
+      pc.User = old_user
+      pc.save!
+      @test_table.model = old_model
+    end.run
+
   end
 
   def key_clear(pc)
-    pc.User = ""
-    pc.Color = 0
-    pc.save!
+    old_user, old_color = pc.User, pc.Color
+    command do
+      pc.User = ""
+      pc.Color = 0
+      pc.save!
+    end.un do
+      pc.User = old_user
+      pc.Color = old_color
+      pc.save!
+    end.run
   end
 
   def fill_accounts(accounts)

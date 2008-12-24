@@ -19,11 +19,11 @@ window :text=> t('main.title') do
           @test_table = table
         end
         tabs do
-          tab_title "Test1"
+          tab_title "&TestTab"
           group :text=>"playground", :radio=>true do
             stack do
-               button :text => "test1"
-               radio :text => "test2"
+               button :text => "undo", :click => :undo_action
+               radio :text => "test1"
                radio :text => "test2"
                @slider = hslider :min=> -100
                @spin = spin { value_observe @slider, :value }
