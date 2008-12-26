@@ -7,17 +7,23 @@ require 'account_list'
 require 'controller'
 require 'application'
 require 'main_helper'
+require 'add_controller'
 
 require 'main'
 
 class MainController  
   include Controller
+  
+  attr_accessor :main_view
 
   def show
     @model_name = :main
-    @main = Main.new
+    @main = Main.one
     render
+
+    @add_controller = AddController.one.show
   end
+
 
   def user_list_format(a)
     a.tr(" ","\n")
@@ -50,6 +56,13 @@ class MainController
       pc.save!
     end.run
 
+  end
+
+
+  def undo_action(w)
+    super(w)
+    @files = open :files
+    puts @files
   end
 
   def code_to_color(code)
@@ -114,7 +127,7 @@ class MainController
     socket = TCPSocket.new('localhost', 7887)
 
     rescue Errno::ECONNREFUSED
-      Base.log.error t 'scanner.no_connection'
+      Base.log.error t('scanner.no_connection')
     else
       scanner = Thread.new {
         Base.log.debug "starting scanner thread ..."
@@ -143,9 +156,5 @@ class MainController
       }
     end
   end
-
-
-
-
 end
 

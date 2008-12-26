@@ -9,7 +9,7 @@ window :text=> t('main.title') do
           render "cluster", :cluster => c
         }
       end
-      stretch
+      stretch 
       flow do
         stack do
           field(:text => @main.account_text) {
@@ -32,7 +32,7 @@ window :text=> t('main.title') do
                stretch
             end
           end
-          tab_title "Log"
+          tab_title "L&og"
           table
         end
         stretch

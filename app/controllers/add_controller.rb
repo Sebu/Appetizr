@@ -1,0 +1,43 @@
+
+
+require 'controller'
+require 'add'
+require 'gl'
+
+
+class AddController  
+  include Controller
+  include Gl
+
+  def show
+    @model_name = :add
+    @main = Add.one  
+    render
+  end
+
+  def gl_init
+    glClearColor(0.0, 0.5, 0.5, 0.0)
+    glEnable(GL_DEPTH_TEST)
+    glMatrixMode(GL_PROJECTION)
+  	glLoadIdentity()
+  	glOrtho(-10.0, 10.0, -10.0, 10.0, -10.0, 10.0)
+    glMatrixMode(GL_MODELVIEW)
+  end
+
+  def gl_draw
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glBegin(GL_QUADS)
+      glVertex3f(-5,-5,0)
+      glVertex3f(5,-5,0)
+      glVertex3f(5,5,0)
+      glVertex3f(-5,5,0)
+    glEnd()
+  end
+
+
+  def gl_resize(w,h)
+    glViewport(0, 0, w, h)
+  end
+
+end
+

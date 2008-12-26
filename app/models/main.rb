@@ -10,6 +10,7 @@ class Main
   obs_attr :scan_string
   attr_accessor :clusters
   
+  
   def initialize
     @name = 'indigoAdm'
     @account_text = '1111'

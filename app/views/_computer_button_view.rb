@@ -1,8 +1,5 @@
 
 
-
-
- 
 button :id => @c.Cname do
   click :cbutton_click, @c
   background_observe @c, :Color, :filter=> :code_to_color
