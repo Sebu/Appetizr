@@ -20,8 +20,7 @@ CONFIG  = config_file["all"]
 CONFIG.merge!(config_file[INDIGO_ENV])
 
 
-# I18n stuff :D (use :en by default)
-$:.unshift '/var/lib/gems/1.8/gems/activesupport-2.2.2/lib'
+require 'rubygems'
 require 'active_support'
 I18n.load_path = Dir[File.join(APP_DIR, 'resources', 'config', 'locales', '*.{rb,yml}')]
 I18n.locale = :en
