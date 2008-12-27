@@ -19,9 +19,8 @@ class MainController
   def show
     @model_name = :main
     @main = Main.one
+#   @add_controller = AddController.one.show
     render
-
-    @add_controller = AddController.one.show
   end
 
 
