@@ -1,5 +1,5 @@
 
-window :text=> "gl test" do 
+window :text=> "gl test", :width => 400, :height => 400 do 
 
   stack do
     @glw = glarea        

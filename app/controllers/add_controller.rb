@@ -14,7 +14,8 @@ class AddController
     @add = Add.one  
     render
   end
-  
+
+  #TODO: not optimal update should happen in some model STUFF
   def update(v)
     @glw.gl_update
     v
