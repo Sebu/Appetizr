@@ -1,0 +1,70 @@
+
+
+
+
+# dock :all
+# image 'bla.jpg'
+# image <resource>
+
+#text_observe @main, :account_text
+#observe  @parent, :text, @main, :account_text, :filter=>:test
+
+
+#TODO: remove need for add_events
+#  def add_events
+
+#    clicked ['c81', 'c82'] do |s|
+#     Base.log.info "click0r"
+#     @main.account_text = "aaa"
+#    end
+
+    # default should be: feld1_return
+
+#    respond :to => [:return] ,:id => [:feld1] do 
+#    end
+
+#    respond :to => [:changed], :id => [:feld1] do | w, e |
+#      @app.name = w.text
+#    end
+ 
+#  observe: '@adm.name' do ||
+#    adm_name_update()??????
+#  end
+
+#link_to ist hier clicked?
+# render stuff muss in controller.create
+
+      table :id => :test_table do
+#        format :account, with => :acc_img
+#        format :real_name, with => :string
+#        format :lock_state, with => :bool
+      end
+
+
+# funzt in activerecord geil
+name_changed
+name_was
+
+
+need i18n from active_support
+
+
+views/
+  app_view
+  computer_view(view button)
+  _cluster_view
+  accout/
+    acc_add_view
+    acc_remove_view
+
+controllers/
+  app
+  computer
+  account
+  printer
+  note
+models/
+  computer
+  account
+  printer (activecups<activeresource)
+  note
