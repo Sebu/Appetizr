@@ -10,11 +10,10 @@ module Indigo
     module Windowed
 
       def run
-       require 'add_controller'
+       require 'main_controller'
        a = Qt::Application.new(ARGV)
        t = IdleKicker.new
-       @main_view = AddController.one.show
-       puts @main_view
+       @main_view = MainController.one.show
        a.exec 
       end
 

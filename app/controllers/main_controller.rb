@@ -58,11 +58,11 @@ class MainController
   end
 
 
-  def undo_action(w)
-    super(w)
-    @files = open :files
-    puts @files
-  end
+#  def undo_action(w)
+#    super(w)
+#    @files = open :files
+#    puts @files
+#  end
 
   def code_to_color(code)
     CONFIG["colors"][code]

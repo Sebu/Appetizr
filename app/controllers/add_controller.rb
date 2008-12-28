@@ -22,8 +22,8 @@ class AddController
   end
 
   def click(w)
-    @part ||= part :main
-    @part.show_all
+#    @part ||= part :main
+#    @part.show_all
   end
 
   def gl_init
