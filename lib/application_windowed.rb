@@ -10,10 +10,15 @@ module Indigo
     module Windowed
 
       def run
-       require 'main_controller'
+       #Qt Stuff
        a = Qt::Application.new(ARGV)
        t = IdleKicker.new
-       @main_view = MainController.one.show
+
+       name = CONFIG["controller"].to_s
+       require "#{name}_controller"
+       @main_view = eval "#{name.capitalize}Controller.one.show"
+
+       #Qt Stuff
        a.exec 
       end
 
@@ -23,7 +28,7 @@ end
 
 
 
-
+#Qt Stuff
 #fuck da ship workaround for green ruby threads and qt :/
 #IdleKicker
 #0 timeout would be better but doesn't work :(

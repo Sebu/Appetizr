@@ -17,23 +17,25 @@ class MainController
   attr_accessor :main_view
 
   def show
-    @model_name = :main
-    @main = Main.one
-#   @add_controller = AddController.one.show
+    @main = Main.new
     render
   end
-
 
   def user_list_format(a)
     a.tr(" ","\n")
   end
 
+  def click_gl_demo(w)
+    @part ||= part :add
+    @part.show_all
+  end
+
   def drag_users(pc)
-    [pc.User,pc.Color]
+     pc
   end
 
   def drop_pool(*args)
-    @pool_store = args
+    @pool_store = *args
   end
 
   def drag_pool()
@@ -43,11 +45,11 @@ class MainController
   def drop_free(user, color)
   end
 
-  def drop_users(pc, user, color)
+  def drop_users(pc, other_pc)
     old_user, old_color = pc.User, pc.Color
     command do
-      pc.User=user
-      pc.Color=color
+      pc.User=other_pc["User"]
+      pc.Color=other_pc["Color"]
       pc.save!
     end.un do
       pc.User = old_user
@@ -58,11 +60,10 @@ class MainController
   end
 
 
-#  def undo_action(w)
-#    super(w)
-#    @files = open :files
-#    puts @files
-#  end
+  def open_action(w, mode)
+    @files = open(mode)
+    puts @files
+  end
 
   def code_to_color(code)
     CONFIG["colors"][code]

@@ -36,9 +36,12 @@ module Indigo
         end
         name = "_#{name}"
       else
+
+        #TODO: not so pretty
+        name = self.class.to_s.downcase[0..-11].to_sym
         @parent ||= self
         @controller = self
-        name = model_name
+
         @filename = "#{params[:path]}/#{name}_view.rb"
       end 
 

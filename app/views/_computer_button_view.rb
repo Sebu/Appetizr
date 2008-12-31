@@ -9,8 +9,8 @@ button :id => @c.Cname do
   drop :drop_users, @c
 
   stack :margin => 2 do
-    label :text => "<b>#{@c.Cname}</b>" , :size => 8
-    label(:size => 7){ text_observe @c, :User, :filter=> :user_list_format }
+    label "<b>#{@c.Cname}</b>" , :size => 8
+    label(:size => 7) { text_observe @c, :User, :filter=> :user_list_format }
     #svg :file=> "test.svg"
     stretch
   end

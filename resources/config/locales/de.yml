@@ -1,7 +1,7 @@
 
 
 de:
-  open_file: 'Datei oeffnen'
+  open_files: 'Dateien öffnen'
   scanner:  
     no_connection: 'keine verbindung zum scanner'
   message: 
@@ -11,7 +11,7 @@ de:
     title: 'rubyAdm vom seb geschraubt'
 
 en:
-  open_file: 'Open file'
+  open_files: 'Open files'
   scanner:
     no_connection: 'no connection to scanner'
   message: 

@@ -31,13 +31,14 @@ module Indigo
       controller = eval "#{name.to_s.capitalize}Controller.one"
       controller.parent = @parent
       view = controller.show
-      puts "#{@parent} parent"
+      #puts "#{@parent} parent"
+      #puts @parent.widget
       view.hide
       view
     end
 
     def open(mode, params={})
-      params = {:title=>t(:open_file)}.merge(params)
+      params = {:title=>t(:open_files)}.merge(params)
       file_dialog(mode, params)
     end
 

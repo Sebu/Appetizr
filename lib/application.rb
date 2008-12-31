@@ -1,5 +1,4 @@
 
-
 require 'active_record'
 
 module Indigo
@@ -7,8 +6,7 @@ module Indigo
     module Base
 
       class << self; attr_accessor :log end
-      @log = Logger.new(STDOUT)
-      @log.level = Logger::DEBUG
+      @log = ActiveSupport::BufferedLogger.new(STDOUT)
       ActiveRecord::Base.logger= @log 
   
     end

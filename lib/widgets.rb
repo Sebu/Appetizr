@@ -21,18 +21,20 @@ module CreatesWidgets
       names.each do | name |
         class_eval %{
 
-          def #{name.to_s.downcase}(params={},&block)
-            widget = #{name}.new(@parent)
+          def #{name.to_s.downcase}(*args,&block)
+            params = args.extract_options!
+            params.to_options!
+
+            widget = #{name}.new(@parent,*args)
             widget.controller = @controller
             gen_accessor(params[:id], widget) if params[:id]
-            #named_widgets[params[:id]]  = widget
+
             @parent.children ||= Hash.new
             @parent.children[params[:id]] = widget
             @parent, widget.parent = widget, @parent
             widget.parse_params(params)
             widget.parse_block(&block)
             @parent = widget.parent
-            ##@parent.add_element(widget) unless widget.class == Window or widget.class == Dialog
             widget
           end
 
@@ -83,7 +85,7 @@ module Widget
   attr_accessor :controller
 
   def parse_params(params)
-    set_text(params[:text]) if params[:text]
+    #set_text(params[:text]) if params[:text]
   end
 
   def parse_block(&block)
@@ -106,15 +108,29 @@ module Widget
       @dnd_drop_method = method
       @controller = controller
 
+      def simple_accept(event)
+        action = if event.keyboardModifiers == Qt::ControlModifier
+                    Qt::CopyAction
+                  else
+                    Qt::MoveAction
+                  end 
+        event.setDropAction(action)
+        event.accept
+      end
+
       def dragEnterEvent(event)
-        event.acceptProposedAction
+        simple_accept(event)
+      end
+
+      def dragMoveEvent(event)
+        simple_accept(event)
       end
 
       def dropEvent(event)
-        data = event.mimeData.text  
-        data = YAML::load(data)   
-        @controller.send(@dnd_drop_method,*(@dnd_drop_args+data))
-        event.acceptProposedAction
+        incomming = event.mimeData.text 
+        data = ActiveSupport::JSON.decode(incomming)   
+        @controller.send(@dnd_drop_method,*(@dnd_drop_args+[data]))
+        simple_accept(event)
       end
     }
   end
@@ -131,14 +147,16 @@ module Widget
       @dnd_drag_args = args
       @dnd_drag_method = method
       @controller = controller
+
       def mousePressEvent(event)
-         super(event)
+         super
          if (event.button == Qt::LeftButton)
            @dragStartPosition = event.pos
          end
       end
 
       def mouseMoveEvent(event)
+         super
          return if @drag_in_progress || false
          return if (event.buttons != Qt::LeftButton)
          return if ((event.pos - @dragStartPosition).manhattanLength < Qt::Application::startDragDistance)
@@ -149,20 +167,14 @@ module Widget
          drag = Qt::Drag.new(self)
          mimeData = Qt::MimeData.new
         
-         mimeData.setText(data.to_yaml)
+         mimeData.setText(data.to_json)
          drag.setMimeData(mimeData)
 
-         action = if event.modifiers == Qt::ShiftModifier
-                    Qt::CopyAction
-                  else
-                    Qt::MoveAction
-                  end      
          
-         dropAction = drag.exec(action)
+         dropAction = drag.exec(Qt::CopyAction | Qt::MoveAction)
          if (@dnd_drag_delete_method and dropAction == Qt::MoveAction and drag.source != drag.target)
            @controller.send(@dnd_drag_delete_method, *@dnd_drag_args)
          end
-
          @drag_in_progress = false
       end
       }
@@ -177,23 +189,23 @@ class Window
 
   obs_attr :text, :func => :set_text	
 
-  def initialize(p)
-    puts "#{p} create window"
+  def initialize(p, name)
     @widget = Qt::MainWindow.new(p.widget)
+    set_text(name)
   end
 
   def parse_params(params)
-    puts "#{params[:text]}"
+    #puts "#{params[:text]}"
     posx = params[:posx] || 100 
     posy = params[:posy] || 100
     width = params[:width]
     height = params[:height] 
     @widget.setGeometry(posx, posy, width, height) if width and height
-    super(params)
+    super
   end
 
   def set_text(value) 
-    @widget.setWindowTitle("#{value} created with indigoRuby")
+    @widget.setWindowTitle(value)
   end
   def add_element(w)
     @widget.setCentralWidget(w.widget)
@@ -212,10 +224,21 @@ class Dialog
 
   obs_attr :text, :func => :set_text	
 
-  def initialize(p)
+  def initialize(p, title)
     @widget = Qt::Dialog.new(p.widget)
     @layout = Qt::HBoxLayout.new
     @widget.setLayout(@layout)
+    set_text(title)
+  end
+
+  def parse_params(params)
+    #puts "#{params[:text]}"
+    posx = params[:posx] || 100 
+    posy = params[:posy] || 100
+    width = params[:width]
+    height = params[:height] 
+    @widget.setGeometry(posx, posy, width, height) if width and height
+    super
   end
 
   def set_text(value) 
@@ -227,16 +250,23 @@ class Dialog
   def show_all
     @widget.show
   end
+  def hide
+    @widget.hide
+  end
 end
 
 class GlArea
   include Widget
+  include ObserveAttr
+
+  #TODO: should be only a writer or so
+  obs_attr :update, :func => :gl_update, :override => true
 
   def initialize(p)
     @widget = Qt::GLWidget.new
     p.add_element(self) 
   end
-  def gl_update
+  def gl_update(*args)
     @widget.updateGL
   end
   def parse_params(params)
@@ -262,7 +292,7 @@ class GlArea
         @controller.send(@resize_method , w, h)
       end
     end
-    super(params)
+    super
   end
 end
 
@@ -289,9 +319,10 @@ class Label
 
   obs_attr :text, :func => "set_text"
 
-  def initialize(p)
+  def initialize(p, *args)
     @widget = Qt::Label.new
-    p.add_element(self) 
+    p.add_element(self)
+    set_text(args[0])
   end
   def parse_params(params)
     @font = Qt::Font.new
@@ -312,7 +343,7 @@ class Button
   obs_attr :text, :func => "set_text"
   obs_attr :background, :func=>"background", :override => true
   
-  def initialize(p)
+  def initialize(p, *args)
     @widget = Qt::PushButton.new
     @widget.connect(SIGNAL(:clicked)) { emit(:click, self) }
     @widget.setMinimumSize( Qt::Size.new(60,60) )
@@ -323,6 +354,7 @@ class Button
     @layout.margin = 0
     @widget.setLayout(@layout)
     p.add_element(self) 
+    set_text(args[0])
   end
 
 
@@ -355,11 +387,12 @@ class Field
 
   obs_attr :text #, :func => "set_text"
 
-  def initialize(p)
+  def initialize(p, *args)
     @widget = Qt::LineEdit.new
+    set_text(args[0])
     @widget.connect(SIGNAL("textChanged(const QString &)")) {|m| emit("text_changed", m) }
     @widget.connect(SIGNAL(:returnPressed)) { emit(:enter, self) }
-    p.add_element(self) 
+    p.add_element(self)
   end
 
   def set_text(value)
@@ -389,7 +422,7 @@ class Spin
   include ObserveAttr
   obs_attr :value, :override => true
 
-  def initialize(p)
+  def initialize(p, *args)
     @widget = Qt::SpinBox.new
     @widget.connect(SIGNAL("valueChanged(int)")) {|m| emit("value_changed", m) }
     p.add_element(self) 
@@ -408,7 +441,7 @@ end
 class Tabs
   include Widget 
  
-  def initialize(p)
+  def initialize(p, *args)
     @widget = Qt::TabWidget.new
     p.add_element(self) 
   end
@@ -460,9 +493,10 @@ end
 class Check
   include Widget
 
-  def initialize(p)
+  def initialize(p, *args)
     @widget = Qt::CheckBox.new
-    p.add_element(self) 
+    p.add_element(self)
+    set_text(args[0])
   end
   def parse_params(params)
     super
@@ -475,9 +509,10 @@ end
 class Radio
   include Widget
 
-  def initialize(p)
+  def initialize(p, *args)
     @widget = Qt::RadioButton.new
-    p.add_element(self) 
+    p.add_element(self)
+    set_text(args[0])
   end
   def parse_params(params)
     super
@@ -490,11 +525,12 @@ end
 class Group
   include Widget
 
-  def initialize(p)
+  def initialize(p, *args)
     @widget = Qt::GroupBox.new
     @layout = Qt::HBoxLayout.new
     @widget.setLayout(@layout)
     p.add_element(self)
+    set_text(args[0])
   end
   def parse_params(params)
     @widget.checkable = params[:radio] || false

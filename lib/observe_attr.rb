@@ -11,11 +11,18 @@ module ObserveAttr
 
   #  TODO: change syntax and uniform the a <==> b
   def observe(m2, key2, m1, key1, options={})
+    options.to_options!
+
+    #puts "#{m2} #{key2} #{m1} #{key1}"    
 
     signal = m1.class.obs_calls[key1.to_sym][:signal]
     func = m2.class.obs_calls[key2.to_sym][:func]
 
     controller = options[:controller] || @controller
+
+    #TODO: prep filter chain
+    # options[:filter].each do | f |
+    # filter_chain = controller.send(f, gen_filter_chain next )
     if options[:filter]
       m1.connect(signal) {|args| m2.send(func, controller.send(options[:filter],args) ) }
       m2.send( func, controller.send(options[:filter],m1.send(key1)) ) 
@@ -57,7 +64,7 @@ module ObserveAttr
           end
         else
           def #{func}(value)
-            super(value)
+            super
             emit "#{params[:signal]}", value
           end
         end

@@ -1,4 +1,5 @@
 all:
+  controller: main
   colors: {0: '#d7d7c5', 1: '#4cadc5', 2: '#4c7dc5', 5: '#fe2f2f'}
   pw_check_file: "/net/adm/pyadm/passwordAbfrage_pyadm"
   VALIDTAB_FILE_PREFIX: "validtab."

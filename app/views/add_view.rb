@@ -1,10 +1,11 @@
 
-window :text=> "gl test", :width => 400, :height => 400 do 
-
+dialog "gl test", :width => 400, :height => 400 do 
   stack do
-    @glw = glarea        
-    hslider(:max=>360){ @add.rotation_observe @parent, :value, :filter=> :update, :controller => self}
-    button :click => :click
+    @glw = glarea { update_observe @add, :rotation }
+
+    hslider :max=>360 do
+      @add.rotation_observe @parent, :value
+    end
   end
 end
 

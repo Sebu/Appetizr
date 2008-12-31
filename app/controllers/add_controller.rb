@@ -10,20 +10,8 @@ class AddController
   include Gl
 
   def show
-    @model_name = :add
-    @add = Add.one  
+    @add = Add.new  
     render
-  end
-
-  #TODO: not optimal update should happen in some model STUFF
-  def update(v)
-    @glw.gl_update
-    v
-  end
-
-  def click(w)
-#    @part ||= part :main
-#    @part.show_all
   end
 
   def gl_init
