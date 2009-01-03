@@ -296,6 +296,42 @@ class GlArea
   end
 end
 
+class CheckBoxD < Qt::ItemDelegate
+  attr_accessor :filter_func, :controller
+
+  def paint(painter, option, index)
+    data = index.model.data(index)
+		@opts ||= Qt::StyleOptionButton.new
+    @opts.state = Qt::Style::State_On
+    @opts.rect = option.rect
+		Qt::Application.style.drawControl(Qt::Style::CE_CheckBox, @opts, painter)
+  end  
+end
+
+
+class ProgressBarD < Qt::ItemDelegate
+  attr_accessor :filter_func, :controller
+  
+  def paint(painter, option, index)
+    data = index.model.data_raw(index)
+		@opts ||= Qt::StyleOptionProgressBar.new
+		@opts.text = "Load"
+    @opts.progress = if @filter_func 
+                       @controller.send(@filter_func, data)
+                     else
+                       data
+                     end
+		@opts.maximum = 100
+		@opts.minimum =   0
+  	@opts.textVisible = true
+		@opts.textAlignment = Qt::AlignCenter
+    @opts.rect = option.rect
+		Qt::Application.style.drawControl(Qt::Style::CE_ProgressBar, @opts, painter)
+    super
+  end  
+end
+
+
 class Table 
   include Widget
 
@@ -309,6 +345,16 @@ class Table
   end
   def model
     @widget.model
+  end
+
+  def column(col, type, params={})
+    case type
+      when :Text: return
+    end
+    delegate = eval "#{type.to_s}D.new"
+    delegate.controller = @controller
+    delegate.filter_func = params[:filter]
+    @widget.setItemDelegateForColumn(col, delegate)
   end
 
 end

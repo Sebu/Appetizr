@@ -21,6 +21,10 @@ class MainController
     render
   end
 
+  def test_filter(data)
+    32
+  end
+
   def user_list_format(a)
     a.tr(" ","\n")
   end

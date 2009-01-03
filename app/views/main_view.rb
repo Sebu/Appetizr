@@ -16,7 +16,10 @@ window t('main.title') do
           @main.account_text_observe @parent, :text
           enter :feld1_return
         end
-        @test_table = table
+        @test_table = table do
+          column 0, :CheckBox
+          column 1, :ProgressBar, :filter=>:test_filter
+        end
       end
       tabs do
         tab_title "&TestTab"
