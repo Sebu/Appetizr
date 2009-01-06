@@ -1,10 +1,10 @@
 
-require 'widgets'
-require 'application'
+require 'some_gui/create_some_gui'
+require 'some_gui/widgets'
 
-module Indigo
-  module RenderSomeGui
-   include CreateSomeGui  
+module Indigo::SomeGui
+  module Render
+    include Widgets
 
     def load_file(filename)
       content = ''

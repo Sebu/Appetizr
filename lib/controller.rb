@@ -1,15 +1,17 @@
 
 
 require 'event_handle_generator'
-require 'render_some_gui'
+require 'some_gui/render_some_gui'
+require 'some_gui/widgets'
 require 'command_pattern'
 
 module Indigo
   module Controller
-
     include CommandPattern
     include EventHandleGenerator
-    include RenderSomeGui
+    include SomeGui::Create
+    include SomeGui::Widgets
+    include SomeGui::Render
   
     attr_accessor :model_name
     attr_accessor :controller
