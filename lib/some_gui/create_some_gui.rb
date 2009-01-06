@@ -1,4 +1,5 @@
 
+
 module Indigo
 module SomeGui
   module CreatesWidgets
@@ -22,7 +23,7 @@ module SomeGui
               params = args.extract_options!
               params.to_options!
 
-              widget = #{name}.new(@parent,*args)
+              widget = Widgets::#{name}.new(@parent,*args)
               widget.controller = @controller
               gen_accessor(params[:id], widget) if params[:id]
 

@@ -5,14 +5,20 @@ require 'some_gui/render_some_gui'
 require 'some_gui/widgets'
 require 'command_pattern'
 
+FileModes = {:files=>Qt::FileDialog::ExistingFiles,
+               :file=>Qt::FileDialog::ExistingFile,
+               :dir_file=>Qt::FileDialog::Directory,
+               :dir=>Qt::FileDialog::DirectoryOnly,
+               :any=>Qt::FileDialog::AnyFile}
+
 module Indigo
   module Controller
     include CommandPattern
     include EventHandleGenerator
     include SomeGui::Create
-    include SomeGui::Widgets
     include SomeGui::Render
-  
+
+ 
     attr_accessor :model_name
     attr_accessor :controller
 
@@ -45,15 +51,10 @@ module Indigo
     end
 
     def file_dialog(mode, params={})
-      modes = {:files=>Qt::FileDialog::ExistingFiles,
-               :file=>Qt::FileDialog::ExistingFile,
-               :dir_file=>Qt::FileDialog::Directory,
-               :dir=>Qt::FileDialog::DirectoryOnly,
-               :any=>Qt::FileDialog::AnyFile}
-      title = params[:title] || ""
-      root = params[:root] || ""
-      filter = params[:ext] || ["*.*"]
-      file_mode = modes[mode]
+      title  = params[:title] || ""
+      root   = params[:root]  || ""
+      filter = params[:ext]   || ["*.*"]
+      file_mode = FileModes[mode]
       fdialog = Qt::FileDialog.new(nil, title, root, filter.join(";;"))
       fdialog.setFileMode(file_mode)
       fdialog.exec
