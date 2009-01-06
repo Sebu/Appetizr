@@ -1,0 +1,17 @@
+
+Indigo - rapid prototyping application framework inspired by RoR and Shoes
+
+How it should work(but does not right now ):
+  indigo my_app
+  .. create models and views
+  ./start
+  
+Indigo uses ...
+  ... a DSL to create/format view similar to the DSL of shoes ( http://github.com/why/shoes/tree/master ).
+  ... rubigen to create app templaes
+  ... active_record/resource for db and webservice access
+  ... active_support for nice ruby extensions and I18n
+  ... qtruby for the underlying widget rendering (can change in the future)
+  ... some other extensions and ideas from RoR
+  ... opengl for opengl support ;) (more on the why later)
+  
