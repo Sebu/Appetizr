@@ -1,6 +1,4 @@
 
-require 'signaling'
-require 'observe_attr'
 
 module Indigo
   module ActiveNode

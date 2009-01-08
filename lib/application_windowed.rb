@@ -1,31 +1,27 @@
 
 require 'logger'
-require 'application'
-
-
-require 'Qt4'
 
 module Indigo
-  module Application
-    module Windowed
+module Application
+module Windowed
 
-      def run
-       #Qt Stuff
-       a = Qt::Application.new(ARGV)
-       t = IdleKicker.new
+  def run
+    #Qt Stuff
+    a = Qt::Application.new(ARGV)
+    t = IdleKicker.new
 
-       name = CONFIG["controller"].to_s
-       require "#{name}_controller"
-       @main_view = eval "#{name.capitalize}Controller.one.show"
+    name = Config["controller"].to_s
+    require "#{name}_controller"
+    @main_view = eval "#{name.capitalize}Controller.one.show"
 
-       #Qt Stuff
-       a.exec 
-      end
-
-    end
+    #Qt Stuff
+    a.exec 
   end
+
 end
 
+end
+end
 
 
 #Qt Stuff

@@ -1,12 +1,14 @@
 
 
+require 'Qt4'
+require 'signaling'
+require 'observe_attr'
+require 'some_gui/create_some_gui'
 
-module Indigo
-module SomeGui
-module Qt4Backend
+module Indigo::SomeGui::Qt4Backend
 
   module Widget
-    include Create
+    include Indigo::SomeGui::Create
     include Signaling
     include ObserveAttr
 
@@ -591,7 +593,4 @@ module Qt4Backend
       @widget.layout.addWidget(w.widget)
     end
   end
-
-end
-end
 end

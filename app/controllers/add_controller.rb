@@ -1,12 +1,9 @@
 
 
-require 'controller'
 require 'add'
-require 'gl'
-
 
 class AddController  
-  include Controller
+  include Indigo::Controller
   include Gl
 
   def show

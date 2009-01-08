@@ -1,6 +1,5 @@
 
-require 'ar_table_model'
 
-class AccountList < ARTableModel
+class AccountList < Indigo::ARTableModel
 end
 

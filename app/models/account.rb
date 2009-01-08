@@ -3,7 +3,7 @@ require 'useraccountdb'
 require 'account_helper'
 
 class Account < UserAccountDB
-  include ObserveAttr 
+  include Indigo::ObserveAttr
 
   set_table_name "map"
   set_primary_key "barcode"

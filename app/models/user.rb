@@ -1,7 +1,6 @@
 
 require 'useraccountdb'
 
-
 class User < UserAccountDB
   set_table_name "equiv"
   set_primary_key "canonical"

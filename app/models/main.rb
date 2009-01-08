@@ -1,5 +1,4 @@
 
-require 'active_node'
 require 'computer'
 
 class Main 

@@ -1,10 +1,5 @@
 
 
-require 'event_handle_generator'
-require 'some_gui/render_some_gui'
-require 'some_gui/widgets'
-require 'command_pattern'
-
 FileModes = {:files=>Qt::FileDialog::ExistingFiles,
                :file=>Qt::FileDialog::ExistingFile,
                :dir_file=>Qt::FileDialog::Directory,

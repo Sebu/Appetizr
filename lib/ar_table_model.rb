@@ -1,5 +1,6 @@
-require 'Qt4'
 
+
+module Indigo
 class ARTableModel < Qt::AbstractTableModel
 
     attr_reader :rows
@@ -93,4 +94,5 @@ class ARTableModel < Qt::AbstractTableModel
             return false
         end
     end
+end
 end

@@ -4,15 +4,14 @@ require 'user'
 require 'computer'
 require 'account'
 require 'account_list'
-require 'controller'
 require 'application'
 require 'main_helper'
 require 'add_controller'
 
 require 'main'
 
-class MainController  
-  include Controller
+class MainController 
+  include Indigo::Controller
   
   attr_accessor :main_view
 
@@ -70,7 +69,7 @@ class MainController
   end
 
   def code_to_color(code)
-    CONFIG["colors"][code]
+    Config["colors"][code]
   end
 
   def cbutton_click(w, pc)
@@ -131,13 +130,13 @@ class MainController
     socket = TCPSocket.new('localhost', 7887)
 
     rescue Errno::ECONNREFUSED
-      Base.log.error t('scanner.no_connection')
+#     Base.log.error t('scanner.no_connection')
     else
       scanner = Thread.new {
-        Base.log.debug "starting scanner thread ..."
+#       Base.log.debug "starting scanner thread ..."
         while true
           scan = socket.recvfrom(25)
-          Base.log.debug "Scanner says #{scan}"
+#         Base.log.debug "Scanner says #{scan}"
           type, data = check_scanner_string(scan[0])
           @main.scan_string = data
           case type
@@ -153,11 +152,11 @@ class MainController
               key_clear(pc)
             end
           else
-            Base.log.debug "#{type}, #{data}"
+#           Base.log.debug "#{type}, #{data}"
           end
           sleep 1
         end
-      }
+     }
     end
   end
 end

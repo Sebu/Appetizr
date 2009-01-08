@@ -1,5 +1,4 @@
 
-
 #TODO: make everything more clean
 
 
@@ -10,35 +9,31 @@ $:.unshift APP_DIR + '/app/controllers'
 $:.unshift APP_DIR + '/app/models'
 $:.unshift APP_DIR + '/app/views'
 $:.unshift APP_DIR + '/app/helpers'
+
 #get environment
 require 'config/environment'
+
+require 'rubygems'
+require 'active_support'
+require 'indigo'
 
 #get config/config.yml
 require 'yaml'
 config_file = YAML.load_file("#{APP_DIR}/resources/config/config.yml")
-CONFIG  = config_file["all"]
-CONFIG.merge!(config_file[INDIGO_ENV])
+Config  = config_file["all"]
+Config.merge!(config_file[INDIGO_ENV])
 
-
-require 'rubygems'
-require 'active_support'
-I18n.load_path = Dir[File.join(APP_DIR, 'resources', 'config', 'locales', '*.{rb,yml}')]
-I18n.locale = :en
-
-
-require 'app'
-require 'application'
-
-
-# hmm nice somehow
-include Indigo 
-include Application
 
 module Indigo
   class Boot
-
+    include Application
+    
     # startup the app    
-    def self.run
+    def self.run!
+
+      I18n.load_path = Dir[File.join(APP_DIR, 'resources', 'config', 'locales', '*.{rb,yml}')]
+      I18n.locale = Config[:locale]
+
 
       #      Application::Base
       Base.log.debug "booting.." 
@@ -54,6 +49,6 @@ module Indigo
   end
 end
 
-Indigo::Boot.run
+Indigo::Boot.run!
 
 

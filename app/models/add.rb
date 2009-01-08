@@ -1,5 +1,4 @@
 
-require 'active_node'
 
 class Add
   include Indigo::ActiveNode

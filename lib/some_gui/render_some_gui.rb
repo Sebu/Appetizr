@@ -1,6 +1,4 @@
 
-require 'some_gui/create_some_gui'
-
 
 module Indigo::SomeGui
   module Render
