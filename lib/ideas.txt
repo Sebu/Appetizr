@@ -1,5 +1,18 @@
 
 
+# automatic doc
+autodoc :style => :float do
+  desc "SDSDSDSD"
+  window do
+    button
+  end
+end
+> this will generate a GUI image with text beside it
+
+
+# resouce checksums?
+
+
 
 
 # dock :all

@@ -69,7 +69,7 @@ class MainController
   end
 
   def code_to_color(code)
-    Config["colors"][code]
+    CONFIG["colors"][code]
   end
 
   def cbutton_click(w, pc)

@@ -10,7 +10,7 @@ module Windowed
     a = Qt::Application.new(ARGV)
     t = IdleKicker.new
 
-    name = Config["controller"].to_s
+    name = CONFIG["controller"].to_s
     require "#{name}_controller"
     @main_view = eval "#{name.capitalize}Controller.one.show"
 

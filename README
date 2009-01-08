@@ -1,7 +1,7 @@
 
 Indigo - rapid prototyping application framework inspired by RoR and Shoes
 
-How it should work(but does not right now ):
+How it should work(but does not right now):
   indigo my_app
   cd my_app
   .. create models and views

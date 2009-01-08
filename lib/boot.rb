@@ -1,7 +1,6 @@
 
 #TODO: make everything more clean
 
-
 # add /app and co. to path
 $:.unshift APP_DIR + '/resources'
 $:.unshift APP_DIR + '/app'
@@ -20,8 +19,8 @@ require 'indigo'
 #get config/config.yml
 require 'yaml'
 config_file = YAML.load_file("#{APP_DIR}/resources/config/config.yml")
-Config  = config_file["all"]
-Config.merge!(config_file[INDIGO_ENV])
+CONFIG  = config_file["all"]
+CONFIG.merge!(config_file[INDIGO_ENV])
 
 
 module Indigo
@@ -32,7 +31,7 @@ module Indigo
     def self.run!
 
       I18n.load_path = Dir[File.join(APP_DIR, 'resources', 'config', 'locales', '*.{rb,yml}')]
-      I18n.locale = Config[:locale]
+      I18n.locale = CONFIG[:locale]
 
 
       #      Application::Base

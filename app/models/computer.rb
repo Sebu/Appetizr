@@ -14,7 +14,7 @@ class Computer < ActiveRecord::Base
   validates_numericality_of :Color, :greater_than_or_equal_to => 0, :less_than => 6
 
   def change_vtab
-    filename = "#{Config['VALIDTAB_PATH']}#{Config['VALIDTAB_FILE_PREFIX']}#{self.Cname}"
+    filename = "#{CONFIG['VALIDTAB_PATH']}#{CONFIG['VALIDTAB_FILE_PREFIX']}#{self.Cname}"
     return unless File.exists?(filename)
     vtab = File.new(filename,"r+")
     begin
