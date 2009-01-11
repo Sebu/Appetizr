@@ -2,8 +2,8 @@
 
 Dir.chdir "#{File.dirname(__FILE__)}/.."
 APP_DIR = Dir.pwd
-$:.unshift APP_DIR + '/lib'
+$:.unshift APP_DIR + '/vendor'
 
-require 'boot'
+require 'indigo/boot'
 
 
