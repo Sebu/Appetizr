@@ -1,5 +1,4 @@
 
-module Indigo
 module ObserveAttr
   
 
@@ -71,6 +70,5 @@ module ObserveAttr
       }
     end
   end
-end
 end
 

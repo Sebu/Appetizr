@@ -3,7 +3,7 @@ require 'ftools'
 
 class Computer < ActiveRecord::Base
   include Indigo::ActiveNode
-  include Indigo::ObserveAttr 
+  include ObserveAttr 
   multi_db
 
   set_table_name "Cache"

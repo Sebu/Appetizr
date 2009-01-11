@@ -1,7 +1,7 @@
 
 development:
   adapter: sqlite3
-  database: resources/db/computer.sqlite3
+  database: db/computer.sqlite3
 
 test:
 

@@ -3,7 +3,7 @@ require 'computer'
 
 class Main 
   include Indigo::ActiveNode
-  include Indigo::ObserveAttr
+  include ObserveAttr
   obs_attr :name
   obs_attr :account_text
   obs_attr :scan_string

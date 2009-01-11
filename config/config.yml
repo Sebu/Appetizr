@@ -6,7 +6,7 @@ all:
   VALIDTAB_FILE_PREFIX: "validtab."
 
 development:
-  VALIDTAB_PATH: "resources/vtabs/"
+  VALIDTAB_PATH: "vtabs/"
 
 test:
 

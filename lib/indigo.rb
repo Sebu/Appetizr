@@ -3,17 +3,18 @@
 autoload :Qt, 'Qt4'
 autoload :Gl, 'gl'
 
-module Indigo
-  autoload :Application, 'application'
-  autoload :Signaling, 'signaling'
+#autoload :multi_db, 'indigo/multiple_databases'
+autoload :CommandPattern, 'command_pattern'
+autoload :Signaling, 'signaling'
+autoload :ObserveAttr, 'observe_attr'
 
-  autoload :SomeGui, 'some_gui'
-  autoload :ActiveNode, 'active_node'
-  autoload :ObserveAttr, 'observe_attr'
-  autoload :EventHandleGenerator, 'event_handle_generator'
-  autoload :Controller, 'controller'
-  autoload :CommandPattern, 'command_pattern'
-  autoload :ARTableModel, 'ar_table_model'
+module Indigo
+  autoload :Application, 'indigo/application'
+  autoload :SomeGui, 'indigo/some_gui'
+  autoload :ActiveNode, 'indigo/active_node'
+  autoload :EventHandleGenerator, 'indigo/event_handle_generator'
+  autoload :Controller, 'indigo/controller'
+  autoload :ARTableModel, 'indigo/ar_table_model'
   autoload :App,'app'
 end
 

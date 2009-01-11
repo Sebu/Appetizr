@@ -4,7 +4,7 @@ require 'active_record'
 module Indigo
   module Application
 
-    autoload :Windowed, 'application_windowed'
+    autoload :Windowed, 'indigo/application_windowed'
 
     module Base
 

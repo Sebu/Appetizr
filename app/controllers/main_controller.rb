@@ -4,7 +4,6 @@ require 'user'
 require 'computer'
 require 'account'
 require 'account_list'
-require 'application'
 require 'main_helper'
 require 'add_controller'
 

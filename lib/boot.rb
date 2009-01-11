@@ -1,6 +1,7 @@
 
 #TODO: make everything more clean
 
+
 # add /app and co. to path
 $:.unshift APP_DIR + '/resources'
 $:.unshift APP_DIR + '/app'
@@ -10,7 +11,7 @@ $:.unshift APP_DIR + '/app/views'
 $:.unshift APP_DIR + '/app/helpers'
 
 #get environment
-require 'config/environment'
+require APP_DIR + '/config/environment'
 
 require 'rubygems'
 require 'active_support'
@@ -18,7 +19,7 @@ require 'indigo'
 
 #get config/config.yml
 require 'yaml'
-config_file = YAML.load_file("#{APP_DIR}/resources/config/config.yml")
+config_file = YAML.load_file("#{APP_DIR}/config/config.yml")
 CONFIG  = config_file["all"]
 CONFIG.merge!(config_file[INDIGO_ENV])
 

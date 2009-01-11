@@ -2,6 +2,6 @@
 
 class Add
   include Indigo::ActiveNode
-  include Indigo::ObserveAttr
+  include ObserveAttr
   obs_attr :rotation
 end

@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
-APP_DIR = File.dirname(__FILE__)
+Dir.chdir "#{File.dirname(__FILE__)}/.."
+APP_DIR = Dir.pwd
 $:.unshift APP_DIR + '/lib'
 
 require 'boot'

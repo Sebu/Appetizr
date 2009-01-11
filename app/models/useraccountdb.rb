@@ -1,5 +1,5 @@
 
-require 'multiple_databases'
+require 'indigo/multiple_databases'
 
 class UserAccountDB < ActiveRecord::Base
   multi_db
