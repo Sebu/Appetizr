@@ -4,10 +4,6 @@ require 'user'
 require 'computer'
 require 'account'
 require 'account_list'
-require 'main_helper'
-require 'add_controller'
-
-require 'main'
 
 class MainController 
   include Indigo::Controller
