@@ -4,9 +4,9 @@ require 'add'
 
 class AddController  
   include Indigo::Controller
-  include Gl
 
   def show
+    include Gl
     @add = Add.new  
     render
   end
