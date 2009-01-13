@@ -30,10 +30,6 @@ module Indigo
     end
 
     def part(name)
-      require "#{name.to_s}_controller"
-      require "#{name.to_s}_helper"
-      require "#{name.to_s}"
-
       controller = eval "#{name.to_s.capitalize}Controller.one"
       controller.parent = @parent
       view = controller.show

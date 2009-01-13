@@ -1,5 +1,5 @@
 
-require 'active_record'
+
 
 module Indigo
   module Application

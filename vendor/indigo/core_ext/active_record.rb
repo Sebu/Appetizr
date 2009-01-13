@@ -1,4 +1,4 @@
-
+require 'active_record'
 
 module MultipleDatabases
 
@@ -31,5 +31,4 @@ end
 
 class ActiveRecord::Base
   extend MultipleDatabases
-
 end

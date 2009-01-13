@@ -1,6 +1,4 @@
 
-require 'computer'
-
 class Main 
   include Indigo::ActiveNode
   include ObserveAttr

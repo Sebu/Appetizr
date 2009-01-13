@@ -11,9 +11,7 @@ module Windowed
     t = IdleKicker.new
 
     name = CONFIG["controller"].to_s
-    require "#{name}_controller"
     require "#{name}_helper"
-    require "#{name}"
     @main_view = eval "#{name.capitalize}Controller.one.show"
 
     #Qt Stuff

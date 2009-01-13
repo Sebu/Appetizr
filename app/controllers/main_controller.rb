@@ -1,9 +1,6 @@
 
 
-require 'user'
-require 'computer'
-require 'account'
-require 'account_list'
+#require 'account_list'
 
 class MainController 
   include Indigo::Controller

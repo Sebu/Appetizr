@@ -1,5 +1,4 @@
 
-require 'useraccountdb'
 require 'account_helper'
 
 class Account < UserAccountDB
