@@ -1,7 +1,6 @@
 
 #TODO:  make everything more clean
 #       and move to a initializer??
-
 require 'rubygems'
 require 'active_support'
 

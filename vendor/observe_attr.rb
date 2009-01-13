@@ -1,7 +1,7 @@
 
-module ObserveAttr
-  
+#TODO: rewrite
 
+module ObserveAttr
   def self.included(base)
     base.class_eval do
       extend ObserveAttr::ClassMethods
