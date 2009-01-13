@@ -4,9 +4,11 @@ Indigo - rapid prototyping application framework inspired by RoR and Shoes
 TODO before first usefull release
 * rewrite ObserveAttr
 * create a real initialer (with better internel config support for framework and app)
-* improve Singaling (maybe use GObject?)
-* improve the Rakefile
-* improve migration support (get it to work correctly)
+* improve ...
+   ... Singaling (maybe use GObject?)
+   ... the Rakefile
+   ... migration support (get it to work correctly)
+   ... the widgetery
 
 How it should work(but does not right now):
   indigo my_app
