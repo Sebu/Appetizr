@@ -1,9 +1,5 @@
 
-
-dbinfo = YAML.load_file("config/databases/computer.yml")
-ActiveRecord::Base.establish_connection(dbinfo[INDIGO_ENV])
-
-
+puts "SSD"
 class InitComputer < ActiveRecord::Migration
   def self.up
     create_table :Cache, :primary_key => :Cname do |table|
@@ -18,5 +14,3 @@ class InitComputer < ActiveRecord::Migration
     drop_table :Cache
   end
 end
-
-InitComputer.migrate(:up)

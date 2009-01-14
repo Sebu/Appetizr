@@ -1,9 +1,4 @@
 
-
-dbinfo = YAML.load_file("config/databases/useraccountdb.yml")
-ActiveRecord::Base.establish_connection(dbinfo[INDIGO_ENV])
-
-
 class InitAdm < ActiveRecord::Migration
   def self.up
     create_table :map, :id => false do |table|
@@ -21,5 +16,3 @@ class InitAdm < ActiveRecord::Migration
     drop_table :equiv
   end
 end
-
-InitAdm.migrate(:up)
