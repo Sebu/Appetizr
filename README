@@ -1,6 +1,11 @@
 
 Indigo - rapid prototyping application framework inspired by RoR and Shoes
 
+USAGE OF DEMO APP/FRAMEWORK
+* rake db:migrate
+* script/start
+
+
 TODO before first usefull release
 * rewrite ObserveAttr
 * create a real initialer (with better internel config support for framework and app)
