@@ -2,7 +2,7 @@
 
 class AddController  
   include Indigo::Controller
-  include Gl
+# include Gl
 
   def show
     @add = Add.new  

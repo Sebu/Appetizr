@@ -1,6 +1,4 @@
 
-require 'account_helper'
-
 class Account < UserAccountDB
   include ObserveAttr
 
@@ -50,6 +48,16 @@ class Account < UserAccountDB
 
   def after_initialize
    self.locked ||= get_lockstate(self.account)
+  end
+
+  def get_lockstate(user)
+    puts CONFIG['pw_check_file']
+    system("#{CONFIG['pw_check_file']} #{user}")
+    case $?
+      when 0:   false
+      when 512: true
+      else      true
+    end
   end
 
 end

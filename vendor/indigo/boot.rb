@@ -25,28 +25,22 @@ CONFIG  = config_file["all"]
 CONFIG.merge!(config_file[INDIGO_ENV])
 
 
-
 # BOOT
 module Indigo
   class Boot
     include Application
     
     # startup the app    
+    # should be more like
+    # init_framework 
+    # logger
+    # init_plugins
+    # inti...
+    # NOT App.run (move to something like commands/start)
     def self.run!
       I18n.load_path = Dir[File.join(APP_DIR, 'config', 'locales', '*.{rb,yml}')]
       I18n.locale = CONFIG[:locale]
-
-      #      Application::Base
-      Base.log.debug "booting.." 
-      #init stuff
-
-      # the real app starting
-      App.run
-
-      Base.log.debug "..shutdown"
-      #shutdown
     end
-
   end
 end
 

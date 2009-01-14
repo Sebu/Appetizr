@@ -17,6 +17,6 @@ button :id => @c.Cname do
 end
 
 
-#TODO: do this somewhere else (in model or controller??)
+#TODO: do this somewhere else (in model or controller?? or herlper??)
 name @c, "#{@c.Cname}_model"
 
