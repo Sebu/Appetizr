@@ -2,9 +2,15 @@
 Indigo - rapid prototyping application framework inspired by RoR and Shoes
 
 USAGE OF DEMO APP/FRAMEWORK
-* rake db:migrate
-* script/start
+* 'rake db:migrate' or 'rake db:schema:load'
+* 'script/start'
 
+Differences to Rails
+1. indigo is not RAILS
+2. indigo uses multiple databases by default so
+    schema.rb is in db/schemas/db_name.rb
+    migrations is in db/migration/db_name/[0-9]*_*.rb
+3. more 
 
 TODO before first usefull release
 * rewrite ObserveAttr
@@ -15,12 +21,7 @@ TODO before first usefull release
    ... migration support (get it to work correctly)
    ... the widgetery
 
-How it should work(but does not right now):
-  indigo my_app
-  cd my_app
-  .. create models and views
-  script/start
-  
+
 Indigo uses ...
   ... a DSL to create/format view similar to the DSL of shoes ( http://github.com/why/shoes/tree/master ).
   ... rubigen to create app templaes
@@ -29,4 +30,11 @@ Indigo uses ...
   ... qtruby for the underlying widget rendering (can change in the future)
   ... some other extensions and ideas from RoR
   ... ruby-opengl for opengl support ;) (more on the why later)
+
+
+How it should work(but does not right now):
+  indigo my_app
+  cd my_app
+  .. create models and views
+  script/start
   
