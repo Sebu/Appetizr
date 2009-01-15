@@ -9,6 +9,14 @@ class InitAdm < ActiveRecord::Migration
       table.string :alias, :limit => 32
       table.string :canonical, :limit => 32
     end
+    acc = Account.new
+    acc.account = "alg-123"
+    acc.barcode = "1111"
+    acc.save!
+    acc = Account.new
+    acc.account = "co1-200"
+    acc.barcode = "1234"
+    acc.save!
   end
 
   def self.down

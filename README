@@ -19,7 +19,7 @@ How it should work(but does not right now):
   indigo my_app
   cd my_app
   .. create models and views
-  ./start
+  script/start
   
 Indigo uses ...
   ... a DSL to create/format view similar to the DSL of shoes ( http://github.com/why/shoes/tree/master ).
