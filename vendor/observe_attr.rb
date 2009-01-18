@@ -1,5 +1,8 @@
 
 #TODO: rewrite
+# add filter chain
+# remove some fixed code
+# add lazy reading of data
 
 module ObserveAttr
   def self.included(base)
@@ -9,13 +12,15 @@ module ObserveAttr
   end
 
   #  TODO: change syntax and uniform the a <==> b
-  def observe(m2, key2, m1, key1, options={})
+  def observe(m1, key1, m2, key2, options={})
     options.to_options!
 
-    #puts "#{m2} #{key2} #{m1} #{key1}"    
+    #puts "#{m1} #{key1} #{m2} #{key2}"    
 
-    signal = m1.class.obs_calls[key1.to_sym][:signal]
-    func = m2.class.obs_calls[key2.to_sym][:func]
+    # emited signal
+    signal = m2.class.obs_calls[key2.to_sym][:signal]
+    # reader function to call
+    func = m1.class.obs_calls[key1.to_sym][:func]
 
     controller = options[:controller] || @controller
 
@@ -23,52 +28,65 @@ module ObserveAttr
     # options[:filter].each do | f |
     # filter_chain = controller.send(f, gen_filter_chain next )
     if options[:filter]
-      m1.connect(signal) {|args| m2.send(func, controller.send(options[:filter],args) ) }
-      m2.send( func, controller.send(options[:filter],m1.send(key1)) ) 
+      m2.connect(signal) {|args| m1.send(func, controller.send(options[:filter],args) ) }
+      m1.send( func, controller.send(options[:filter],m2.send(key2)) ) 
     else
-      m1.connect(signal, m2, func)
-      m2.send( func, m1.send(key1)) 
+      m2.connect(signal, m1, func)
+      m1.send( func, m2.send(key2)) 
     end
   end
 
   module ClassMethods
     attr_accessor :obs_calls
 
-    def obs_attr(name, params = {})
-      signal = "#{name}_changed"
-      func = "#{name}="
-      default_params = {:signal => signal, :func => func, :override=> false}
-      params = default_params.merge(params)
 
+    def obsattr_reader(name, params ={})
+      params = {:func => "#{name}="}.merge(params)
       @obs_calls ||= {}
-      @obs_calls[name] = params
-
-      class_eval %{
+      @obs_calls[name] = if @obs_calls[name]
+                           @obs_calls[name].merge(params)
+                         else 
+                           params
+                         end     
+     class_eval %{
         def #{name}_observe(model,key,params={})
           observe(self, "#{name}".to_sym, model, key, params)
         end
+      }
+    end
 
+    def obsattr_writer(name, params = {})
+      params = {:signal => "#{name}_changed", :func => "#{name}="}.merge(params)
+
+      @obs_calls ||= {}
+      @obs_calls[name] = if @obs_calls[name]
+                           @obs_calls[name].merge(params)
+                         else 
+                           params
+                         end     
+
+      alias_method "o_assign_#{name}", params[:func] unless params[:override]
+
+      class_eval %{
         if not params[:override]
-          def #{func}(value)
-            @#{name}_was=@#{name}
-            @#{name}=value
+          def #{params[:func]}(value)
+            send("o_assign_#{name}", value)
             emit "#{params[:signal]}", value
-            #super
-          end
-          def #{name}
-            @#{name}
-          end
-          def #{name}_was
-             @#{name}_was
           end
         else
-          def #{func}(value)
+          def #{params[:func]}(value)
             super
             emit "#{params[:signal]}", value
           end
         end
       }
     end
+
+    def obs_attr(name, params = {})
+      obsattr_writer name, params
+      obsattr_reader name, params
+    end
+
   end
 end
 

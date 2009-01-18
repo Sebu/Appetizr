@@ -116,8 +116,6 @@ module Qt4Backend
     include Widget
     include ObserveAttr
 
-    obs_attr :text, :func => :set_text	
-
     def initialize(p, name)
       @widget = Qt::MainWindow.new(p.widget)
       set_text(name)
@@ -136,6 +134,8 @@ module Qt4Backend
     def set_text(value) 
       @widget.setWindowTitle(value)
     end
+    obs_attr :text, :func => :set_text	
+
     def add_element(w)
       @widget.setCentralWidget(w.widget)
     end
@@ -150,8 +150,6 @@ module Qt4Backend
   class Dialog 
     include Widget
     include ObserveAttr
-
-    obs_attr :text, :func => :set_text	
 
     def initialize(p, title)
       @widget = Qt::Dialog.new(p.widget)
@@ -173,6 +171,9 @@ module Qt4Backend
     def set_text(value) 
       @widget.setWindowTitle(value)
     end
+    obs_attr :text, :func => :set_text	
+
+
     def add_element(w)
       @widget.layout.addWidget(w.widget)
     end
@@ -297,8 +298,6 @@ module Qt4Backend
     include Widget
     include ObserveAttr
 
-    obs_attr :text, :func => "set_text"
-
     def initialize(p, *args)
       @widget = Qt::Label.new
       p.add_element(self)
@@ -310,9 +309,12 @@ module Qt4Backend
       @widget.setFont(@font)
         super
     end
+
     def set_text(value)
       @widget.setText(value)
     end
+    obs_attr :text, :func => "set_text"
+
   end
 
   class Button 
@@ -320,7 +322,7 @@ module Qt4Backend
     include ObserveAttr
     include EventHandleGenerator
 
-    obs_attr :text, :func => "set_text"
+    obs_attr :text, :func => "set_text", :override => true
     obs_attr :background, :func=>"background", :override => true
     
     def initialize(p, *args)
@@ -365,8 +367,6 @@ module Qt4Backend
     include Widget
     include ObserveAttr
 
-    obs_attr :text #, :func => "set_text"
-
     def initialize(p, *args)
       @widget = Qt::LineEdit.new
       set_text(args[0])
@@ -379,7 +379,7 @@ module Qt4Backend
       self.text=value
       @widget.setText(value.to_s)
     end
-
+    obs_attr :text, :func => "set_text"
   end
 
   class Svg

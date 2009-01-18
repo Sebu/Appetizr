@@ -15,13 +15,21 @@ module Signaling
   def connect(signal, *args, &pr)
     @connections = Hash.new unless @connections
     @connections[signal] = [] unless @connections[signal]
-    data = if pr then [pr, nil, args] else [ args[0], args[1], args[2..-1] ] end
+    data =  if pr 
+              [pr, nil, args] 
+            elsif (args[0] and args[1])
+              [ args[0], args[1], args[2..-1] ] 
+            else
+              nil
+            end
+    return unless data
     @connections[signal].push data
   end
 
-  def disconnect(signal, *args)
+  def disconnect(signal, *args, &pr)
 		return unless @connections
-		@connections[signal].delete(args)
+    data = if pr then [pr, nil, args] else [ args[0], args[1], args[2..-1] ] end
+		@connections[signal].delete(data)
 	end
 
   
@@ -31,7 +39,7 @@ module Signaling
     return if @dirty
     return if !@connections
     connected_slots = @connections[name]
-    return if !connected_slots
+    return if !connected_slots or connected_slots.empty?
     @dirty = true
     connected_slots.each do |obj, method, more|
 		  if method == nil

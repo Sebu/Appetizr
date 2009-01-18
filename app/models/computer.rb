@@ -9,8 +9,8 @@ class Computer < ActiveRecord::Base
   set_table_name "Cache"
   set_primary_key "Cname"
   after_update :change_vtab
-  obs_attr :User, :override => true
-  obs_attr :Color, :override => true
+  obsattr_writer :User, :override => true
+  obsattr_writer :Color, :override => true
   validates_numericality_of :Color, :greater_than_or_equal_to => 0, :less_than => 6
 
   def change_vtab

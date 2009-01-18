@@ -2,8 +2,9 @@
 class Main 
   include Indigo::ActiveNode
   include ObserveAttr
+  attr_accessor :name, :account_text, :scan_string
   obs_attr :name
-  obs_attr :account_text
+  obsattr_reader :account_text
   obs_attr :scan_string
   attr_accessor :clusters
   
