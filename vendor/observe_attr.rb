@@ -1,8 +1,9 @@
 
-#TODO: rewrite
+#TODO: after first rewrite still not convinced :/
 # add filter chain
 # remove some fixed code
 # add lazy reading of data
+# use alias method chain
 
 module ObserveAttr
   def self.included(base)

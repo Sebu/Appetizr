@@ -8,12 +8,12 @@ USAGE OF DEMO APP/FRAMEWORK
 Differences to Rails
 1. indigo is not RAILS
 2. indigo uses multiple databases by default so
-    schema.rb is in db/schemas/db_name.rb
-    migrations is in db/migration/db_name/[0-9]*_*.rb
+    schema.rb is db/schemas/db_name.rb
+    migrations is db/migration/db_name/[0-9]*_*.rb
 3. more 
 
 TODO before first usefull release
-* rewrite ObserveAttr
+* improve ObserveAttr (see file)
 * create a real initialer (with better internel config support for framework and app)
 * improve ...
    ... Signaling (maybe use GObject?)
