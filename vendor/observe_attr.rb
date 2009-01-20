@@ -32,7 +32,7 @@ module ObserveAttr
       m1.send( func, controller.send(options[:filter],m2.send(key2)) ) 
     else
       m2.connect(signal, m1, func)
-      m1.send( func, m2.send(key2)) 
+      m1.send(func, m2.send(key2)) 
     end
   end
 

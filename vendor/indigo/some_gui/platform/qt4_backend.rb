@@ -13,10 +13,6 @@ module Qt4Backend
     attr_accessor :widget
     attr_accessor :controller
 
-    def parse_params(params)
-      #set_text(params[:text]) if params[:text]
-    end
-
     def parse_block(&block)
       if block_given? 
         block.call @parent
@@ -118,7 +114,7 @@ module Qt4Backend
 
     def initialize(p, name)
       @widget = Qt::MainWindow.new(p.widget)
-      set_text(name)
+      self.text=name
     end
 
     def parse_params(params)
@@ -131,10 +127,14 @@ module Qt4Backend
       super
     end
 
-    def set_text(value) 
+    def text=(value) 
       @widget.setWindowTitle(value)
     end
-    obs_attr :text, :func => :set_text	
+    def text
+      @widget.windowTitle
+    end
+
+    obs_attr :text
 
     def add_element(w)
       @widget.setCentralWidget(w.widget)
@@ -155,7 +155,7 @@ module Qt4Backend
       @widget = Qt::Dialog.new(p.widget)
       @layout = Qt::HBoxLayout.new
       @widget.setLayout(@layout)
-      set_text(title)
+      self.text=title
     end
 
     def parse_params(params)
@@ -168,10 +168,13 @@ module Qt4Backend
       super
     end
 
-    def set_text(value) 
+    def text=(value) 
       @widget.setWindowTitle(value)
     end
-    obs_attr :text, :func => :set_text	
+    def text
+      @widget.windowTitle
+    end
+    obs_attr :text
 
 
     def add_element(w)
@@ -189,8 +192,7 @@ module Qt4Backend
     include Widget
     include ObserveAttr
 
-    #TODO: should be only a writer or so
-    obs_attr :update, :func => :gl_update, :override => true
+    obsattr_reader :update, :func => :gl_update
 
     def initialize(p)
       @widget = Qt::GLWidget.new(p.widget)
@@ -301,7 +303,7 @@ module Qt4Backend
     def initialize(p, *args)
       @widget = Qt::Label.new
       p.add_element(self)
-      set_text(args[0])
+      self.text=args[0]
     end
     def parse_params(params)
       @font = Qt::Font.new
@@ -310,10 +312,13 @@ module Qt4Backend
         super
     end
 
-    def set_text(value)
+    def text=(value)
       @widget.setText(value)
     end
-    obs_attr :text, :func => "set_text"
+    def text
+      @widget.text
+    end
+    obs_attr :text
 
   end
 
@@ -322,8 +327,16 @@ module Qt4Backend
     include ObserveAttr
     include EventHandleGenerator
 
-    obs_attr :text, :func => "set_text", :override => true
     obs_attr :background, :func=>"background", :override => true
+
+    def text=(value) 
+      @widget.setText(value)
+    end
+    def text
+      @widget.text
+    end
+    obs_attr :text
+
     
     def initialize(p, *args)
       @widget = Qt::PushButton.new
@@ -335,11 +348,9 @@ module Qt4Backend
       @layout.spacing = 0
       @layout.margin = 0
       @widget.setLayout(@layout)
-      p.add_element(self) 
-      set_text(args[0])
+      p.add_element(self)
+      self.text=args[0]
     end
-
-
 
     def background(value)
       @widget.setStyleSheet("background: '#{value}'")
@@ -349,10 +360,6 @@ module Qt4Backend
       method_click = params[:click]
       click(method_click) if method_click
       super
-    end
-
-    def set_text(value) 
-      @widget.setText(value)
     end
 
     def add_element(w)
@@ -369,17 +376,19 @@ module Qt4Backend
 
     def initialize(p, *args)
       @widget = Qt::LineEdit.new
-      set_text(args[0])
       @widget.connect(SIGNAL("textChanged(const QString &)")) {|m| emit("text_changed", m) }
       @widget.connect(SIGNAL(:returnPressed)) { emit(:enter, self) }
       p.add_element(self)
+      self.text=args[0]
     end
 
-    def set_text(value)
-      self.text=value
+    def text=(value)
       @widget.setText(value.to_s)
     end
-    obs_attr :text, :func => "set_text"
+    def text
+      @widget.text
+    end
+    obs_attr :text
   end
 
   class Svg
@@ -400,8 +409,6 @@ module Qt4Backend
   class Spin
     include Widget
     include ObserveAttr
-    obs_attr :value, :override => true
-
     def initialize(p, *args)
       @widget = Qt::SpinBox.new
       @widget.connect(SIGNAL("valueChanged(int)")) {|m| emit("value_changed", m) }
@@ -410,6 +417,11 @@ module Qt4Backend
     def value=(value)
       @widget.value=value
     end
+    def value
+      @widget.value
+    end
+    obs_attr :value
+
     def parse_params(params)
       @widget.maximum = params[:max] || 100
       @widget.minimum = params[:min] || 0
@@ -434,8 +446,8 @@ module Qt4Backend
   end
 
   module Slider
-    include Widget  
-
+    include Widget
+    include ObserveAttr
     def parse_params(params)
       @widget.maximum = params[:max] || 100
       @widget.minimum = params[:min] || 0
@@ -445,12 +457,15 @@ module Qt4Backend
     def value=(value)
       @widget.value=value
     end
+    def value
+      @widget.value
+    end
   end
 
   class HSlider
     include Slider
     include ObserveAttr
-    obs_attr :value, :override => true
+    obs_attr :value
 
     def initialize(p)
       @widget = Qt::Slider.new(Qt::Horizontal)
@@ -461,7 +476,7 @@ module Qt4Backend
   class VSlider
     include Slider
     include ObserveAttr
-    obs_attr :value, :override => true
+    obs_attr :value
 
     def initialize(p)
       @widget = Qt::Slider.new(Qt::Vertical)
@@ -476,12 +491,12 @@ module Qt4Backend
     def initialize(p, *args)
       @widget = Qt::CheckBox.new
       p.add_element(self)
-      set_text(args[0])
+      self.text=(args[0])
     end
     def parse_params(params)
       super
     end
-    def set_text(value) 
+    def text=(value) 
       @widget.setText(value)
     end
   end
@@ -492,12 +507,12 @@ module Qt4Backend
     def initialize(p, *args)
       @widget = Qt::RadioButton.new
       p.add_element(self)
-      set_text(args[0])
+      self.text=(args[0])
     end
     def parse_params(params)
       super
     end
-    def set_text(value) 
+    def text=(value) 
       @widget.setText(value)
     end
   end
@@ -510,13 +525,13 @@ module Qt4Backend
       @layout = Qt::HBoxLayout.new
       @widget.setLayout(@layout)
       p.add_element(self)
-      set_text(args[0])
+      self.text=(args[0])
     end
     def parse_params(params)
       @widget.checkable = params[:radio] || false
       super
     end
-    def set_text(value) 
+    def text=(value) 
       @widget.setTitle(value)
     end
     def add_element(w)
