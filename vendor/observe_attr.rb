@@ -26,9 +26,11 @@ module ObserveAttr
     controller = options[:controller] || @controller
 
     #TODO: prep filter chain
-    # options[:filter].each do | f |
-    # filter_chain = controller.send(f, gen_filter_chain next )
-    if options[:filter]
+    #options[:filter].each do | f |
+    #filter_chain_pre = controller.send(f, gen_filter_chain next )
+
+    if options[:fiter].is_a?(Array)
+    elsif options[:filter].is_a?(Symbol) or options[:filter].is_a?(String)
       m2.connect(signal) {|args| m1.send(func, controller.send(options[:filter],args) ) }
       m1.send( func, controller.send(options[:filter],m2.send(key2)) ) 
     else
