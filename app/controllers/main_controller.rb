@@ -31,7 +31,7 @@ class MainController
     @pool_store = *args
   end
 
-  def drag_pool()
+  def drag_pool
     @pool_store
   end
 
@@ -141,6 +141,9 @@ class MainController
           type, data = check_scanner_string(scan[0])
           @main.scan_string = data
           case type
+          when :card
+            accounts = User.find_accounts_by_barcode(data)
+            fill_accounts(accounts)
           when :matrikel
             accounts = Account.find_accounts_by_barcode(data)
             fill_accounts(accounts)

@@ -6,3 +6,8 @@ development:
 test:
 
 production:
+  adapter: mysql
+  database: adm2
+  username: "bibliothek"
+  password: "pooluser"
+  host: print-pool
