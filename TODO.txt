@@ -1,0 +1,8 @@
+
+- generate correct colors
+- cache refresh
+- log(intern & extern)
+- lock/unlock
+- pycon/scanSense :D
+
+
