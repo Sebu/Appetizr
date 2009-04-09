@@ -2,7 +2,7 @@
 #TODO:  make everything more clean
 #       and move to a initializer??
 require 'rubygems'
-require 'active_support'
+require 'activesupport'
 
 # get environment
 require APP_DIR + '/config/environment'
@@ -19,7 +19,7 @@ require 'indigo'
 
 # load CONFIG
 # TODO: change the whole process
-require 'yaml'
+autoload :YAML, 'yaml'
 config_file = YAML.load_file("#{APP_DIR}/config/config.yml")
 CONFIG  = config_file["all"]
 CONFIG.merge!(config_file[INDIGO_ENV])

@@ -17,8 +17,8 @@ window t('main.title') do
           enter :feld1_return
         end
         @test_table = table do
-          column 0, :CheckBox
-          column 1, :ProgressBar, :filter=>:test_filter
+          column 1, :CheckBox
+          #column 1, :ProgressBar, :filter=>:test_filter
         end
       end
       tabs :opacity=>0.7 do

@@ -22,6 +22,10 @@ module CommandPattern
       @doit = doit
       self
     end
+    def re(&redoit)
+      @doit = redoit
+      self
+    end
     def un(&undoit)
       @undoit = undoit
       self

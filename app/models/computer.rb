@@ -11,7 +11,7 @@ class Computer < ActiveRecord::Base
   after_update :change_vtab
   obsattr_writer :User, :override => true
   obsattr_writer :Color, :override => true
-  validates_numericality_of :Color, :greater_than_or_equal_to => 0, :less_than => 6
+  validates_numericality_of :Color, :greater_than_or_equal_to => 0, :less_than => 7
 
   def change_vtab
     filename = "#{CONFIG['VALIDTAB_PATH']}#{CONFIG['VALIDTAB_FILE_PREFIX']}#{self.Cname}"

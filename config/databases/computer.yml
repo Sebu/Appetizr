@@ -10,6 +10,6 @@ production:
   database: xadm
   username: "xadm_user"
   password: ""
-  host: localhost
-  socket: /var/run/mysqld/mysqld.sock
+  host: print-pool
+
 
