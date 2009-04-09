@@ -78,7 +78,8 @@ class MainController
       pc.User = new_users.join(" ")
       pc.save!
       @test_table.model = nil
-    end.un do
+    end
+    .un do
       pc.Color = old_color
       pc.User = old_user
       pc.save!
@@ -93,7 +94,8 @@ class MainController
       pc.User = ""
       pc.Color = 0
       pc.save!
-    end.un do
+    end
+    .un do
       pc.User = old_user
       pc.Color = old_color
       pc.save!

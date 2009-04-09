@@ -10,15 +10,18 @@ class AddController
   end
 
   def gl_init
+
     glClearColor(0.0, 0.0, 0.0, 0.0)
     glEnable(GL_DEPTH_TEST)
     glMatrixMode(GL_PROJECTION)
+    glPushMatrix
   	glLoadIdentity
   	glOrtho(-10.0, 10.0, -10.0, 10.0, -10.0, 10.0)
     glMatrixMode(GL_MODELVIEW)
   end
 
   def gl_draw
+    glPushMatrix
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
   	glLoadIdentity
     glRotatef(@add.rotation,0.0, 0.0, 1.0)
@@ -27,7 +30,11 @@ class AddController
       glVertex3f(5,-5,0)
       glVertex3f(5,5,0)
       glVertex3f(-5,5,0)
-    glEnd()
+    glEnd
+    glPopMatrix
+    glMatrixMode(GL_PROJECTION)
+    glPopMatrix
+
   end
 
 

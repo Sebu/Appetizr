@@ -4,7 +4,7 @@ window t('main.title') do
   stack do
     drop :drop_pool
     drag_start :drag_pool
-    flow :spacing => 1 do 
+    flow  :spacing => 1 do 
       @main.clusters[0..9].each { | c |
         render "cluster", :cluster => c
       }
@@ -21,7 +21,7 @@ window t('main.title') do
           column 1, :ProgressBar, :filter=>:test_filter
         end
       end
-      tabs do
+      tabs :opacity=>0.7 do
         tab_title "&TestTab"
         group "playground", :radio=>true do
           stack do

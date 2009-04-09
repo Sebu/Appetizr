@@ -23,6 +23,10 @@ module Qt4Backend
     def show_all
     end
 
+    def parse_params(params)
+      @widget.windowOpacity =  params[:opacity] || 1.0
+    end
+
     def drop(method, *args)
       controller = @controller
       
@@ -152,7 +156,7 @@ module Qt4Backend
     include ObserveAttr
 
     def initialize(p, title)
-      @widget = Qt::Dialog.new(p.widget)
+      @widget = Qt::Dialog.new(p.widget, Qt::CustomizeWindowHint | Qt::WindowTitleHint)
       @layout = Qt::HBoxLayout.new
       @widget.setLayout(@layout)
       self.text=title
@@ -188,6 +192,7 @@ module Qt4Backend
     end
   end
 
+ 
   class GlArea
     include Widget
     include ObserveAttr
@@ -195,16 +200,20 @@ module Qt4Backend
     obsattr_reader :update, :func => :gl_update
 
     def initialize(p)
-      @widget = Qt::GLWidget.new(p.widget)
-      @layout = Qt::HBoxLayout.new
-      @widget.setLayout(@layout)
-      p.add_element(self) 
+      @widget = Qt::GraphicsView.new(p.widget)
+      @scene = Qt::GraphicsScene.new
+      @widget.setViewport( Qt::GLWidget.new )
+      @widget.setViewportUpdateMode(Qt::GraphicsView::FullViewportUpdate)
+      @widget.setScene(@scene)
+      p.add_element(self)
+      @widget.show
     end
     def gl_update(*args)
-      @widget.updateGL
+      @widget.update
+      Qt::Timer::singleShot(20, @widget, SLOT("update()"))
     end
     def add_element(w)
-      @widget.layout.addWidget(w.widget)
+      @scene.addWidget(w.widget)
     end
     def parse_params(params)
       outter = self
@@ -219,8 +228,34 @@ module Qt4Backend
         @resize_method = resize
         @draw_method = draw
         @init_method = gl_init
+
+        def resizeEvent(event) 
+            if (scene)
+                scene.sceneRect =  Qt::Rect.new(Qt::Point.new(0, 0), event.size) 
+            end
+            super
+        end
+
+        def after_initialize
+            pos = Qt::PointF.new(10, 10)
+            items.each do | item |
+                item.setFlag(Qt::GraphicsItem::ItemIsMovable)
+                item.setCacheMode(Qt::GraphicsItem::DeviceCoordinateCache)
+                rect = item.boundingRect
+                item.setPos(pos.x - rect.x, pos.y - rect.y)
+                pos += Qt::PointF.new(0, 10 + rect.height)
+            end
+        end
+
+        def drawBackground(painter, rect)
+            @controller.send(@init_method)
+            #@controller.send(@resize_method , width, height)
+            @controller.send(@draw_method)
+            update
+        end
+    
         def initializeGL
-          @controller.send(@init_method)
+          @controller.send(@init_method)          
         end
         def paintGL
           @controller.send(@draw_method)
@@ -229,6 +264,7 @@ module Qt4Backend
           @controller.send(@resize_method , w, h)
         end
       end
+      @widget.after_initialize
       super
     end
   end
