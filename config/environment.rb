@@ -1,3 +1,3 @@
 
 
-INDIGO_ENV = 'production'
+INDIGO_ENV = 'development'

@@ -11,11 +11,20 @@ class Main
   
   def initialize
     @name = 'indigoAdm'
-    @account_text = '1111'
+    @account_text = 'jeder'
 
     @clusters = []
+    computers = []
     16.downto(1) do |n|
-      @clusters << Computer.find_cluster(n)
+      new_computers = Computer.find_cluster(n)
+      @clusters << new_computers
+      computers = new_computers + computers
     end
+    refresh = Thread.new {
+      while true
+        Computer.reload(computers)
+        sleep(15)
+      end  
+    }
   end
 end

@@ -3,6 +3,8 @@
 class MainController 
   include Indigo::Controller
   
+  COLOR_MAPPING = {:normal => 1, :no_passwd => 2, :locked => 3, :tutor => 4, :nobody => 5, :wheel => 6, :jeder => 7}
+  
   attr_accessor :main_view
 
   def show
@@ -74,7 +76,8 @@ class MainController
     command do
       new_users = []
       @test_table.model.rows.collect { |a| new_users << a.account } if @test_table.model
-      pc.Color = 1
+      Debug.log.debug COLOR_MAPPING[ Account.gen_color(new_users) ]
+      pc.Color = COLOR_MAPPING[ Account.gen_color(new_users) ]
       pc.User = new_users.join(" ")
       pc.save!
       @test_table.model = nil
@@ -105,7 +108,7 @@ class MainController
   end
 
   def feld1_return(w)
-#   Base.log.debug "creating model for :test_table #{@main.account_text}"
+    Debug.log.debug "creating model for :test_table #{@main.account_text}"
     users = @main.account_text.split(',').each { |n| n.strip! }
     accounts =  Account.find_accounts(users) # User.find_accounts_by_barcodes(users) #
     fill_accounts(accounts)
@@ -127,17 +130,18 @@ class MainController
 
   def after_initialize
     require 'socket'
+    
     begin
     socket = TCPSocket.new('localhost', 7887)
 
     rescue Errno::ECONNREFUSED
-#     Base.log.error t('scanner.no_connection')
+      Debug.log.error t('scanner.no_connection')
     else
       scanner = Thread.new {
-#       Base.log.debug "starting scanner thread ..."
+        Debug.log.debug "starting scanner thread ..."
         while true
           scan = socket.recvfrom(25)
-#         Base.log.debug "Scanner says #{scan}"
+          Debug.log.debug "Scanner says #{scan}"
           type, data = check_scanner_string(scan[0])
           @main.scan_string = data
           case type
@@ -156,7 +160,7 @@ class MainController
               key_clear(pc)
             end
           else
-#           Base.log.debug "#{type}, #{data}"
+            Debug.log.debug "#{type}, #{data}"
           end
           sleep 1
         end

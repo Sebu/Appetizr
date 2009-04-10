@@ -36,6 +36,7 @@ class Account < UserAccountDB
         )
   end
 
+ 
   def locked=(value)
     self[:locked] = value
     #set lock state
@@ -50,13 +51,43 @@ class Account < UserAccountDB
    self.locked ||= get_lockstate(self.account)
   end
 
-  def get_lockstate(user)
-    puts CONFIG['pw_check_file']
-    system("#{CONFIG['pw_check_file']} #{user}")
+  def self.get_passwd(user)
+    Debug.log.debug CONFIG['pw_check_file']
+    `"#{CONFIG['pw_check_file']} #{user}"`
     case $?
-      when 0:   false
-      when 512: true
-      else      true
+      when 0:   return :ok
+      when 256: return :no_password
+      when 512: return :locked
+      when 768: return :is_no_user
+      #else raise "password check failed - returned #{$?}"
+    end    
+  end
+  
+  def self.gen_color(users)
+    users.each do |user|
+      case user
+      when "jeder": return :jeder
+      when "nobody": return :nobody
+      else
+        return :normal if INDIGO_ENV == "development"
+        case `getgroup -stat "#{user}"`
+        when ["excoll","wheel"]: return :wheel
+        when ["assi","tutor"]:   return :tutor
+        else 
+          case Account.get_passwd(user)
+          when :locked:   return :locked
+          when :no_passwd: return :no_passwd
+          else return :normal
+          end
+        end                  
+      end
+    end                    
+  end 
+  
+  def get_lockstate(user)
+    case Account.get_passwd(user)
+    when :ok: false
+    else      true
     end
   end
 

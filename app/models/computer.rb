@@ -11,8 +11,27 @@ class Computer < ActiveRecord::Base
   after_update :change_vtab
   obsattr_writer :User, :override => true
   obsattr_writer :Color, :override => true
-  validates_numericality_of :Color, :greater_than_or_equal_to => 0, :less_than => 7
+  validates_numericality_of :Color, :greater_than_or_equal_to => 0, :less_than => 8
 
+
+  def reload_activerecord_instances
+    instance_variables.each do |ivar|
+      if ivar.is_a?(ActiveRecord::Base) && ivar.respond_to?(:reload)
+        ivar.reload
+      end
+    end
+  end
+  
+
+
+ 
+
+  def after_reload
+    self.Color_changed
+    self.User_changed
+  end
+
+  
   def change_vtab
     filename = "#{CONFIG['VALIDTAB_PATH']}#{CONFIG['VALIDTAB_FILE_PREFIX']}#{self.Cname}"
     return unless File.exists?(filename)

@@ -12,6 +12,12 @@ autoload :CommandPattern, 'command_pattern'
 autoload :Signaling, 'signaling'
 autoload :ObserveAttr, 'observe_attr'
 
+  class Debug
+    class << self
+      attr_accessor :log
+    end
+    @log = ActiveSupport::BufferedLogger.new(STDOUT)
+  end
 
 module Indigo
   require 'indigo/core_ext'
@@ -22,5 +28,8 @@ module Indigo
   autoload :Controller, 'indigo/controller'
   autoload :ARTableModel, 'indigo/ar_table_model'
   autoload :App,'app'
+  
+
+
 end
 

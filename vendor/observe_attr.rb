@@ -71,6 +71,9 @@ module ObserveAttr
       alias_method "o_assign_#{name}", params[:func] unless params[:override]
 
       class_eval %{
+        def #{name}_changed
+          emit "#{params[:signal]}", self.#{name}
+        end
         if not params[:override]
           def #{params[:func]}(value)
             send("o_assign_#{name}", value)
