@@ -3,7 +3,7 @@
 
 # nice extensions (set in initializer ext_mod = [Qt,Gl,...])
 autoload :Gl, 'gl'
-autoload :Qt, 'Qt4'
+autoload :Qt, 'Qt'
 
 
 

@@ -1,6 +1,0 @@
-
-- log(intern)
-- lock/unlock user/account
-- pycon/scanSense :D
-
-

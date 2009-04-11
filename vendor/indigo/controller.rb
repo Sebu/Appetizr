@@ -24,17 +24,21 @@ module Indigo
     end
 
     def initialize
-      after_initialize if respond_to? :after_initialize
       @controller = self
+      @model_name = self.class.to_s[0..-11] 
+      eval "@#{model_name.downcase} = #{model_name}.new"
+      after_initialize if respond_to? :after_initialize
       self
     end
 
+    def show
+      render
+    end
+  
     def part(name)
       controller = eval "#{name.to_s.capitalize}Controller.one"
       controller.parent = @parent
       view = controller.show
-      #puts "#{@parent} parent"
-      #puts @parent.widget
       view.hide
       view
     end

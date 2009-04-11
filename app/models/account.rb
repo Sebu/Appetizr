@@ -12,7 +12,7 @@ class Account < UserAccountDB
 #  named_scope :accounts_by_barcode, lambda { |barcode| {:group => "account", :conditions => ["barcode = ?", barcode]} }
 #  named_scope :check_accounts, lambda { |users| { :conditions => ["barcode IN (?) OR account IN (?)", users, users], :group => "account" } }
 
-
+#TODO: move to named scopes
   def self.find_accounts_by_barcode(barcode)
     #accounts_by_barcode barcode
     find(:all, :group => "account", :conditions => ["barcode = ?", barcode])
@@ -24,7 +24,7 @@ class Account < UserAccountDB
   end
 
 
-
+#TODO: workaround ( for our non rails conform tables ) 
   def update(attribute_names = @attributes.keys)
         quoted_attributes = attributes_with_quotes(false, false, attribute_names)
         return 0 if quoted_attributes.empty?
@@ -56,7 +56,7 @@ class Account < UserAccountDB
     `"#{CONFIG['pw_check_file']} #{user}"`
     case $?
       when 0:   return :ok
-      when 256: return :no_password
+      when 256: return :no_passwd
       when 512: return :locked
       when 768: return :is_no_user
       #else raise "password check failed - returned #{$?}"
@@ -75,7 +75,7 @@ class Account < UserAccountDB
         when ["assi","tutor"]:   return :tutor
         else 
           case Account.get_passwd(user)
-          when :locked:   return :locked
+          when :locked:    return :locked
           when :no_passwd: return :no_passwd
           else return :normal
           end
@@ -86,8 +86,8 @@ class Account < UserAccountDB
   
   def get_lockstate(user)
     case Account.get_passwd(user)
-    when :ok: false
-    else      true
+    when :ok: return false
+    else      return true
     end
   end
 

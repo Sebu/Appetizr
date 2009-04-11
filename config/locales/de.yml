@@ -18,5 +18,5 @@ en:
     one: '1 message'
     other: "{{count}} messages"
   main:
-    title: 'rubyAdm by seb'
+    title: 'rubyAdm 0.1a by seb'
 

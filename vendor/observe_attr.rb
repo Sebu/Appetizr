@@ -88,7 +88,7 @@ module ObserveAttr
       }
     end
 
-    def obs_attr(name, params = {})
+    def obsattr(name, params = {})
       obsattr_writer name, params
       obsattr_reader name, params
     end

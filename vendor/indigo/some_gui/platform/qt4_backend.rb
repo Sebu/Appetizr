@@ -138,7 +138,7 @@ module Qt4Backend
       @widget.windowTitle
     end
 
-    obs_attr :text
+    obsattr :text
 
     def add_element(w)
       @widget.setCentralWidget(w.widget)
@@ -178,7 +178,7 @@ module Qt4Backend
     def text
       @widget.windowTitle
     end
-    obs_attr :text
+    obsattr :text
 
 
     def add_element(w)
@@ -354,7 +354,7 @@ module Qt4Backend
     def text
       @widget.text
     end
-    obs_attr :text
+    obsattr :text
 
   end
 
@@ -363,7 +363,7 @@ module Qt4Backend
     include ObserveAttr
     include EventHandleGenerator
 
-    obs_attr :background, :func=>"background", :override => true
+    obsattr :background, :func=>"background", :override => true
 
     def text=(value) 
       @widget.setText(value)
@@ -371,7 +371,7 @@ module Qt4Backend
     def text
       @widget.text
     end
-    obs_attr :text
+    obsattr :text
 
     
     def initialize(p, *args)
@@ -404,6 +404,27 @@ module Qt4Backend
 
   end
 
+  class Text
+    include Widget
+    include ObserveAttr
+
+    def initialize(p, *args)
+      @widget = Qt::TextEdit.new
+      p.add_element(self)
+      self.text=args[0]
+    end
+    def parse_params(params)
+      @widget.read_only = params[:value] || true
+      super
+    end
+    def text=(value)
+      @widget.setText(value.to_s)
+    end
+    def text
+      @widget.text
+    end
+    obsattr :text
+  end
 
 
   class Field 
@@ -424,7 +445,7 @@ module Qt4Backend
     def text
       @widget.text
     end
-    obs_attr :text
+    obsattr :text
   end
 
   class Svg
@@ -456,7 +477,7 @@ module Qt4Backend
     def value
       @widget.value
     end
-    obs_attr :value
+    obsattr :value
 
     def parse_params(params)
       @widget.maximum = params[:max] || 100
@@ -501,7 +522,7 @@ module Qt4Backend
   class HSlider
     include Slider
     include ObserveAttr
-    obs_attr :value
+    obsattr :value
 
     def initialize(p)
       @widget = Qt::Slider.new(Qt::Horizontal)
@@ -512,7 +533,7 @@ module Qt4Backend
   class VSlider
     include Slider
     include ObserveAttr
-    obs_attr :value
+    obsattr :value
 
     def initialize(p)
       @widget = Qt::Slider.new(Qt::Vertical)

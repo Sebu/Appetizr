@@ -11,7 +11,6 @@ button :id => @c.Cname do
   stack :margin => 2 do
     label "<b>#{@c.Cname}</b>" , :size => 8
     label(:size => 7) { text_observe @c, :User, :filter=> :user_list_format }
-    #svg :file=> "test.svg"
     stretch
   end
 end

@@ -45,7 +45,7 @@ module SomeGui
   module Create
     include CreatesWidgets
 
-    create_widget :GlArea, :Dialog, :Svg, :Spin, :Combo, :Tabs, :VSlider, :HSlider, :Radio, :Check, :Window, :Flow, :Stack, :Field, :Label, :Button, :Group, :Table
+    create_widget :Text, :GlArea, :Dialog, :Svg, :Spin, :Combo, :Tabs, :VSlider, :HSlider, :Radio, :Check, :Window, :Flow, :Stack, :Field, :Label, :Button, :Group, :Table
     
     attr_accessor :children
     attr_accessor :parent

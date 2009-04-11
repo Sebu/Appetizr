@@ -8,24 +8,15 @@ class Computer < ActiveRecord::Base
 
   set_table_name "Cache"
   set_primary_key "Cname"
-  after_update :change_vtab
+
   obsattr_writer :User, :override => true
   obsattr_writer :Color, :override => true
+
   validates_numericality_of :Color, :greater_than_or_equal_to => 0, :less_than => 8
 
+  after_update :change_vtab
 
-  def reload_activerecord_instances
-    instance_variables.each do |ivar|
-      if ivar.is_a?(ActiveRecord::Base) && ivar.respond_to?(:reload)
-        ivar.reload
-      end
-    end
-  end
   
-
-
- 
-
   def after_reload
     self.Color_changed
     self.User_changed
@@ -59,3 +50,4 @@ class Computer < ActiveRecord::Base
     find(:all, :select=>"Cname,Color,User", :conditions=> ["Cname LIKE 'c?_'",cluster], :order => "Cname ASC") 
   end
 end
+

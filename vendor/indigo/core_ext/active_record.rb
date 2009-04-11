@@ -41,7 +41,7 @@ class ActiveRecord::Base
       instance.clear_association_cache
       new_attrs = new_instances[index].instance_variable_get('@attributes')
       instance.instance_variable_get( '@attributes' ).update( new_attrs )
-      instance.after_reload
+      instance.after_reload if instance.respond_to? :after_reload
     end
   end
 end
