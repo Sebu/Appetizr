@@ -2,8 +2,8 @@
 
 window t('main.title') do 
   stack do
-    drop :drop_pool
-    drag_start :drag_pool
+    drop :drop_pool_store
+    drag_start :drag_pool_store
     flow  :spacing => 1 do 
       @main.clusters[0..9].each { |c| render "cluster", :cluster => c }
     end

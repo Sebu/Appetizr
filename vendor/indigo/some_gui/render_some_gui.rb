@@ -7,8 +7,8 @@ module Indigo::SomeGui
       content = ''
       File.open(filename, 'r') { |f| content = f.read }
 
-      #Application::Base.log.debug "loading render block #{filename}"
-      #Application::Base.log.debug content
+      #Debug.log.debug "loading render block #{filename}"
+      #Debug.log.debug content
       content
     end  
 

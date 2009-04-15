@@ -11,23 +11,14 @@ class MainController
   end
 
 
-  def drag_users(pc)
-     pc
+  #TODO: remove and implicit generate in dnd functions
+  def drag_pool_store
+    @pool_store
   end
-
-
-  def drop_pool(*args)
+  def drop_pool_store(*args)
     @pool_store = *args
   end
 
-
-  def drag_pool
-    @pool_store
-  end
-
-
-  def drop_free(user, color)
-  end
 
 
   def drop_users(pc, other_pc)

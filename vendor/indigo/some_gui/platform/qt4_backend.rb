@@ -30,7 +30,7 @@ module Qt4Backend
     def drop(method, *args)
       controller = @controller
       
-      @widget.setAcceptDrops(true)
+      @widget.accept_drops = true
       @widget.instance_eval %{
 
         @dnd_drop_args = args
@@ -57,7 +57,7 @@ module Qt4Backend
 
         def dropEvent(event)
           incomming = event.mimeData.text 
-          data = ActiveSupport::JSON.decode(incomming)   
+          data = ActiveSupport::JSON.decode(incomming)
           @controller.send(@dnd_drop_method,*(@dnd_drop_args+[data]))
           simple_accept(event)
         end
@@ -73,9 +73,10 @@ module Qt4Backend
     def drag_start(method, *args)
         controller = @controller
         @widget.instance_eval %{
+
+        @controller = controller
         @dnd_drag_args = args
         @dnd_drag_method = method
-        @controller = controller
 
         def mousePressEvent(event)
            super
@@ -89,7 +90,11 @@ module Qt4Backend
            return if @drag_in_progress || false
            return if (event.buttons != Qt::LeftButton)
            return if ((event.pos - @dragStartPosition).manhattanLength < Qt::Application::startDragDistance)
-           data = @controller.send(@dnd_drag_method,*@dnd_drag_args)
+           if @dnd_drag_method == :direct
+             data = *@dnd_drag_args
+           else
+             data = @controller.send(@dnd_drag_method,*@dnd_drag_args)
+           end
            return unless data 
            @drag_in_progress = true    
 
@@ -364,6 +369,7 @@ module Qt4Backend
     include EventHandleGenerator
 
     obsattr :background, :func=>"background", :override => true
+    obsattr :tool_tip, :func=>"tool_tip", :override => true
 
     def text=(value) 
       @widget.setText(value)
@@ -387,6 +393,11 @@ module Qt4Backend
       p.add_element(self)
       self.text=args[0]
     end
+
+    def tool_tip(value)
+      @widget.tool_tip=value
+    end
+
 
     def background(value)
       @widget.setStyleSheet("background: '#{value}'")
