@@ -12,6 +12,8 @@ class Account < UserAccountDB
 #  named_scope :accounts_by_barcode, lambda { |barcode| {:group => "account", :conditions => ["barcode = ?", barcode]} }
 #  named_scope :check_accounts, lambda { |users| { :conditions => ["barcode IN (?) OR account IN (?)", users, users], :group => "account" } }
 
+
+
 #TODO: move to named scopes
   def self.find_accounts_by_barcode(barcode)
     #accounts_by_barcode barcode

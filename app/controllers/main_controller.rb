@@ -123,7 +123,8 @@ class MainController
   
     refresh = Thread.new {
       while true
-        Computer.reload(@main.computers)
+        @main.clusters.each { |c| Computer.reload(c) }
+#       Computer.reload(@main.computers)
         sleep(15)
       end  
     }

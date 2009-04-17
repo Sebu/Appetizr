@@ -34,7 +34,7 @@ class ActiveRecord::Base
 
   def self.reload(instances, options={})
     return if instances.empty?
-    options = {:conditions=> ["#{primary_key} IN (?)",instances.map(&:id)]}.merge(options)
+    options = {:conditions=> ["#{primary_key} IN (?)",instances.map(&:id)], :order => "#{primary_key} ASC"}.merge(options)
     new_instances = find(:all,  options)
     instances.each_with_index do |instance, index|
       instance.clear_aggregation_cache
