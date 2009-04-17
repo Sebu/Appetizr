@@ -1,10 +1,11 @@
 
 
 button :id => @c.Cname do
+  tool_tip_observe @c, :User
   click :cbutton_click, @c
   background_observe @c, :Color, :filter=> :code_to_color
 
-  drag_start :drag_users, @c
+  drag_start :direct, @c
   drag_delete :key_clear
   drop :drop_users, @c
 
