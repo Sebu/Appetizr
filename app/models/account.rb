@@ -55,7 +55,7 @@ class Account < UserAccountDB
 
   def self.get_passwd(user)
     Debug.log.debug CONFIG['pw_check_file']
-    `"#{CONFIG['pw_check_file']} #{user}"`
+    system("#{CONFIG['pw_check_file']} #{user}")
     case $?
       when 0:   return :ok
       when 256: return :no_passwd
@@ -72,9 +72,9 @@ class Account < UserAccountDB
       when "nobody": return :nobody
       else
         return :normal if INDIGO_ENV == "development"
-        case `getgroup -stat "#{user}"`
-        when ["excoll","wheel"]: return :wheel
-        when ["assi","tutor"]:   return :tutor
+        case `getgroup -stat "#{user}"`.chomp!
+        when "excoll","wheel": return :wheel
+        when "assi","tutor": return :tutor
         else 
           case Account.get_passwd(user)
           when :locked:    return :locked

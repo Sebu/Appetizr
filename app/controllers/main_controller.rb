@@ -52,8 +52,8 @@ class MainController
     old_model = @account_table.model
     command do
       new_users = []
+      puts @account_table.model
       @account_table.model.rows.collect { |a| new_users << a.account } if @account_table.model
-      Debug.log.debug CONFIG['color_mapping'][ Account.gen_color(new_users) ]
       pc.Color = CONFIG['color_mapping'][ Account.gen_color(new_users) ]
       pc.User = new_users.join(" ")
       pc.save!
@@ -82,7 +82,10 @@ class MainController
 
 
   def fill_accounts(accounts)
+     accounts.each { |a| @main.log += t "account.scanned", :name => a.account }
     @account_table.model = accounts.length > 0 ? AccountList.new(accounts, ["account","locked"]) : @account_table.model = nil
+    # workaround: otherwise the GC loses @mode_table.model reference and detroys the model
+    @tmp_model = @account_table.model
   end
 
 
@@ -115,7 +118,6 @@ class MainController
     refresh = Thread.new {
       while true
         @main.clusters.each { |c| Computer.reload(c) }
-#       Computer.reload(@main.computers)
         sleep(15)
       end  
     }

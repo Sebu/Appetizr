@@ -2,7 +2,7 @@
 
 
 # nice extensions (set in initializer ext_mod = [Qt,Gl,...])
-autoload :Gl, 'gl'
+#autoload :Gl, 'gl'
 autoload :Qt, 'Qt4'
 
 
@@ -16,7 +16,7 @@ class Debug
   class << self
     attr_accessor :log
   end
-  @log = ActiveSupport::BufferedLogger.new STDOUT
+  @log = ActiveSupport::BufferedLogger.new STDOUT #INDIGO_ENV =='development' ? STDOUT : "log/main.log"
 end
 
 module Indigo

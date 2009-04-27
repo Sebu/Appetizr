@@ -9,9 +9,11 @@ de:
     other: "{{count}} wursts"
   main:
     title: 'rubyAdm vom seb geschraubt'
+  account:
+    scanned: "{{name}} eingelesen\n"
 
 en:
-  open_files: 'Open files'
+  open_files: 'open files'
   scanner:
     no_connection: 'no connection to scanner'
   message: 
@@ -19,4 +21,6 @@ en:
     other: "{{count}} messages"
   main:
     title: 'rubyAdm 0.1a by seb'
+  account:
+    scanned: "{{name}} scanned\n"
 

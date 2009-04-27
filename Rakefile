@@ -2,7 +2,7 @@ require 'rake'
 require 'rake/testtask'
 require 'rake/rdoctask'
 
-# vendor should disappear in later revisions
+# vendor stuff (should disappear in later revisions)
 APP_DIR = Dir.pwd
 $:.unshift APP_DIR + '/vendor'
 
