@@ -1,8 +1,9 @@
+demo app TODO
 
-- lock/unlock user/account
 - pycon/scanSense :D
-- privat config
-- better locale support
+- add/change users
+- change main to app
+- better locale support (change locale)
 - better log(intern)
 - printer view
 - speed! ( ruby1.9 + gobject for signaling )

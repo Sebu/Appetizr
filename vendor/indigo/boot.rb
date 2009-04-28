@@ -18,12 +18,19 @@ extra_paths.each { |path| $:.unshift(APP_DIR + path) }
 require 'indigo'
 
 # load CONFIG
-# TODO: change the whole process
 autoload :YAML, 'yaml'
-config_file = YAML.load_file("#{APP_DIR}/config/config.yml")
-CONFIG  = config_file["all"]
-CONFIG.merge!(config_file[INDIGO_ENV])
-
+CONFIG = {}
+config_files = ["#{APP_DIR}/config/config_defaults.yml",   # defaults
+                "#{ENV['HOME']}/.indigo/app/config.yml",   # user
+                "#{APP_DIR}/config/config.yml"]            # readonly
+config_files.each do |config_filename|
+  if File.exist?(config_filename) then
+    Debug.log.debug "Loading config #{config_filename}"
+    config_file = YAML.load_file(config_filename)
+    CONFIG.merge!(config_file["all"])
+    CONFIG.merge!(config_file[INDIGO_ENV])
+  end
+end
 
 # BOOT
 module Indigo
