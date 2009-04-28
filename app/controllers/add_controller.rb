@@ -10,7 +10,6 @@ class AddController
   end
 
   def gl_init
-
     glClearColor(0.0, 0.0, 0.0, 0.0)
     glEnable(GL_DEPTH_TEST)
     glMatrixMode(GL_PROJECTION)

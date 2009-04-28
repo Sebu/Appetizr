@@ -6,6 +6,7 @@ demo app TODO
 - better locale support (change locale)
 - better log(intern)
 - printer view
+- prectab view
 - speed! ( ruby1.9 + gobject for signaling )
 
 

@@ -1,4 +1,11 @@
 
+
+# require 'rubygems'
+# require 'rbus'
+# notifier = RBus.session_bus.get_object('org.freedesktop.Notifications', '/org/freedesktop/Notifications')
+# notifier.Notify('R-Bus',0,'info','R-Bus Notification', 'A test example to see that everything works.',[],{},-1)
+
+
 #  def click_gl_demo(w)
 #    @part ||= part :add
 #    @part.show_all

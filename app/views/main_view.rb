@@ -20,7 +20,7 @@ window t('main.title') do
       end
       tabs :opacity=>0.7 do
         tab_title "L&og"
-        text  { text_observe @main, :log }
+        text  { text_observe @main, :status }
       end
       stretch
       stack do       

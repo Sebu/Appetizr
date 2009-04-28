@@ -80,7 +80,7 @@ class MainController
 
 
   def fill_accounts(accounts)
-    accounts.each { |a| @main.log += t "account.scanned", :name => a.account }
+    accounts.each { |a| @main.status = t("account.scanned", :name => a.account) }
     @account_table.model = accounts.length > 0 ? AccountList.new(accounts, ["account","locked"]) : @account_table.model = nil
     # workaround: otherwise the GC loses @mode_table.model reference and detroys the model
     @tmp_model = @account_table.model
@@ -115,8 +115,8 @@ class MainController
   
     refresh = Thread.new {
       while true
-        @main.clusters.each { |c| Computer.reload(c) }
         sleep 15
+        @main.clusters.each { |c| Computer.reload(c) }
       end  
     }
 

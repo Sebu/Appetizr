@@ -436,6 +436,7 @@ module Qt4Backend
     def initialize(p, *args)
       @widget = Qt::TextEdit.new
       p.add_element(self)
+      @text = ""
       self.text=args[0]
     end
     def parse_params(params)
@@ -443,7 +444,8 @@ module Qt4Backend
       super
     end
     def text=(value)
-      @widget.setText(value.to_s)
+      @text += value.to_s
+      @widget.text = @text.to_s
     end
     def text
       @widget.text
