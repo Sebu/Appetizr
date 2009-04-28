@@ -69,13 +69,11 @@ class ARTableModel < Qt::AbstractTableModel
 
     def setData(index, variant, role=Qt::EditRole)
         if index.valid? and role == Qt::EditRole
-            item = @rows[index.row]
-            values = item.attributes
-            puts values
-            att = @keys[index.column]
             raise "invalid column #{index.column}" if (index.column < 0 ||
                 index.column > @keys.size)
-            values[att] = case item.attributes[att].class.name
+            item = @rows[index.row]
+            att = @keys[index.column]
+            value = case item.class.name
             when "String"
                 variant.toString
             when "Fixnum"
@@ -85,8 +83,7 @@ class ARTableModel < Qt::AbstractTableModel
             else
                 variant.value
             end
-            p item, values
-            item.attributes=values
+            eval "item.#{att}=value"
             item.save
             emit dataChanged(index, index)
             return true
@@ -94,5 +91,33 @@ class ARTableModel < Qt::AbstractTableModel
             return false
         end
     end
+    
+#    def setData(index, variant, role=Qt::EditRole)
+#        if index.valid? and role == Qt::EditRole
+#            item = @rows[index.row]
+#            values = item.attributes
+#            puts item[@keys[index.column]]
+#            att = @keys[index.column]
+#            raise "invalid column #{index.column}" if (index.column < 0 ||
+#                index.column > @keys.size)
+#            values[att] = case item.attributes[att].class.name
+#            when "String"
+#                variant.toString
+#            when "Fixnum"
+#                variant.toInt
+#            when "Float"
+#                variant.toDouble
+#            else
+#                variant.value
+#            end
+#            p item, values
+#            item.attributes=values
+#            item.save
+#            emit dataChanged(index, index)
+#            return true
+#        else
+#            return false
+#        end
+#    end
 end
 end

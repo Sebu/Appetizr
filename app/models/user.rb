@@ -6,7 +6,6 @@ class User < UserAccountDB
 
   def self.find_accounts_by_barcode(barcode)
     res = find(:first, :conditions => ["canonical = (?)", barcode])
-    puts res
     res.accounts
   end
 

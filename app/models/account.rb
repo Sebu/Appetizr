@@ -7,10 +7,10 @@ class Account < UserAccountDB
   belongs_to :user
 
   attr_readonly :barcode
-  attr_accessible :account, :locked
+  attr_accessible :account , :locked
 
 #  named_scope :accounts_by_barcode, lambda { |barcode| {:group => "account", :conditions => ["barcode = ?", barcode]} }
-#  named_scope :check_accounts, lambda { |users| { :conditions => ["barcode IN (?) OR account IN (?)", users, users], :group => "account" } }
+#  named_scope :find_accounts, lambda { |users| { :conditions => ["barcode IN (?) OR account IN (?)", users, users], :group => "account" } }
 
 
 
@@ -41,20 +41,18 @@ class Account < UserAccountDB
  
   def locked=(value)
     self[:locked] = value
-    #set lock state
+    `"#{CONFIG['admin_sh_file']} -unlock #{self.account}"` unless self[:locked]
   end
 
   def locked
-    #get lock state?
     self[:locked] 
   end
 
   def after_initialize
-   self.locked ||= get_lockstate(self.account)
+   self.locked ||= get_lock_state(self.account)
   end
 
   def self.get_passwd(user)
-    Debug.log.debug CONFIG['pw_check_file']
     system("#{CONFIG['pw_check_file']} #{user}")
     case $?
       when 0:   return :ok
@@ -64,6 +62,7 @@ class Account < UserAccountDB
       #else raise "password check failed - returned #{$?}"
     end    
   end
+
   
   def self.gen_color(users)
     users.each do |user|
@@ -86,7 +85,7 @@ class Account < UserAccountDB
     end                    
   end 
   
-  def get_lockstate(user)
+  def get_lock_state(user)
     case Account.get_passwd(user)
     when :ok: return false
     else      return true

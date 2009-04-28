@@ -277,10 +277,24 @@ module Qt4Backend
   class CheckBoxD < Qt::ItemDelegate
     attr_accessor :filter_func, :controller
 
+    def createEditor(parent, item, index) 
+      Qt::CheckBox.new(parent)
+    end
+
+    def setModelData(editor, model, index) 
+      value = editor.isChecked
+      model.setData(index, Qt::Variant.new(value))
+    end
+
+    def updateEditorGeometry(editor, item,  index)
+      editor.setGeometry(item.rect)
+    end
+
+
     def paint(painter, option, index)
       data = index.model.data(index)
   		@opts ||= Qt::StyleOptionButton.new
-      @opts.state = Qt::Style::State_On
+      @opts.state = data == true ? Qt::Style::State_On : Qt::Style::State_Off
       @opts.rect = option.rect
   		Qt::Application.style.drawControl(Qt::Style::CE_CheckBox, @opts, painter)
     end  
@@ -329,10 +343,10 @@ module Qt4Backend
       case type
         when :Text: return
       end
-      delegate = eval "#{type.to_s}D.new"
-      delegate.controller = @controller
-      delegate.filter_func = params[:filter]
-      @widget.setItemDelegateForColumn(col, delegate)
+      @delegate = eval "#{type.to_s}D.new"
+      @delegate.controller = @controller
+      @delegate.filter_func = params[:filter]
+      @widget.setItemDelegateForColumn(col, @delegate)
     end
 
   end

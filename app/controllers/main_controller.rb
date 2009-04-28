@@ -6,11 +6,6 @@ class MainController
   attr_accessor :main_view
 
 
-  def user_list_format(a)
-    a.tr(" ","\n")
-  end
-
-
   #TODO: remove and implicit generate in dnd functions
   def drag_pool_store
     @pool_store
@@ -19,6 +14,10 @@ class MainController
     @pool_store = *args
   end
 
+
+  def user_list_format(a)
+    a.tr(" ","\n")
+  end
 
 
   def drop_users(pc, other_pc)
@@ -52,7 +51,6 @@ class MainController
     old_model = @account_table.model
     command do
       new_users = []
-      puts @account_table.model
       @account_table.model.rows.collect { |a| new_users << a.account } if @account_table.model
       pc.Color = CONFIG['color_mapping'][ Account.gen_color(new_users) ]
       pc.User = new_users.join(" ")
@@ -82,7 +80,7 @@ class MainController
 
 
   def fill_accounts(accounts)
-     accounts.each { |a| @main.log += t "account.scanned", :name => a.account }
+    accounts.each { |a| @main.log += t "account.scanned", :name => a.account }
     @account_table.model = accounts.length > 0 ? AccountList.new(accounts, ["account","locked"]) : @account_table.model = nil
     # workaround: otherwise the GC loses @mode_table.model reference and detroys the model
     @tmp_model = @account_table.model
@@ -118,7 +116,7 @@ class MainController
     refresh = Thread.new {
       while true
         @main.clusters.each { |c| Computer.reload(c) }
-        sleep(15)
+        sleep 15
       end  
     }
 
@@ -145,7 +143,6 @@ class MainController
             accounts = Account.find_accounts_by_barcode(data)
             fill_accounts(accounts)
           when :key
-            #@account_table
             pc = eval "@#{data}_model"
             if @account_table.model
               key_register(pc)
