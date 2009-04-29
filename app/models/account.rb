@@ -40,8 +40,9 @@ class Account < UserAccountDB
 
  
   def locked=(value)
+    system("#{CONFIG['admin_sh_file']} -unlock #{self.account}") if self[:locked] == true and value == false
     self[:locked] = value
-    `"#{CONFIG['admin_sh_file']} -unlock #{self.account}"` unless self[:locked]
+    
   end
 
   def locked

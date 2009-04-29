@@ -280,8 +280,8 @@ module Qt4Backend
 
     def paint(painter, option, index)
       data = index.model.data(index)
-  		@opts ||= Qt::StyleOptionButton.new
-      @opts.state = data == true ? Qt::Style::State_On : Qt::Style::State_Off
+      @opts ||= Qt::StyleOptionButton.new
+      @opts.state = data.value == true ? Qt::Style::State_On : Qt::Style::State_Off
       @opts.rect = option.rect
   		Qt::Application.style.drawControl(Qt::Style::CE_CheckBox, @opts, painter)
     end  

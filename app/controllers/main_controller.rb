@@ -149,8 +149,9 @@ class MainController
             if @account_table.model
               key_register(pc)
             else
+              @main.status = "#{pc.User} von #{pc.Cname} abgemeldet"
               key_clear(pc)
-              @main.status = "#{pc.Cname} abgemeldet"
+              
             end
           else
             Debug.log.debug "#{type}, #{data}"

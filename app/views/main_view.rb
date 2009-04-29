@@ -19,6 +19,7 @@ window t('main.title') do
           column 1, :CheckBox
         end
       end
+      button "undo", :click => :undo_action
       tabs :opacity=>0.7 do
         tab_title "L&og"
         text  { text_observe @main, :status }
