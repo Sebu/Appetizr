@@ -5,23 +5,10 @@ module Indigo
 module SomeGui
 module Qt4Backend
 
-  module Widget
-    include Create
-    include Signaling
-    include ObserveAttr
+  module QtWidget
+    include Widget
 
     attr_accessor :widget
-    attr_accessor :controller
-
-    def parse_block(&block)
-      if block_given? 
-        block.call @parent
-      end
-      show_all
-    end
-
-    def show_all
-    end
 
     def parse_params(params)
       @widget.windowOpacity =  params[:opacity] || 1.0
@@ -118,7 +105,7 @@ module Qt4Backend
   end
 
   class Window 
-    include Widget
+    include QtWidget
     include ObserveAttr
 
     def initialize(p, name)
@@ -157,7 +144,7 @@ module Qt4Backend
   end
 
   class Dialog 
-    include Widget
+    include QtWidget
     include ObserveAttr
 
     def initialize(p, title)
@@ -199,7 +186,7 @@ module Qt4Backend
 
  
   class GlArea
-    include Widget
+    include QtWidget
     include ObserveAttr
 
     obsattr_reader :update, :func => :gl_update
@@ -325,7 +312,7 @@ module Qt4Backend
 
 
   class Table 
-    include Widget
+    include QtWidget
 
     def initialize(p)
       @widget = Qt::TableView.new
@@ -352,7 +339,7 @@ module Qt4Backend
   end
 
   class Label
-    include Widget
+    include QtWidget
     include ObserveAttr
 
     def initialize(p, *args)
@@ -378,7 +365,7 @@ module Qt4Backend
   end
 
   class Button 
-    include Widget
+    include QtWidget
     include ObserveAttr
     include EventHandleGenerator
 
@@ -430,7 +417,7 @@ module Qt4Backend
   end
 
   class Text
-    include Widget
+    include QtWidget
     include ObserveAttr
 
     def initialize(p, *args)
@@ -444,7 +431,7 @@ module Qt4Backend
       super
     end
     def text=(value)
-      @text += value.to_s
+      @text += "#{value.to_s}\n"
       @widget.text = @text.to_s
     end
     def text
@@ -455,7 +442,7 @@ module Qt4Backend
 
 
   class Field 
-    include Widget
+    include QtWidget
     include ObserveAttr
 
     def initialize(p, *args)
@@ -476,7 +463,7 @@ module Qt4Backend
   end
 
   class Svg
-    include Widget
+    include QtWidget
     include ObserveAttr
 
     def initialize(p)
@@ -491,7 +478,7 @@ module Qt4Backend
   end
 
   class Spin
-    include Widget
+    include QtWidget
     include ObserveAttr
     def initialize(p, *args)
       @widget = Qt::SpinBox.new
@@ -515,7 +502,7 @@ module Qt4Backend
   end
 
   class Tabs
-    include Widget 
+    include QtWidget 
     
     def initialize(p, *args)
       @widget = Qt::TabWidget.new
@@ -530,7 +517,7 @@ module Qt4Backend
   end
 
   module Slider
-    include Widget
+    include QtWidget
     include ObserveAttr
     def parse_params(params)
       @widget.maximum = params[:max] || 100
@@ -570,7 +557,7 @@ module Qt4Backend
   end
 
   class Check
-    include Widget
+    include QtWidget
 
     def initialize(p, *args)
       @widget = Qt::CheckBox.new
@@ -586,7 +573,7 @@ module Qt4Backend
   end
 
   class Radio
-    include Widget
+    include QtWidget
 
     def initialize(p, *args)
       @widget = Qt::RadioButton.new
@@ -602,7 +589,7 @@ module Qt4Backend
   end
 
   class Group
-    include Widget
+    include QtWidget
 
     def initialize(p, *args)
       @widget = Qt::GroupBox.new
@@ -624,7 +611,7 @@ module Qt4Backend
   end
 
   class Flow 
-    include Widget
+    include QtWidget
     
     def initialize(p)
       @widget = Qt::Widget.new
@@ -660,7 +647,7 @@ module Qt4Backend
 
 
   class Stack 
-    include Widget
+    include QtWidget
     
     def initialize(p)
       @widget = Qt::Widget.new

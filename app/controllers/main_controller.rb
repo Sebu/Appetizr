@@ -25,6 +25,7 @@ class MainController
     command do
       pc.User=other_pc["User"]
       pc.Color=other_pc["Color"]
+      @main.status = "#{pc.User} von #{other_pc['Cname']} auf #{pc.Cname} umgemeldet"
       pc.save!
     end.un do
       pc.User = old_user
@@ -54,6 +55,7 @@ class MainController
       @account_table.model.rows.collect { |a| new_users << a.account } if @account_table.model
       pc.Color = CONFIG['color_mapping'][ Account.gen_color(new_users) ]
       pc.User = new_users.join(" ")
+      @main.status = "#{pc.User} auf #{pc.Cname} angemeldet"
       pc.save!
       @account_table.model = nil
     end.un do
@@ -148,6 +150,7 @@ class MainController
               key_register(pc)
             else
               key_clear(pc)
+              @main.status = "#{pc.Cname} abgemeldet"
             end
           else
             Debug.log.debug "#{type}, #{data}"

@@ -1,6 +1,7 @@
 
 
 window t('main.title') do 
+  notification { message_observe @main, :status }
   stack do
     drop :drop_pool_store
     drag_start :drag_pool_store

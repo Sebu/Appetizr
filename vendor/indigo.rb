@@ -6,7 +6,6 @@ autoload :Gl, 'gl'
 autoload :Qt, 'Qt4'
 
 
-
 # extensions to Ruby libs
 autoload :CommandPattern, 'command_pattern'
 autoload :Signaling, 'signaling'

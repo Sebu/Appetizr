@@ -12,7 +12,7 @@ class Main
   
   def initialize
     @account_text = "seb"
-    @status = "log start\n"
+    @status = "start"
     @clusters = []
     @computers = []
     16.downto(1) do |n|

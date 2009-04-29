@@ -1,8 +1,7 @@
 demo app TODO
-
-- pycon/scanSense :D
 - add/change users
 - change main to app
+- better pycon/scanSense :D
 - better locale support (change locale)
 - better log(intern)
 - printer view
