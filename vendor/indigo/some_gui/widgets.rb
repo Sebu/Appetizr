@@ -27,17 +27,28 @@ module Indigo::SomeGui
       include ObserveAttr
     
       def initialize(p, *args)
-        Debug.log.debug "creating notification"
-        @notifier = RBus.session_bus.get_object('org.freedesktop.Notifications', '/org/freedesktop/Notifications')
+        bus = RBus.session_bus
+        if bus then        
+          @notifier = RBus.session_bus.get_object('org.freedesktop.Notifications', '/org/freedesktop/Notifications')
+          Debug.log.debug "creating notification widget using dbus"
+        else
+          Debug.log.debug "no dbus daemon found"          
+        end      
+
       end
 
       def parse_params(params)
         super
       end
 
-      def message=(value)
-        text = value.to_s
-        @notifier.Notify('adm', 0, 'info','rubyAdm status', text, [], {"x-canonical-append"=>RBus::Variant.new("true",'s')},-1)
+      def message=(args)
+        title,body,icon = args
+        #  "important" "undo" "redo" "info/hint" "error" "unlocked" "locked"
+        app_internal_icon ="#{APP_DIR}/resources/images/#{icon}.svg"
+        if File.exist? app_internal_icon then 
+          icon = app_internal_icon
+        end
+        @notifier.Notify(INDIGO_APP_NAME, 0, icon, title, body, [], {"x-canonical-append"=>RBus::Variant.new("true",'s')},-1) if @notifier
       end
 
       def message

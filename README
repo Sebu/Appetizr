@@ -14,7 +14,7 @@ Differences to Rails
 
 TODO before first usefull release
 * improve ObserveAttr (see file)
-* create a real initialer (with better internel config support for framework and app)
+* create a real initializer (with better internel config support for framework and app)
 * improve ...
    ... Signaling (maybe use GObject?)
    ... the Rakefile

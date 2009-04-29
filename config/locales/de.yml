@@ -10,7 +10,7 @@ de:
   main:
     title: 'rubyAdm vom seb geschraubt'
   account:
-    scanned: "{{name}} eingelesen"
+    scanned: "eingelesen"
 
 en:
   open_files: 'open files'
@@ -22,5 +22,5 @@ en:
   main:
     title: 'rubyAdm 0.1a by seb'
   account:
-    scanned: "{{name}} scanned"
+    scanned: "scanned"
 

@@ -17,11 +17,14 @@ extra_paths.each { |path| $:.unshift(APP_DIR + path) }
 # load framework
 require 'indigo'
 
+# TODO: set app dir (should we do this in initializer or config file?)
+INDIGO_APP_NAME = APP_DIR.split("/")[-1]
+
 # load CONFIG
 autoload :YAML, 'yaml'
 CONFIG = {}
 config_files = ["#{APP_DIR}/config/config_defaults.yml",   # defaults
-                "#{ENV['HOME']}/.indigo/app/config.yml",   # user
+                "#{ENV['HOME']}/.indigo/#{INDIGO_APP_NAME}/config.yml",   # user
                 "#{APP_DIR}/config/config.yml"]            # readonly
 config_files.each do |config_filename|
   if File.exist?(config_filename) then
@@ -31,6 +34,7 @@ config_files.each do |config_filename|
     CONFIG.merge!(config_file[INDIGO_ENV])
   end
 end
+
 
 # BOOT
 module Indigo

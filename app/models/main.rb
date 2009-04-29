@@ -12,7 +12,7 @@ class Main
   
   def initialize
     @account_text = "seb"
-    @status = "start"
+    @status = ["rubyAdm", "starting", "application-x-ruby"]
     @clusters = []
     @computers = []
     16.downto(1) do |n|

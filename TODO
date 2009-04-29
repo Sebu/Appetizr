@@ -1,10 +1,12 @@
 demo app TODO
+
 - add/change users
 - change main to app
+- printer view
+- add resource handling (Res/r/image("ssd"))
 - better pycon/scanSense :D
 - better locale support (change locale)
 - better log(intern)
-- printer view
 - prectab view
 - speed! ( ruby1.9 + gobject for signaling )
 

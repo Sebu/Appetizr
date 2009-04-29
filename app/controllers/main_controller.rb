@@ -12,6 +12,7 @@ class MainController
   end
   def drop_pool_store(*args)
     @pool_store = *args
+    @main.status = ["#{@pool_store['User']}", "von #{@pool_store['Cname']} in store verschoben","trashcan_full"]
   end
 
 
@@ -25,9 +26,10 @@ class MainController
     command do
       pc.User=other_pc["User"]
       pc.Color=other_pc["Color"]
-      @main.status = "#{pc.User} von #{other_pc['Cname']} auf #{pc.Cname} umgemeldet"
+      @main.status = ["#{pc.User}", "von #{other_pc['Cname']} auf #{pc.Cname} umgemeldet","redo"]
       pc.save!
     end.un do
+      @main.status = ["#{pc.User}", "von #{pc.Cname} auf #{other_pc['Cname']} umgemeldet","undo"]
       pc.User = old_user
       pc.Color = old_color
       pc.save!
@@ -51,14 +53,14 @@ class MainController
     old_user, old_color = pc.User, pc.Color
     old_model = @account_table.model
     command do
-      new_users = []
-      @account_table.model.rows.collect { |a| new_users << a.account } if @account_table.model
+      new_users = @account_table.model.rows.collect { |a| a.account } if @account_table.model
       pc.Color = CONFIG['color_mapping'][ Account.gen_color(new_users) ]
       pc.User = new_users.join(" ")
-      @main.status = "#{pc.User} auf #{pc.Cname} angemeldet"
+      @main.status = ["#{pc.User}", "auf #{pc.Cname} angemeldet", "key"] 
       pc.save!
       @account_table.model = nil
     end.un do
+      @main.status = ["#{pc.User}", "von #{pc.Cname} abgemeldet", "undo"] 
       pc.Color = old_color
       pc.User = old_user
       pc.save!
@@ -82,15 +84,16 @@ class MainController
 
 
   def fill_accounts(accounts)
-    accounts.each { |a| @main.status = t("account.scanned", :name => a.account) }
+    account_string = accounts.collect { |a| a.account }.join(" ")
+    @main.status = ["#{account_string}", t("account.scanned"), "barcode"]
     @account_table.model = accounts.length > 0 ? AccountList.new(accounts, ["account","locked"]) : @account_table.model = nil
     # workaround: otherwise the GC loses @mode_table.model reference and detroys the model
     @tmp_model = @account_table.model
   end
 
 
+  # TODO: direct_login = users.collect{ |i| i.has_an_@_in_name } bla bla ....
   def account_return(w)
-    Debug.log.debug "creating model for :account_table #{@main.account_text}"
     users = @main.account_text.split(',').each { |n| n.strip! }
     accounts =  Account.find_accounts(users) # User.find_accounts_by_barcodes(users) #
     fill_accounts(accounts)
@@ -149,9 +152,8 @@ class MainController
             if @account_table.model
               key_register(pc)
             else
-              @main.status = "#{pc.User} von #{pc.Cname} abgemeldet"
+              @main.status = ["#{pc.User}", "von #{pc.Cname} abgemeldet", "key"]
               key_clear(pc)
-              
             end
           else
             Debug.log.debug "#{type}, #{data}"

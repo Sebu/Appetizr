@@ -1,7 +1,8 @@
 #!/usr/bin/env ruby1.8
 
 #TODO: move somewhere else
-Dir.chdir "#{File.dirname(__FILE__)}/.."
+dir = Dir.chdir "#{File.dirname(__FILE__)}/.."
+
 APP_DIR = Dir.pwd
 $:.unshift APP_DIR + '/vendor'
 
