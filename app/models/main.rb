@@ -12,13 +12,16 @@ class Main
   
   def initialize
     @account_text = "seb"
+    @scan_string = "1234"
     @status = ["rubyAdm", "starting", "application-x-ruby"]
     @clusters = []
-    @computers = []
+#    @computers = []
+    
+  
     16.downto(1) do |n|
       new_computers = Computer.find_cluster(n)
       @clusters << new_computers
-      @computers = new_computers + @computers
+      #@computers = new_computers + @computers
     end
   end
   

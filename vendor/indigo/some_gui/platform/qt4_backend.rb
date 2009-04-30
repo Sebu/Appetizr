@@ -148,7 +148,7 @@ module Qt4Backend
     include ObserveAttr
 
     def initialize(p, title)
-      @widget = Qt::Dialog.new(p.widget, Qt::CustomizeWindowHint | Qt::WindowTitleHint)
+      @widget = Qt::Dialog.new(p.widget) #, Qt::CustomizeWindowHint | Qt::WindowTitleHint)
       @layout = Qt::HBoxLayout.new
       @widget.setLayout(@layout)
       self.text=title
@@ -156,11 +156,13 @@ module Qt4Backend
 
     def parse_params(params)
       #puts "#{params[:text]}"
-      posx = params[:posx] || 100 
-      posy = params[:posy] || 100
+      #posx = params[:posx] || 100 
+      #posy = params[:posy] || 100
       width = params[:width]
       height = params[:height] 
-      @widget.setGeometry(posx, posy, width, height) if width and height
+      @widget.setMinimumWidth(width)
+      @widget.setMinimumHeight(height)
+      #Geometry(posx, posy, width, height) if width and height
       super
     end
 

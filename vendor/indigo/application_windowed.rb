@@ -31,7 +31,7 @@ class IdleKicker < Qt::Object
 
   slots :give_up
 
-  def give_up()
+  def give_up
   end
 
   def initialize

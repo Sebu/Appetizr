@@ -1,7 +1,11 @@
 
 
-window t('main.title') do 
+window t('main.title') do
+  
+  # TODO: not the best place :)
+  @add_window = part :add
   notification { message_observe @main, :status }
+  
   stack do
     drop :drop_pool_store
     drag_start :drag_pool_store
@@ -15,14 +19,18 @@ window t('main.title') do
           @main.account_text_observe @parent, :text
           enter :account_return
         end
+        flow do
+          button "undo", :click => :undo_action
+          button "add", :click => :add_user
+        end
         @account_table = table do
           column 1, :CheckBox
         end
       end
-      button "undo", :click => :undo_action
+
       tabs :opacity=>0.7 do
         tab_title "L&og"
-        text  { text_observe @main, :status }
+        text  { text_observe @main, :status, :filter=>:status_format }
       end
       stretch
       stack do       

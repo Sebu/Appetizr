@@ -3,18 +3,20 @@ class Account < UserAccountDB
   include ObserveAttr
 
   set_table_name "map"
-  set_primary_key "barcode"
   belongs_to :user
 
+  # no primary_key required?
+  #set_primary_key "barcode"
+  
   attr_readonly :barcode
-  attr_accessible :account , :locked
+  attr_accessible :account, :locked, :barcode
 
-#  named_scope :accounts_by_barcode, lambda { |barcode| {:group => "account", :conditions => ["barcode = ?", barcode]} }
-#  named_scope :find_accounts, lambda { |users| { :conditions => ["barcode IN (?) OR account IN (?)", users, users], :group => "account" } }
+  named_scope :accounts_by_barcode, lambda { |barcode| {:group => "account", :conditions => ["barcode = ?", barcode]} }
+ named_scope :find_accounts, lambda { |users| { :conditions => ["barcode IN (?) OR account IN (?)", users, users], :group => "account" } }
 
 
-
-#TODO: move to named scopes
+=begin
+  #TODO: move to named scopes
   def self.find_accounts_by_barcode(barcode)
     #accounts_by_barcode barcode
     find(:all, :group => "account", :conditions => ["barcode = ?", barcode])
@@ -24,7 +26,7 @@ class Account < UserAccountDB
     #check_accounts users
     find(:all, :group => "account", :conditions => ["barcode IN (?) OR account IN (?)", users, users])
   end
-
+=end
 
 #TODO: workaround ( for our non rails conform tables ) 
   def update(attribute_names = @attributes.keys)

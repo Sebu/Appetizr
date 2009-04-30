@@ -26,7 +26,7 @@ module Indigo
     def initialize
       @controller = self
       @model_name = self.class.to_s[0..-11] 
-      eval "@#{model_name.downcase} = #{model_name}.new"
+      eval "@#{model_name.downcase} = #{model_name}.one"
       after_initialize if respond_to? :after_initialize
       self
     end

@@ -64,7 +64,7 @@ class ARTableModel < Qt::AbstractTableModel
 
     def flags(index)
         att = @keys[index.column]
-        @readonlys.include?(att) ? super(index) : (Qt::ItemIsEditable|super(index))
+        @readonlys and @readonlys.include?(att) ? super(index) : (Qt::ItemIsEditable|super(index))
     end
 
     def setData(index, variant, role=Qt::EditRole)

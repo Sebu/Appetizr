@@ -19,6 +19,11 @@ class MainController
   def user_list_format(a)
     a.tr(" ","\n")
   end
+  
+  def status_format(status)
+    title,body,icon = status
+    "#{title} #{body}"
+  end
 
 
   def drop_users(pc, other_pc)
@@ -26,10 +31,10 @@ class MainController
     command do
       pc.User=other_pc["User"]
       pc.Color=other_pc["Color"]
-      @main.status = ["#{pc.User}", "von #{other_pc['Cname']} auf #{pc.Cname} umgemeldet","redo"]
+      @main.status = ["#{pc.User}", "von #{other_pc['Cname']} auf #{pc.Cname} verschoben","redo"]
       pc.save!
     end.un do
-      @main.status = ["#{pc.User}", "von #{pc.Cname} auf #{other_pc['Cname']} umgemeldet","undo"]
+      @main.status = ["#{pc.User}", "von #{pc.Cname} auf #{other_pc['Cname']} verschoben","undo"]
       pc.User = old_user
       pc.Color = old_color
       pc.save!
@@ -44,31 +49,22 @@ class MainController
 
   def cbutton_click(w, pc)
     if @account_table.model
-      key_register(pc)
+      table_register(pc)
     end
   end
 
-
-  def key_register(pc)
-    old_user, old_color = pc.User, pc.Color
-    old_model = @account_table.model
-    command do
-      new_users = @account_table.model.rows.collect { |a| a.account } if @account_table.model
-      pc.Color = CONFIG['color_mapping'][ Account.gen_color(new_users) ]
-      pc.User = new_users.join(" ")
-      @main.status = ["#{pc.User}", "auf #{pc.Cname} angemeldet", "key"] 
-      pc.save!
-      @account_table.model = nil
-    end.un do
-      @main.status = ["#{pc.User}", "von #{pc.Cname} abgemeldet", "undo"] 
-      pc.Color = old_color
-      pc.User = old_user
-      pc.save!
-      @account_table.model = old_model
-    end.run
+  def add_user(w)
+    @add_window.show_all
   end
-
-
+  
+  def table_register(pc)
+    new_users = @account_table.model.rows.collect { |a| a.account } if @account_table.model
+    users_register(new_users, pc)
+    @account_table.model = nil
+  end
+  
+  
+  # TODO: merge with users_register methods
   def key_clear(pc)
     old_user, old_color = pc.User, pc.Color
     command do
@@ -82,6 +78,22 @@ class MainController
     end.run
   end
 
+  def users_register(users, pc)
+    old_user, old_color = pc.User, pc.Color
+    command do
+      pc.User = users.join(" ")
+      pc.Color = CONFIG['color_mapping'][ Account.gen_color(users) ]
+      pc.save!
+      @main.status = ["#{pc.User}", "auf #{pc.Cname} angemeldet", "key"]
+    end.un do
+      pc.User = old_user
+      pc.Color = old_color
+      pc.save!
+    end.run
+  end
+
+
+
 
   def fill_accounts(accounts)
     account_string = accounts.collect { |a| a.account }.join(" ")
@@ -92,10 +104,10 @@ class MainController
   end
 
 
-  # TODO: direct_login = users.collect{ |i| i.has_an_@_in_name } bla bla ....
+  # TODO:     #direct_login = users.collect{ |u| u.split("@") } 
   def account_return(w)
     users = @main.account_text.split(',').each { |n| n.strip! }
-    accounts =  Account.find_accounts(users) # User.find_accounts_by_barcodes(users) #
+    accounts =  Account.find_accounts(users)
     fill_accounts(accounts)
   end
 
@@ -138,19 +150,18 @@ class MainController
         while true
           scan = socket.recvfrom(25)
           Debug.log.debug "Scanner says #{scan}"
-          type, data = check_scanner_string(scan[0])
-          @main.scan_string = data
+          type, @main.scan_string = check_scanner_string(scan[0])
           case type
           when :card
-            accounts = User.find_accounts_by_barcode(data)
+            accounts = User.find_accounts_by_barcode(@main.scan_string)
             fill_accounts(accounts)
           when :matrikel
-            accounts = Account.find_accounts_by_barcode(data)
+            accounts = Account.find_accounts_by_barcode(@main.scan_string)
             fill_accounts(accounts)
           when :key
             pc = eval "@#{data}_model"
             if @account_table.model
-              key_register(pc)
+              table_register(pc)
             else
               @main.status = ["#{pc.User}", "von #{pc.Cname} abgemeldet", "key"]
               key_clear(pc)
