@@ -5,8 +5,7 @@ class User < UserAccountDB
   has_many :accounts, :foreign_key => "barcode"
 
   def self.find_accounts_by_barcode(barcode)
-    res = find(:first, :conditions => ["canonical = (?)", barcode])
-    res.accounts
+    find(:first, :conditions => ["canonical = (?)", barcode]).accounts
   end
 
 end

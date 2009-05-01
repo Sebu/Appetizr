@@ -22,21 +22,27 @@ module Indigo::SomeGui
     include Indigo::SomeGui::Qt4Backend
 
     class Notification
-      require 'rbus'
+
       include Widget
       include ObserveAttr
     
       def initialize(p, *args)
-        bus = RBus.session_bus
+        
+        begin
+          require 'rbus'
+          bus = RBus.session_bus
+        rescue MissingSourceFile => e
+        end
+
         if bus then        
           @notifier = RBus.session_bus.get_object('org.freedesktop.Notifications', '/org/freedesktop/Notifications')
-          Debug.log.debug "creating notification widget using dbus"
+          Debug.log.debug "creating notification widget using d-bus"
           @send_mode = :dbus
         elsif File.exist?("/usr/bin/notify-send") then
           @send_mode = :send
           Debug.log.debug "creating notification widget using notify-send"
         else
-          Debug.log.debug "no notifications support found"          
+          Debug.log.debug "no notification support found"          
         end      
       end
 

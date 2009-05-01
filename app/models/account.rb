@@ -5,30 +5,15 @@ class Account < UserAccountDB
   set_table_name "map"
   belongs_to :user
 
-  # no primary_key required?
-  #set_primary_key "barcode"
-  
   attr_readonly :barcode
   attr_accessible :account, :locked, :barcode
 
-  named_scope :accounts_by_barcode, lambda { |barcode| {:group => "account", :conditions => ["barcode = ?", barcode]} }
- named_scope :find_accounts, lambda { |users| { :conditions => ["barcode IN (?) OR account IN (?)", users, users], :group => "account" } }
+  named_scope :find_accounts_by_barcode, lambda { |barcode| {:group => "account", :conditions => ["barcode = ?", barcode]} }
+  named_scope :find_accounts, lambda { |users| { :conditions => ["barcode IN (?) OR account IN (?)", users, users], :group => "account" } }
 
 
-=begin
-  #TODO: move to named scopes
-  def self.find_accounts_by_barcode(barcode)
-    #accounts_by_barcode barcode
-    find(:all, :group => "account", :conditions => ["barcode = ?", barcode])
-  end
 
-  def self.find_accounts(users)
-    #check_accounts users
-    find(:all, :group => "account", :conditions => ["barcode IN (?) OR account IN (?)", users, users])
-  end
-=end
-
-#TODO: workaround ( for our non rails conform tables ) 
+  #TODO: workaround ( for our non rails conform tables ) 
   def update(attribute_names = @attributes.keys)
         quoted_attributes = attributes_with_quotes(false, false, attribute_names)
         return 0 if quoted_attributes.empty?
