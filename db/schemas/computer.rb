@@ -12,7 +12,7 @@
 ActiveRecord::Schema.define(:version => 0) do
 
   create_table "Cache", :id => false, :force => true do |t|
-    t.integer "Cname",                              :null => false
+    t.string  "Cname", :limit => 4,                 :null => false
     t.integer "Color",               :default => 0, :null => false
     t.string  "User",  :limit => 36,                :null => false
     t.integer "Time",                :default => 0, :null => false
