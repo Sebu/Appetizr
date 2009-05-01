@@ -2,7 +2,7 @@
 Indigo - rapid prototyping application framework inspired by RoR and Shoes
 
 USAGE OF DEMO APP/FRAMEWORK
-* 'rake db:migrate' or 'rake db:schema:load'
+* 'rake db:migrate'
 * 'script/start'
 
 Differences to Rails
