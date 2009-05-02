@@ -4,9 +4,9 @@ class Main
   include ObserveAttr
 
   attr_accessor :account_text, :scan_string, :status
-  obsattr_reader :account_text
-  obsattr :scan_string
-  obsattr :status
+  obsattr :account_text
+  obsattr_writer :scan_string
+  obsattr_writer :status
   attr_accessor :clusters, :computers
   
   
@@ -15,13 +15,10 @@ class Main
     @scan_string = "1234"
     @status = ["rubyAdm", "starting", "application-x-ruby"]
     @clusters = []
-#    @computers = []
     
   
     16.downto(1) do |n|
-      new_computers = Computer.find_cluster(n)
-      @clusters << new_computers
-      #@computers = new_computers + @computers
+      @clusters << Computer.find_cluster(n)
     end
   end
   

@@ -32,7 +32,7 @@ module Indigo
     end
 
     def show
-      render
+      @parent = render
     end
   
     def part(name)
@@ -68,10 +68,13 @@ module Indigo
       I18n.l(*params)
     end
 
+    #region: actions
     def undo_action(w)
       cmds.undo
     end
-
+    def close_action(w)
+      eval "@#{model_name.downcase}_view.hide"
+    end
 
     module ClassMethods
       def one

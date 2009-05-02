@@ -54,6 +54,7 @@ class MainController
   end
 
   def add_user(w)
+    @add_window ||= part :add
     @add_window.show_all
   end
   
@@ -132,7 +133,7 @@ class MainController
   
     refresh = Thread.new {
       while true
-        sleep 15
+        sleep 20
         @main.clusters.each { |c| Computer.reload(c) }
       end  
     }

@@ -160,8 +160,8 @@ module Qt4Backend
       #posy = params[:posy] || 100
       width = params[:width]
       height = params[:height] 
-      @widget.setMinimumWidth(width)
-      @widget.setMinimumHeight(height)
+      @widget.setMinimumWidth(width) if width
+      @widget.setMinimumHeight(height) if height
       #Geometry(posx, posy, width, height) if width and height
       super
     end
@@ -386,8 +386,8 @@ module Qt4Backend
     def initialize(p, *args)
       @widget = Qt::PushButton.new
       @widget.connect(SIGNAL(:clicked)) { emit(:click, self) }
-      @widget.setMinimumSize( Qt::Size.new(60,60) )
-      @widget.setMaximumSize( Qt::Size.new(60,60) )
+      #@widget.setMinimumSize( Qt::Size.new(60,60) )
+      #@widget.setMaximumSize( Qt::Size.new(60,60) )
       # CONTAINER layout
       @layout = Qt::HBoxLayout.new
       @layout.spacing = 0

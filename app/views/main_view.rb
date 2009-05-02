@@ -3,7 +3,7 @@
 window t('main.title') do
   
   # TODO: not the best place :)
-  @add_window = part :add
+
   notification { message_observe @main, :status }
   
   stack do

@@ -11,10 +11,11 @@ class AddController
     "Barcode: #{scan_string}"
   end
   
-  def field_return(w)
-    users = w.text.split(',').each { |n| n.strip! }
+  def register_users(w)
+    users = @account_field.text.split(',').each { |n| n.strip! }
     # TODO: check existance of users
     users.each { |user| Account.create(:barcode=>@main.scan_string, :account=>user) }
+    close_action(w)
   end
   
 end
