@@ -95,7 +95,8 @@ class MainController
 
   def drop_users(pc, other_pc)
     old_user, old_color = pc.User, pc.Color
-    commands_start
+    commands_end
+    commands_begin
     command do
       pc.User=other_pc["User"]
       pc.Color=other_pc["Color"]

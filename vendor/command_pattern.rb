@@ -48,7 +48,18 @@ module CommandPattern
     end
   end
 
-  def commands_start
+  def cmds  
+    @cmds ||= CommandStack.new
+  end
+  def command(&block)
+    cmd = Command.new(&block)
+    cmds << cmd
+    cmd
+  end
+
+
+  # compound commmands
+  def commands_begin
     @mode = :multi
     @cmds_stacks ||= []
     @cmds_stacks.push cmds
@@ -65,14 +76,6 @@ module CommandPattern
     @mode = :single
   end
   
-  def cmds  
-    @cmds ||= CommandStack.new
-  end
-  def command(&block)
-    cmd = Command.new(&block)
-    cmds << cmd
-    cmd
-  end
 end
 
 #class Test
