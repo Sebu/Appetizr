@@ -14,10 +14,23 @@ class Debug
   class << self
     attr_accessor :log
   end
-  @log = ActiveSupport::BufferedLogger.new STDOUT #INDIGO_ENV =='development' ? STDOUT : "log/main.log"
+  @log = ActiveSupport::BufferedLogger.new INDIGO_ENV =='development' ? STDOUT : "log/main.log"
 end
 
+
+# TODO: move into own module/file
+#  "important" "undo" "redo" "info/hint" "error" "unlocked" "locked"
+class Res
+  def self.[](res)
+    app_internal_res = "#{APP_DIR}/resources/images/#{res}.svg"
+    res = app_internal_res if File.exist? app_internal_res
+    res
+  end
+end
+  
 module Indigo
+  
+  
   require 'indigo/core_ext'
   autoload :Application, 'indigo/application'
   autoload :SomeGui, 'indigo/some_gui'

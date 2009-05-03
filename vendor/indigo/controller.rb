@@ -31,15 +31,21 @@ module Indigo
       self
     end
 
-    def show
+
+    def load_context
       @parent = render
+    end
+    
+    def show
+      view = load_context
+      view.show_all
+      view
     end
   
     def part(name)
       controller = eval "#{name.to_s.capitalize}Controller.one"
       controller.parent = @parent
-      view = controller.show
-      view.hide
+      view = controller.load_context
       view
     end
 

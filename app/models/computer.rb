@@ -22,9 +22,19 @@ class Computer < ActiveRecord::Base
     self.User_changed
   end
 
+  def prectab=(value)
+    @prectab = value
+  end
+  
+  def prectab
+    #@prectab
+    "<u><b><font color=#FEFEAA>itc</b></u>"
+  end
+  obsattr :prectab
+  
   
   def change_vtab
-    filename = "#{CONFIG['VALIDTAB_PATH']}#{CONFIG['VALIDTAB_FILE_PREFIX']}#{self.Cname}"
+    filename = "#{CONFIG['VALIDTAB_PATH']}validtab.#{self.Cname}"
     return unless File.exists?(filename)
     vtab = File.new(filename,"r+")
     begin

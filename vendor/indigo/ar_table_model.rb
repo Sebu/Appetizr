@@ -39,7 +39,7 @@ class ARTableModel < Qt::AbstractTableModel
         return nil if item.nil?
         raise "invalid column #{index.column}" if (index.column < 0 ||
             index.column > @keys.size)
-        return item.attributes[@keys[index.column]]
+        return item #.attributes #[@keys[index.column]]
     end
 
     def data(index, role=Qt::DisplayRole)

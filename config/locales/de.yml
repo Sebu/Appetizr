@@ -4,11 +4,8 @@ de:
   open_files: 'Dateien öffnen'
   scanner:  
     no_connection: 'keine verbindung zum scanner'
-  message: 
-    one: '1 wurst'
-    other: "{{count}} wursts"
   main:
-    title: 'rubyAdm vom seb geschraubt'
+    title: "rubyAdm 0.1a vom seb geschraubt"
   account:
     scanned: "eingelesen"
 
@@ -16,9 +13,6 @@ en:
   open_files: 'open files'
   scanner:
     no_connection: 'no connection to scanner'
-  message: 
-    one: '1 message'
-    other: "{{count}} messages"
   main:
     title: 'rubyAdm 0.1a by seb'
   account:

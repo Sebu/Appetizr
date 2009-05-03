@@ -1,6 +1,6 @@
 
 
-button :id => @c.Cname do
+button :id => @c.Cname, :height => 60 do
   tool_tip_observe @c, :User
   click :cbutton_click, @c
   background_observe @c, :Color, :filter=> :code_to_color
@@ -10,13 +10,13 @@ button :id => @c.Cname do
   drop :drop_users, @c
 
   stack :margin => 2 do
+    flow do
     label "<b>#{@c.Cname}</b>" , :size => 8
+    stretch
+    label(:size => 8) { text_observe @c, :prectab }
+
+    end
     label(:size => 7) { text_observe @c, :User, :filter=> :user_list_format }
     stretch
   end
 end
-
-
-#TODO: do this somewhere else (in model or controller?? or helper??)
-name @c, "#{@c.Cname}_model"
-

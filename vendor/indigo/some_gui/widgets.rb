@@ -5,15 +5,17 @@ module Indigo::SomeGui
     include Signaling
     include ObserveAttr
     attr_accessor :controller
+    attr_accessor :block
     
     def parse_block(&block)
       if block_given? 
         block.call @parent
       end
-      show_all
     end
 
     def show_all
+      #parse_block(&@block)
+      #self.children.each { |c| puts c } if self.children
     end
   end
 
@@ -52,12 +54,7 @@ module Indigo::SomeGui
 
       def message=(args)
         title,body,icon = args
-        #  "important" "undo" "redo" "info/hint" "error" "unlocked" "locked"
-        app_internal_icon ="#{APP_DIR}/resources/images/#{icon}.svg"
-        if File.exist? app_internal_icon then 
-          icon = app_internal_icon
-        end
-        notify(title,body,icon)
+        notify(title,body, Res[icon])
       end
       
       def notify(title,body,icon)

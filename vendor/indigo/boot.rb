@@ -50,7 +50,7 @@ module Indigo
     # NOT App.run (move to something like commands/start)
     def self.run!
       I18n.load_path = Dir[File.join(APP_DIR, 'config', 'locales', '*.{rb,yml}')]
-      I18n.locale = CONFIG[:locale]
+      I18n.locale = CONFIG["locale"]
     end
   end
 end

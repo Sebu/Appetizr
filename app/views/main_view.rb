@@ -1,6 +1,6 @@
 
 
-window t('main.title') do
+window t('main.title'),  :opacity=>0.7  do
   
   # TODO: not the best place :)
 
@@ -21,16 +21,19 @@ window t('main.title') do
         end
         flow do
           button "undo", :click => :undo_action
-          button "add", :click => :add_user
+          button "add", :click => :add_users
         end
         @account_table = table do
           column 1, :CheckBox
+          menu "context" do
+            action "add users", :add_users
+            action "remove users", :remove_users
+          end
         end
       end
 
       tabs :opacity=>0.7 do
-        tab_title "L&og"
-        text  { text_observe @main, :status, :filter=>:status_format }
+        add "L&og", text { text_observe @main, :status, :filter=>:status_format }
       end
       stretch
       stack do       

@@ -15,30 +15,15 @@ class MainController
     @main.status = ["#{@pool_store['User']}", "von #{@pool_store['Cname']} in store verschoben","trashcan_full"]
   end
 
-
   def user_list_format(a)
     a.tr(" ","\n")
   end
   
   def status_format(status)
+    time = Time.now.strftime("%H:%M:%S")
     title,body,icon = status
-    "#{title} #{body}"
-  end
-
-
-  def drop_users(pc, other_pc)
-    old_user, old_color = pc.User, pc.Color
-    command do
-      pc.User=other_pc["User"]
-      pc.Color=other_pc["Color"]
-      @main.status = ["#{pc.User}", "von #{other_pc['Cname']} auf #{pc.Cname} verschoben","redo"]
-      pc.save!
-    end.un do
-      @main.status = ["#{pc.User}", "von #{pc.Cname} auf #{other_pc['Cname']} verschoben","undo"]
-      pc.User = old_user
-      pc.Color = old_color
-      pc.save!
-    end.run
+    "[#{time}] <b>#{title}</b> #{body}"
+    #"[#{time}] <img src=#{Res[icon]} height=24> <b>#{title}</b> #{body}"
   end
 
 
@@ -53,10 +38,22 @@ class MainController
     end
   end
 
-  def add_user(w)
+  
+  
+  def add_users(w)
     @add_window ||= part :add
     @add_window.show_all
   end
+  
+  
+  def remove_users(w)
+    accounts = @account_table.selection
+    accounts.each { |account| Account.delete_all("barcode='#{account.barcode}' AND account='#{account.account}'") }
+    account_string = accounts.collect { |a| a.account }.join(" ")
+    @main.status = ["#{account_string}", "von Barcode: #{@main.scan_string} enfernt","trashcan_full"]
+    #fill_accounts(@account_table.model.rows.remove(users))    
+  end
+  
   
   def table_register(pc)
     new_users = @account_table.model.rows.collect { |a| a.account } if @account_table.model
@@ -65,6 +62,8 @@ class MainController
   end
   
   
+
+    
   # TODO: merge with users_register methods
   def key_clear(pc)
     old_user, old_color = pc.User, pc.Color
@@ -90,6 +89,21 @@ class MainController
       pc.User = old_user
       pc.Color = old_color
       pc.save!
+    end.run
+  end
+
+  def drop_users(pc, other_pc)
+    old_user, old_color = pc.User, pc.Color
+    command do
+      pc.User=other_pc["User"]
+      pc.Color=other_pc["Color"]
+      pc.save!
+      @main.status = ["#{pc.User}", "von <b>#{other_pc['Cname']}</b> auf <b>#{pc.Cname}</b> verschoben","redo"]
+    end.un do
+      pc.User = old_user
+      pc.Color = old_color
+      pc.save!
+      @main.status = ["#{pc.User}", "von <b>#{pc.Cname}</b> auf <b>#{other_pc['Cname']}</b> verschoben","undo"]
     end.run
   end
 
@@ -131,6 +145,11 @@ class MainController
   # TODO: move to somewhere else ( maybe computer and scanner controllers etc. )
   def after_initialize
   
+    @main.clusters.each do |computers|
+      computers.each {|c| name c, "#{c.Cname}_model" }
+    end
+    
+
     refresh = Thread.new {
       while true
         sleep 20

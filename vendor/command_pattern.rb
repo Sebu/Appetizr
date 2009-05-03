@@ -4,15 +4,23 @@ module CommandPattern
   class CommandStack
     def initialize
       @commands = []
+      @mode = :single
     end
     def <<(cmd)
       @commands.push cmd
     end
+    # run all commands
     def run
+      @commands.each { |c| c.doit }
+    end
+    def undoit
+      @commands.reverse_each { |c| c.undoit }
+    end
+    def doit
       @commands.last.run
     end
     def undo
-      @commands.last.undo if @commands.last
+      @commands.last.undoit if @commands.last
       @commands.pop
     end
   end
@@ -34,12 +42,21 @@ module CommandPattern
       @doit.call
       self
     end
-    def undo
+    def undoit
       @undoit.call
       self
     end
   end
 
+  def commands_start
+    @mode = :multi
+    
+  end
+  
+  def commands_end
+    @mode = :single
+  end
+  
   def cmds  
     @cmds ||= CommandStack.new
   end

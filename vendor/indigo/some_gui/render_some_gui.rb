@@ -7,7 +7,7 @@ module Indigo::SomeGui
       content = ''
       File.open(filename, 'r') { |f| content = f.read }
 
-      #Debug.log.debug "loading render block #{filename}"
+      Debug.log.debug "loading render block #{filename}"
       #Debug.log.debug content
       content
     end  
@@ -22,7 +22,7 @@ module Indigo::SomeGui
     end
 
     def render_file(name, partial, locals)
-      @children ||= {}
+      @children ||= []
   
       params = {:path => 'app/views'} #.merge(params)
   

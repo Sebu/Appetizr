@@ -27,10 +27,11 @@ module SomeGui
               widget.controller = @controller
               gen_accessor(params[:id], widget) if params[:id]
 
-              @parent.children ||= Hash.new
-              @parent.children[params[:id]] = widget
+              @parent.children ||= []
+              @parent.children <<  widget
               @parent, widget.parent = widget, @parent
               widget.parse_params(params)
+              widget.block = block
               widget.parse_block(&block)
               @parent = widget.parent
               widget
@@ -45,7 +46,7 @@ module SomeGui
   module Create
     include CreatesWidgets
 
-    create_widget :Notification, :Text, :GlArea, :Dialog, :Svg, :Spin, :Combo, :Tabs, :VSlider, :HSlider, :Radio, :Check, :Window, :Flow, :Stack, :Field, :Label, :Button, :Group, :Table
+    create_widget :Action, :Menu, :Notification, :Text, :GlArea, :Dialog, :Svg, :Spin, :Combo, :Tabs, :VSlider, :HSlider, :Radio, :Check, :Window, :Flow, :Stack, :Field, :Label, :Button, :Group, :Table
     
     attr_accessor :children
     attr_accessor :parent

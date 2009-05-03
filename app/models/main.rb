@@ -13,7 +13,7 @@ class Main
   def initialize
     @account_text = "seb"
     @scan_string = "1234"
-    @status = ["rubyAdm", "starting", "application-x-ruby"]
+    @status = ["rubyAdm", "gestartet", "application-x-ruby"]
     @clusters = []
     
   

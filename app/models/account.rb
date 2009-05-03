@@ -8,6 +8,8 @@ class Account < UserAccountDB
   attr_readonly :barcode, :account
   attr_accessible :account, :locked, :barcode
 
+  validates_presence_of :barcode
+  
   named_scope :find_accounts_by_barcode, lambda { |barcode| {:group => "account", :conditions => ["barcode = ?", barcode]} }
   named_scope :find_accounts, lambda { |users| { :conditions => ["barcode IN (?) OR account IN (?)", users, users], :group => "account" } }
 

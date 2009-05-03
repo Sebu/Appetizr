@@ -10,6 +10,10 @@ module Qt4Backend
 
     attr_accessor :widget
 
+    def add(w)
+      add_element(w)
+    end
+    
     def parse_params(params)
       @widget.windowOpacity =  params[:opacity] || 1.0
     end
@@ -136,6 +140,8 @@ module Qt4Backend
       @widget.setCentralWidget(w.widget)
     end
     def show_all
+      super
+      
       @widget.show
     end
     def hide
@@ -290,7 +296,6 @@ module Qt4Backend
       @opts ||= Qt::StyleOptionButton.new
       @opts.state = data.value == true ? Qt::Style::State_On : Qt::Style::State_Off
       @opts.rect = option.rect
-      @opts.alingment = Qt::AlignCenter
   		Qt::Application.style.drawControl(Qt::Style::CE_CheckBox, @opts, painter)
     end  
     
@@ -336,6 +341,10 @@ module Qt4Backend
     def model
       @widget.model
     end
+    def selection
+      indices = @widget.selectionModel.selectedIndexes
+      indices.collect{|i| @widget.model.data_raw(i) }
+    end
 
     def column(col, type, params={})
       case type
@@ -376,6 +385,8 @@ module Qt4Backend
 
   end
 
+
+  
   class Button 
     include QtWidget
     include ObserveAttr
@@ -396,8 +407,7 @@ module Qt4Backend
     def initialize(p, *args)
       @widget = Qt::PushButton.new
       @widget.connect(SIGNAL(:clicked)) { emit(:click, self) }
-      #@widget.setMinimumSize( Qt::Size.new(60,60) )
-      #@widget.setMaximumSize( Qt::Size.new(60,60) )
+
       # CONTAINER layout
       @layout = Qt::HBoxLayout.new
       @layout.spacing = 0
@@ -413,11 +423,14 @@ module Qt4Backend
 
 
     def background(value)
-      @widget.setStyleSheet("background: '#{value}'")
+      @widget.setStyleSheet("QPushButton { background-color:  #{value} }")
     end
 
     def parse_params(params)
       method_click = params[:click]
+      height = params[:height]
+      @widget.setMinimumSize( Qt::Size.new(height, height) ) if height
+      #@widget.setMaximumSize( Qt::Size.new(60,60) )
       click(method_click) if method_click
       super
     end
@@ -433,9 +446,9 @@ module Qt4Backend
     include ObserveAttr
 
     def initialize(p, *args)
-      @widget = Qt::TextEdit.new
+      @widget = Qt::TextEdit.new(p.widget)
       p.add_element(self)
-      @text = ""
+
       self.text=args[0]
     end
     def parse_params(params)
@@ -443,13 +456,9 @@ module Qt4Backend
       super
     end
     def text=(value)
-      @text += "#{value.to_s}\n"
-      @widget.text = @text.to_s
+      @widget.append("#{value.to_s}") # text = @text.to_s
     end
-    def text
-      @widget.text
-    end
-    obsattr :text
+    obsattr_reader :text
   end
 
 
@@ -520,11 +529,11 @@ module Qt4Backend
       @widget = Qt::TabWidget.new
       p.add_element(self) 
     end
-    def tab_title(title)
-      @tab_title = title
+    def add(title, element)
+      @widget.addTab(element.widget, title)
     end
     def add_element(w)
-      @widget.addTab(w.widget, @tab_title || "")
+      @widget.addTab(w.widget, w.class.name || "")
     end
   end
 
@@ -588,7 +597,7 @@ module Qt4Backend
     include QtWidget
 
     def initialize(p, *args)
-      @widget = Qt::RadioButton.new
+      @widget = Qt::RadioButton.new(p.widget)
       p.add_element(self)
       self.text=(args[0])
     end
@@ -604,7 +613,7 @@ module Qt4Backend
     include QtWidget
 
     def initialize(p, *args)
-      @widget = Qt::GroupBox.new
+      @widget = Qt::GroupBox.new(p.widget)
       @layout = Qt::HBoxLayout.new
       @widget.setLayout(@layout)
       p.add_element(self)
@@ -626,7 +635,7 @@ module Qt4Backend
     include QtWidget
     
     def initialize(p)
-      @widget = Qt::Widget.new
+      @widget = Qt::Widget.new(p.widget)
       @layout = Qt::HBoxLayout.new
       @widget.setLayout(@layout)
       p.add_element(self) 
@@ -662,7 +671,7 @@ module Qt4Backend
     include QtWidget
     
     def initialize(p)
-      @widget = Qt::Widget.new
+      @widget = Qt::Widget.new(p.widget)
       @layout = Qt::VBoxLayout.new
       @widget.setLayout(@layout)
       p.add_element(self) 
@@ -687,6 +696,53 @@ module Qt4Backend
 
     def add_element(w)
       @widget.layout.addWidget(w.widget)
+    end
+  end
+  
+  class Action
+    include QtWidget
+    attr_accessor :qt_action
+     
+    def initialize(p, text, method, *args)
+      @qt_action = Qt::Action.new(text, p.widget)
+      @qt_action.connect(SIGNAL("triggered(bool)")) { emit(:click, self) }
+      self.connect(:click, p.controller, method, *args)
+      p.add_element(self) 
+    end
+    def parse_params(params)
+    end
+  end
+  
+  class Menu
+    include QtWidget
+
+    def initialize(p, *args)
+      widget = @widget = Qt::Menu.new( args[0] || "menu", p.widget)
+      
+      case args[0].to_s
+      when "context"
+        p.widget.instance_eval %{
+          @menu = widget
+          def contextMenuEvent(event)
+            @menu.popup(event.globalPos)
+          end
+        }
+      end
+      p.add_element(self) 
+    end
+
+    def separator
+      @widget.addSeparator()
+    end
+
+ 
+    def add_element(w)
+      case w.class.name
+      when "Indigo::SomeGui::Qt4Backend::Menu"
+        @widget.addMenu(w.widget)
+      when "Indigo::SomeGui::Qt4Backend::Action"
+        @widget.addAction(w.qt_action)  
+      end
     end
   end
 
