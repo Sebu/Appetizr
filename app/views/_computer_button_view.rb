@@ -9,6 +9,10 @@ button :id => @c.Cname, :height => 60 do
   drag_delete :key_clear
   drop :drop_users, @c
 
+  menu "context" do
+    action "nothing", :nothing
+  end
+
   stack :margin => 2 do
     flow do
     label "<b>#{@c.Cname}</b>" , :size => 8
