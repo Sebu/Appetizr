@@ -50,10 +50,18 @@ module CommandPattern
 
   def commands_start
     @mode = :multi
-    
+    @cmds_stacks ||= []
+    @cmds_stacks.push cmds
+    new_cmds = CommandStack.new
+    @cmds << new_cmds
+    @cmds = new_cmds
   end
   
   def commands_end
+    if @mode == :multi then
+      @cmds = @cmds_stacks.last
+      @cmds_stacks.pop
+    end
     @mode = :single
   end
   

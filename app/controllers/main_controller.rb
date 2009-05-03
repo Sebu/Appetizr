@@ -76,6 +76,7 @@ class MainController
       pc.Color = old_color
       pc.save!
     end.run
+    commands_end
   end
 
   def users_register(users, pc)
@@ -94,6 +95,7 @@ class MainController
 
   def drop_users(pc, other_pc)
     old_user, old_color = pc.User, pc.Color
+    commands_start
     command do
       pc.User=other_pc["User"]
       pc.Color=other_pc["Color"]
