@@ -267,26 +267,33 @@ module Qt4Backend
     attr_accessor :filter_func, :controller
 
     def createEditor(parent, item, index) 
-      Qt::CheckBox.new(parent)
+      box = Qt::CheckBox.new(parent)
+      connect(box, SIGNAL("stateChanged(int)")) { emit commitData(box) }
+      box
     end
 
+    def setEditorData(editor,index)
+      value = index.model.data(index, Qt::DisplayRole).toBool
+      editor.setCheckState( value ? Qt::Checked : Qt::Unchecked )
+    end
+ 
     def setModelData(editor, model, index) 
-      value = editor.isChecked
-      model.setData(index, Qt::Variant.new(value))
+      model.setData(index, Qt::Variant.new(editor.isChecked))
     end
 
     def updateEditorGeometry(editor, item,  index)
       editor.setGeometry(item.rect)
     end
 
-
     def paint(painter, option, index)
       data = index.model.data(index)
       @opts ||= Qt::StyleOptionButton.new
       @opts.state = data.value == true ? Qt::Style::State_On : Qt::Style::State_Off
       @opts.rect = option.rect
+      @opts.alingment = Qt::AlignCenter
   		Qt::Application.style.drawControl(Qt::Style::CE_CheckBox, @opts, painter)
     end  
+    
   end
 
 
@@ -318,6 +325,8 @@ module Qt4Backend
 
     def initialize(p)
       @widget = Qt::TableView.new
+      @widget.setMouseTracking(true)
+      @widget.connect(@widget, SIGNAL("entered(const QModelIndex &)"), @widget, SLOT("edit(const QModelIndex &)"))
       p.add_element(self) 
       model = nil
     end
@@ -330,7 +339,8 @@ module Qt4Backend
 
     def column(col, type, params={})
       case type
-        when :Text: return
+      when :Text
+      return
       end
       @delegate = eval "#{type.to_s}D.new"
       @delegate.controller = @controller

@@ -5,6 +5,9 @@ class ARTableModel < Qt::AbstractTableModel
 
     attr_reader :rows
 
+    def selected
+    end
+    
     def initialize(rows,columns=nil)
         super()
         @rows = rows

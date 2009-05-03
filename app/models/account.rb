@@ -5,7 +5,7 @@ class Account < UserAccountDB
   set_table_name "map"
   belongs_to :user
 
-  attr_readonly :barcode
+  attr_readonly :barcode, :account
   attr_accessible :account, :locked, :barcode
 
   named_scope :find_accounts_by_barcode, lambda { |barcode| {:group => "account", :conditions => ["barcode = ?", barcode]} }
@@ -26,10 +26,10 @@ class Account < UserAccountDB
   end
 
  
+  
   def locked=(value)
     system("#{CONFIG['admin_sh_file']} -unlock #{self.account}") if self[:locked] == true and value == false
-    self[:locked] = value
-    
+    self[:locked] = false
   end
 
   def locked
@@ -37,7 +37,7 @@ class Account < UserAccountDB
   end
 
   def after_initialize
-   self.locked ||= get_lock_state(self.account)
+   self[:locked] ||= get_lock_state(self.account)
   end
 
   def self.get_passwd(user)
