@@ -49,7 +49,7 @@ class MainController
   def remove_users(w)
     accounts = @account_table.selection
     accounts.each { |account| Account.delete_all("barcode='#{account.barcode}' AND account='#{account.account}'") }
-    account_string = accounts.collect { |a| a.account }.join(" ")
+    account_string = accounts.collect { |a| a.account }.join(", ")
     @main.status = ["#{account_string}", "von Barcode: #{@main.scan_string} enfernt","trashcan_full"]
     #fill_accounts(@account_table.model.rows.remove(users))    
   end
@@ -85,7 +85,7 @@ class MainController
       pc.User = users.join(" ")
       pc.Color = CONFIG['color_mapping'][ Account.gen_color(users) ]
       pc.save!
-      @main.status = ["#{pc.User}", "auf #{pc.Cname} angemeldet", "key"]
+      @main.status = ["#{pc.User}", "auf <b>#{pc.Cname}</b> angemeldet", "key"]
     end.un do
       pc.User = old_user
       pc.Color = old_color
@@ -114,8 +114,13 @@ class MainController
 
 
   def fill_accounts(accounts)
-    account_string = accounts.collect { |a| a.account }.join(" ")
-    @main.status = ["#{account_string}", t("account.scanned"), "barcode"]
+    account_string = accounts.collect { |a| a.account }.join(", ")
+    p accounts
+    if not accounts or accounts.empty?
+      @main.status = ["#{@main.scan_string}", "hat keinen Account", "barcode"] 
+    else
+      @main.status = ["#{account_string}", t("account.scanned"), "barcode"] 
+    end
     @account_table.model = accounts.length > 0 ? AccountList.new(accounts, ["account","locked"]) : @account_table.model = nil
     # workaround: otherwise the GC loses @mode_table.model reference and detroys the model
     @tmp_model = @account_table.model
@@ -148,11 +153,19 @@ class MainController
   # TODO: move to somewhere else ( maybe computer and scanner controllers etc. )
   def after_initialize
   
+    # generate pc model shortcuts
     @main.clusters.each do |computers|
-      computers.each {|c| name c, "#{c.Cname}_model" }
+      computers.each { |c| name c, "#{c.Cname}_model" }
     end
+
+
+    # load user names from yppassed
+    users = []
+    IO.popen ("ypcat passwd").each { |line| users << line.split(':')[0] }
+    @main.user_list = users
     
 
+    # refresh cache
     refresh = Thread.new {
       while true
         sleep 20
@@ -160,11 +173,10 @@ class MainController
       end  
     }
 
+    # read data from scanner and dispatch
     require 'socket'
-    
     begin
     socket = TCPSocket.new('localhost', 7887)
-
     rescue Errno::ECONNREFUSED
       Debug.log.error t('scanner.no_connection')
     else
@@ -182,15 +194,21 @@ class MainController
             accounts = Account.find_accounts_by_barcode(@main.scan_string)
             fill_accounts(accounts)
           when :key
-            pc = eval "@#{data}_model"
+            pc = eval "@#{@main.scan_string}_model"
             if @account_table.model
               table_register(pc)
             else
-              @main.status = ["#{pc.User}", "von #{pc.Cname} abgemeldet", "key"]
+              case pc.User
+              when ""
+                @main.status = ["#{pc.Cname}", "ist schon frei", "key"] 
+              else
+                @main.status = ["#{pc.User}", "von <b>#{pc.Cname}</b> abgemeldet", "trashcan_full"]
+              end
+
               key_clear(pc)
             end
           else
-            Debug.log.debug "#{type}, #{data}"
+            Debug.log.debug "#{type}, #{@main.scan_string}"
           end
           sleep 1
         end

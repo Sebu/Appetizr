@@ -14,7 +14,7 @@ class Debug
   class << self
     attr_accessor :log
   end
-  @log = ActiveSupport::BufferedLogger.new INDIGO_ENV =='development' ? STDOUT : "log/main.log"
+  @log = ActiveSupport::BufferedLogger.new STDOUT #INDIGO_ENV =='development' ? STDOUT : "log/main.log"
 end
 
 

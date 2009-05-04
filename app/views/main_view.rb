@@ -16,6 +16,7 @@ window t('main.title'),  :opacity=>0.7  do
     flow do
       stack do
         field @main.account_text do
+          completion_observe @main, :user_list
           @main.account_text_observe @parent, :text
           enter :account_return
         end
@@ -35,7 +36,7 @@ window t('main.title'),  :opacity=>0.7  do
       tabs :opacity=>0.7 do
         add "L&og", text { text_observe @main, :status, :filter=>:status_format }
       end
-      stretch
+#     stretch
       stack do       
         @main.clusters[10..15].each { |c| render "cluster_h", :cluster => c }
       end

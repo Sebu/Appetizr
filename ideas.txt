@@ -1,5 +1,18 @@
 
 
+
+
+QCompleter
+
+
+wordList << "alpha" << "omega" << "omicron" << "zeta"
+
+lineEdit = QLineEdit.new
+completer = QCompleter.new(wordList, this)
+completer.case_sensitivity = Qt::CaseInsensitive
+lineEdit.setCompleter(completer)
+
+
 # require 'rubygems'
 # require 'rbus'
 # notifier = RBus.session_bus.get_object('org.freedesktop.Notifications', '/org/freedesktop/Notifications')

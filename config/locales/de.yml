@@ -5,7 +5,7 @@ de:
   scanner:  
     no_connection: 'keine verbindung zum scanner'
   main:
-    title: "rubyAdm 0.1a vom seb geschraubt"
+    title: "indigoAdm 0.1a vom seb geschraubt"
   account:
     scanned: "eingelesen"
 
@@ -14,7 +14,7 @@ en:
   scanner:
     no_connection: 'no connection to scanner'
   main:
-    title: 'rubyAdm 0.1a by seb'
+    title: 'indigoAdm 0.1a by seb'
   account:
     scanned: "scanned"
 

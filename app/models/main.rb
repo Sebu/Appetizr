@@ -3,17 +3,19 @@ class Main
   include Indigo::ActiveNode
   include ObserveAttr
 
-  attr_accessor :account_text, :scan_string, :status
+  attr_accessor :account_text, :scan_string, :status, :user_list
   obsattr :account_text
   obsattr_writer :scan_string
   obsattr_writer :status
+  obsattr :user_list
   attr_accessor :clusters, :computers
   
   
   def initialize
-    @account_text = "seb"
-    @scan_string = "1234"
-    @status = ["rubyAdm", "gestartet", "application-x-ruby"]
+    @user_list = ["seb"]
+    @account_text = ""
+    @scan_string = ""
+    @status = ["indigoAdm", "gestartet", "application-x-ruby"]
     @clusters = []
     
   

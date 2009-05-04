@@ -33,7 +33,7 @@ module Indigo::SomeGui
         begin
           require 'rbus'
           bus = RBus.session_bus
-        rescue MissingSourceFile => e
+        rescue Exception
         end
 
         if bus then        
@@ -48,26 +48,25 @@ module Indigo::SomeGui
         end      
       end
 
-      def parse_params(params)
-        super
+#      def parse_params(params)
+#        super
+#      end
+
+      def notify(title,body,icon)
+        case @send_mode
+        when :dbus then
+          @notifier.Notify(INDIGO_APP_NAME, 0, icon, title, body, [], {"x-canonical-append"=>RBus::Variant.new("true",'s')},-1)
+        when :send then
+          system("notify-send '#{title} ' '#{body}' -i #{icon}")
+        end
       end
+
 
       def message=(args)
         title,body,icon = args
         notify(title,body, Res[icon])
       end
       
-      def notify(title,body,icon)
-        case @send_mode
-        when :dbus then
-          @notifier.Notify(INDIGO_APP_NAME, 0, icon, title, body, [], {"x-canonical-append"=>RBus::Variant.new("true",'s')},-1)
-        when :send then
-          puts title, body, icon
-          system("notify-send '#{title}' '#{body}' -i #{icon}")
-        end
-      end
-
-
       def message
       end
       obsattr :message

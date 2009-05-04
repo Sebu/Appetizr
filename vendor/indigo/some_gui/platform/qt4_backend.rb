@@ -470,10 +470,20 @@ module Qt4Backend
       @widget = Qt::LineEdit.new
       @widget.connect(SIGNAL("textChanged(const QString &)")) {|m| emit("text_changed", m) }
       @widget.connect(SIGNAL(:returnPressed)) { emit(:enter, self) }
+
       p.add_element(self)
       self.text=args[0]
     end
 
+    def completion=(value)
+      @completer = Qt::Completer.new(value)
+      @completer.case_sensitivity = Qt::CaseInsensitive
+      @widget.setCompleter(@completer)
+    end
+    def completion
+    end
+    obsattr :completion
+  
     def text=(value)
       @widget.setText(value.to_s)
     end

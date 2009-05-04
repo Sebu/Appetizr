@@ -8,7 +8,7 @@ class AddController
   end
   
   def scan_string_format(scan_string)
-    "Barcode: #{scan_string}"
+    "Nr.: #{scan_string}"
   end
   
   def register_users(w)

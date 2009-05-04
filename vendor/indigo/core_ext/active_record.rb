@@ -23,7 +23,6 @@ module MultipleDatabases
     params = {:path => "#{APP_DIR}/config/databases", :file => "#{self.to_s.downcase}.yml"}.merge( params )
     dbinfo = YAML.load_file("#{params[:path]}/#{params[:file]}")
     self.abstract_class = true
-    p dbinfo[INDIGO_ENV]
     establish_connection( dbinfo[INDIGO_ENV] )
     mod_sqlite
   end
