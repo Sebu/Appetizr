@@ -10,6 +10,7 @@ class MainController
   def drag_pool_store
     @pool_store
   end
+
   def drop_pool_store(*args)
     @pool_store = *args
     @main.status = ["#{@pool_store['User']}", "von #{@pool_store['Cname']} in store verschoben","trashcan_full"]
@@ -73,7 +74,7 @@ class MainController
       pc.save!
     end.un do
       pc.User = old_user
-      pc.Color = old_color
+      pc.Color  = old_color
       pc.save!
     end.run
     commands_end
@@ -114,10 +115,19 @@ class MainController
 
 
   def fill_accounts(accounts)
+    message = ""
+    accounts.each do |account|
+      exists = Computer.find(:all, :select=>"Cname", :conditions=> ["User LIKE ?", "%#{account.account}%"])
+      exists_string = exists.collect { |pc| pc.Cname }.join(", ")
+      puts exists_string
+      message +="<b>#{account.account}</b> auf <b>#{exists_string}</b>\n" unless exists.empty?
+    end
+    
     account_string = accounts.collect { |a| a.account }.join(", ")
-    p accounts
     if not accounts or accounts.empty?
-      @main.status = ["#{@main.scan_string}", "hat keinen Account", "barcode"] 
+      @main.status = ["#{@main.scan_string}", "hat keinen Account", "barcode"]
+    elsif not message == ""
+      @main.status = ["#{account_string}", "#{t("account.scanned")}\n\n#{message}", "important"]
     else
       @main.status = ["#{account_string}", t("account.scanned"), "barcode"] 
     end

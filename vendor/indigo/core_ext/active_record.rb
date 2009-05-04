@@ -5,7 +5,7 @@ module MultipleDatabases
   def mod_sqlite
     if connection.adapter_name.eql?("SQLite3")
       db = connection.instance_variable_get(:@connection)
-      db.create_function("regexp", 2) do |func, expr, value|
+      db.create_function("regexp()", 2) do |func, expr, value|
         begin
           if value.to_s && value.to_s.match(Regexp.new(expr.to_s))
             func.set_result 1
