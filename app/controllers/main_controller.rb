@@ -140,8 +140,9 @@ class MainController
   # TODO:     #direct_login = users.collect{ |u| u.split("@") } 
   def account_return(w)
     users = @main.account_text.split(',').each { |n| n.strip! }
-    accounts =  Account.find_accounts(users)
-    fill_accounts(accounts)
+    accounts = Account.find_accounts(users)
+    accounts.collect! { |account| account.is_private? ? Account.find_accounts(account.barcode) : account } if accounts
+    fill_accounts(accounts.flatten!)
   end
 
 
@@ -171,7 +172,7 @@ class MainController
 
     # load user names from yppassed
     users = []
-    IO.popen ("ypcat passwd").each { |line| users << line.split(':')[0] }
+    IO.popen("ypcat passwd").each { |line| users << line.split(':')[0] }
     @main.user_list = users
     
 
