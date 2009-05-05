@@ -171,7 +171,7 @@ class MainController
 
     # load user names from yppassed
     users = []
-    IO.popen ("ypcat passwd").each { |line| users << line.split(':')[0] }
+    IO.popen("ypcat passwd").each { |line| users << line.split(':')[0] }
     @main.user_list = users
     
 

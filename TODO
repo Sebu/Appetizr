@@ -1,7 +1,9 @@
 demo app TODO
 
+- fix undo macros
+- also add non DB , but valid, users to @account_table
+- read prectab and update view
 - printer view
-- prectab view
 - reEvaluate & lazy :) 
   menu do
     show_observe @c, :User   in show   render "user_list", :c => @c 
