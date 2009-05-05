@@ -28,6 +28,9 @@ class Account < UserAccountDB
   end
 
  
+  def is_private?
+    /[a-z]{3}[^-]/ === account 
+  end
   
   def locked=(value)
     system("#{CONFIG['admin_sh_file']} -unlock #{self.account}") if self[:locked] == true and value == false
