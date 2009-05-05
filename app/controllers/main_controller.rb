@@ -13,7 +13,7 @@ class MainController
 
   def drop_pool_store(*args)
     @pool_store = *args
-    @main.status = ["#{@pool_store['User']}", "von #{@pool_store['Cname']} in store verschoben","trashcan_full"]
+    @main.status = ["#{@pool_store['User']}", "von <b>#{@pool_store['Cname']}</b> in store verschoben","trashcan_full"]
   end
 
   def user_list_format(a)
@@ -83,7 +83,7 @@ class MainController
   def users_register(users, pc)
     old_user, old_color = pc.User, pc.Color
     command do
-      pc.User = users.join(" ")
+      pc.User = (pc.User.split(" ") | (users)).join(" ")
       pc.Color = CONFIG['color_mapping'][ Account.gen_color(users) ]
       pc.save!
       @main.status = ["#{pc.User}", "auf <b>#{pc.Cname}</b> angemeldet", "key"]
@@ -96,7 +96,6 @@ class MainController
 
   def drop_users(pc, other_pc)
     old_user, old_color = pc.User, pc.Color
-    commands_end
     commands_begin
     command do
       pc.User=other_pc["User"]
@@ -119,7 +118,6 @@ class MainController
     accounts.each do |account|
       exists = Computer.find(:all, :select=>"Cname", :conditions=> ["User LIKE ?", "%#{account.account}%"])
       exists_string = exists.collect { |pc| pc.Cname }.join(", ")
-      puts exists_string
       message +="<b>#{account.account}</b> auf <b>#{exists_string}</b>\n" unless exists.empty?
     end
     
@@ -137,12 +135,22 @@ class MainController
   end
 
 
-  # TODO:     #direct_login = users.collect{ |u| u.split("@") } 
   def account_return(w)
-    users = @main.account_text.split(',').each { |n| n.strip! }
-    accounts = Account.find_accounts(users)
+    direct_login = []
+    users = []
+    @main.account_text.split(',').each do  |n| 
+      n.strip!
+      case n
+      when /.*@[0-9]{2,3}$/ 
+        direct_login << n.split("@")
+      else
+        users << n
+      end
+    end
+    accounts =  users.empty? ? [] : Account.find_accounts(users)
     accounts.collect! { |account| account.is_private? ? Account.find_accounts(account.barcode) : account } if accounts
-    fill_accounts(accounts.flatten!)
+    accounts.flatten! if accounts
+    fill_accounts(accounts)
   end
 
 

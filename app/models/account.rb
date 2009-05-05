@@ -9,6 +9,7 @@ class Account < UserAccountDB
   attr_accessible :account, :locked, :barcode
 
   validates_presence_of :barcode
+  validates_length_of :account :maximum=>30
   
   named_scope :find_accounts_by_barcode, lambda { |barcode| {:group => "account", :conditions => ["barcode = ?", barcode]} }
   named_scope :find_accounts, lambda { |users| { :conditions => ["barcode IN (?) OR account IN (?)", users, users], :group => "account" } }
@@ -29,7 +30,7 @@ class Account < UserAccountDB
 
  
   def is_private?
-    /[a-z]{3}[^-]/ === account 
+    not /.{3}-[0-9a-f]{3}$/ === account 
   end
   
   def locked=(value)
@@ -80,8 +81,9 @@ class Account < UserAccountDB
   
   def get_lock_state(user)
     case Account.get_passwd(user)
-    when :ok: return false
-    else      return true
+    when :ok:         return false
+#   when :is_no_user: return :no_user
+    else              return true
     end
   end
 
