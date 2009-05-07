@@ -9,12 +9,26 @@ class Account < UserAccountDB
   attr_accessible :account, :locked, :barcode
 
   validates_presence_of :barcode
-  validates_length_of :account :maximum=>30
+  validates_length_of :account, :maximum=>30
   
   named_scope :find_accounts_by_barcode, lambda { |barcode| {:group => "account", :conditions => ["barcode = ?", barcode]} }
   named_scope :find_accounts, lambda { |users| { :conditions => ["barcode IN (?) OR account IN (?)", users, users], :group => "account" } }
 
 
+  def self.find_accounts_or_initialize(users)
+    accounts = self.find(:all, :conditions => ["barcode IN (?) OR account IN (?)", users, users], :group => "account" )
+    accounts.each do |account| 
+      users.delete(account.account) if users.include?(account.account)
+    end if accounts
+    accounts ||= []
+    users.each do |user|
+       accounts << Account.new do |account| 
+                                 account.account = user 
+                                 account.barcode = nil       
+                               end
+    end if users
+    accounts
+  end
 
   #TODO: workaround ( for our non rails conform tables ) 
   def update(attribute_names = @attributes.keys)

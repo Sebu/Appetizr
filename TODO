@@ -1,6 +1,7 @@
 demo app TODO
 
 - fix undo macros
+- dnd target != source
 - also add non DB , but valid, users to @account_table
 - read prectab and update view
 - printer view

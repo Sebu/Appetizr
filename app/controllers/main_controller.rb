@@ -83,15 +83,21 @@ class MainController
   def users_register(users, pc)
     old_user, old_color = pc.User, pc.Color
     command do
-      pc.User = (pc.User.split(" ") | (users)).join(" ")
+      pc.User = users.join(" ") #(pc.User.split(" ") | (users)).join(" ")
       pc.Color = CONFIG['color_mapping'][ Account.gen_color(users) ]
       pc.save!
-      @main.status = ["#{pc.User}", "auf <b>#{pc.Cname}</b> angemeldet", "key"]
+      @main.status = ["#{pc.User}", "auf <b>#{pc.Cname}</b> angemeldet", "chair"]
     end.un do
       pc.User = old_user
       pc.Color = old_color
       pc.save!
     end.run
+  end
+
+  def drop_users_on_table(other_pc)
+    users = other_pc["User"].split(" ")
+    puts users
+    
   end
 
   def drop_users(pc, other_pc)
@@ -134,21 +140,20 @@ class MainController
     @tmp_model = @account_table.model
   end
 
-
+  # TODO: improve code (see also Account.find_account_or_initialize
   def account_return(w)
     direct_login = []
     users = []
     @main.account_text.split(',').each do  |n| 
-      n.strip!
-      case n
+      case n.strip!
       when /.*@[0-9]{2,3}$/ 
         direct_login << n.split("@")
       else
         users << n
       end
     end
-    accounts =  users.empty? ? [] : Account.find_accounts(users)
-    accounts.collect! { |account| account.is_private? ? Account.find_accounts(account.barcode) : account } if accounts
+    accounts =  users.empty? ? [] : Account.find_accounts_or_initialize(users)
+    accounts.collect! { |account| (account.is_private? and account.barcode) ? Account.find_all_by_barcode(account.barcode) : account } if accounts
     accounts.flatten! if accounts
     fill_accounts(accounts)
   end

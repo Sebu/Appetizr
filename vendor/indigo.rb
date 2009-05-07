@@ -24,6 +24,8 @@ class Res
   def self.[](res)
     app_internal_res = "#{APP_DIR}/resources/images/#{res}.svg"
     res = app_internal_res if File.exist? app_internal_res
+    app_internal_res = "#{APP_DIR}/resources/images/#{res}.png"
+    res = app_internal_res if File.exist? app_internal_res
     res
   end
 end
