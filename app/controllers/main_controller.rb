@@ -118,7 +118,7 @@ class MainController
 
 
 
-
+  # in: Account
   def fill_accounts(accounts)
     message = ""
     accounts.each do |account|
@@ -126,7 +126,6 @@ class MainController
       exists_string = exists.collect { |pc| pc.Cname }.join(", ")
       message +="<b>#{account.account}</b> auf <b>#{exists_string}</b>\n" unless exists.empty?
     end
-    
     account_string = accounts.collect { |a| a.account }.join(", ")
     if not accounts or accounts.empty?
       @main.status = ["#{@main.scan_string}", "hat keinen Account", "barcode"]
@@ -136,11 +135,13 @@ class MainController
       @main.status = ["#{account_string}", t("account.scanned"), "barcode"] 
     end
     @account_table.model = accounts.length > 0 ? AccountList.new(accounts, ["account","locked"]) : @account_table.model = nil
+
     # workaround: otherwise the GC loses @mode_table.model reference and detroys the model
     @tmp_model = @account_table.model
   end
 
-  # TODO: improve code (see also Account.find_account_or_initialize
+
+  # TODO: improve code (see also Account.find_account_or_initialize)
   def account_return(w)
     direct_login = []
     users = []
@@ -152,8 +153,9 @@ class MainController
         users << n
       end
     end
+    p Account.find_accounts(users).private
     accounts =  users.empty? ? [] : Account.find_accounts_or_initialize(users)
-    accounts.collect! { |account| (account.is_private? and account.barcode) ? Account.find_all_by_barcode(account.barcode) : account } if accounts
+    accounts.collect! { |account| account.all_accounts } if accounts
     accounts.flatten! if accounts
     fill_accounts(accounts)
   end
@@ -228,7 +230,6 @@ class MainController
               else
                 @main.status = ["#{pc.User}", "von <b>#{pc.Cname}</b> abgemeldet", "trashcan_full"]
               end
-
               key_clear(pc)
             end
           else

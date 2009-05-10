@@ -14,7 +14,14 @@ class Account < UserAccountDB
   named_scope :find_accounts_by_barcode, lambda { |barcode| {:group => "account", :conditions => ["barcode = ?", barcode]} }
   named_scope :find_accounts, lambda { |users| { :conditions => ["barcode IN (?) OR account IN (?)", users, users], :group => "account" } }
 
+  named_scope :private,  :conditions => ["account not like '___-___'"] do
+    def other_accounts
+      each { |user| i.update_attribute(:active, true) }
+    end
 
+  end
+
+  
   def self.find_accounts_or_initialize(users)
     accounts = self.find(:all, :conditions => ["barcode IN (?) OR account IN (?)", users, users], :group => "account" )
     accounts.each do |account| 
@@ -28,6 +35,10 @@ class Account < UserAccountDB
                                end
     end if users
     accounts
+  end
+
+  def all_accounts
+    (is_private? and barcode) ? Account.find_all_by_barcode(barcode) : self
   end
 
   #TODO: workaround ( for our non rails conform tables ) 

@@ -14,7 +14,7 @@ class Main
   def initialize
     @user_list = ["seb"]
     @account_text = ""
-    @scan_string = ""
+    @scan_string = "2222"
     @status = ["indigoAdm", "gestartet", "application-x-ruby"]
     @clusters = []
     
