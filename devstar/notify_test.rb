@@ -1,3 +1,4 @@
+
 require 'rubygems'
 require 'rbus'
 notifier = RBus.session_bus.get_object('org.freedesktop.Notifications', '/org/freedesktop/Notifications')
