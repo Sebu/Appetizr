@@ -40,6 +40,14 @@ class MainController
   end
 
   
+  def drop_users_on_table(other_pc)
+    users = other_pc["User"].split(" ")
+    accounts = Account.find_accounts_or_initialize(users)
+    fill_accounts(accounts)
+    puts accounts
+    puts users
+  end
+
   
   def add_users(w)
     @add_window ||= part :add
@@ -57,7 +65,7 @@ class MainController
   
   
   def table_register(pc)
-    new_users = @account_table.model.rows.collect { |a| a.account } if @account_table.model
+    new_users = @account_table.selection.collect { |a| a.account } if @account_table.model
     users_register(new_users, pc)
     @account_table.model = nil
   end
@@ -68,7 +76,7 @@ class MainController
   # TODO: merge with users_register methods
   def key_clear(pc)
     old_user, old_color = pc.User, pc.Color
-    command do
+    command("key clear") do
       pc.User = ""
       pc.Color = 0
       pc.save!
@@ -81,8 +89,9 @@ class MainController
   end
 
   def users_register(users, pc)
+    return if users.empty?
     old_user, old_color = pc.User, pc.Color
-    command do
+    command("register users") do
       pc.User = users.join(" ") #(pc.User.split(" ") | (users)).join(" ")
       pc.Color = CONFIG['color_mapping'][ Account.gen_color(users) ]
       pc.save!
@@ -94,16 +103,10 @@ class MainController
     end.run
   end
 
-  def drop_users_on_table(other_pc)
-    users = other_pc["User"].split(" ")
-    puts users
-    
-  end
-
   def drop_users(pc, other_pc)
     old_user, old_color = pc.User, pc.Color
-    commands_begin
-    command do
+    commands_begin "dnd user"
+    command("drop users") do
       pc.User=other_pc["User"]
       pc.Color=other_pc["Color"]
       pc.save!
@@ -136,6 +139,7 @@ class MainController
     end
     @account_table.model = accounts.length > 0 ? AccountList.new(accounts, ["account","locked"]) : @account_table.model = nil
 
+    @account_table.select_all
     # workaround: otherwise the GC loses @mode_table.model reference and detroys the model
     @tmp_model = @account_table.model
   end
@@ -145,7 +149,7 @@ class MainController
   def account_return(w)
     direct_login = []
     users = []
-    @main.account_text.split(',').each do  |n| 
+    @main.account_text.split(',').each do |n| 
       case n.strip!
       when /.*@[0-9]{2,3}$/ 
         direct_login << n.split("@")
@@ -153,7 +157,7 @@ class MainController
         users << n
       end
     end
-#   p Account.find_accounts(users).private
+    #p Account.find_accounts(users).private.other_accounts.flatten
     accounts =  users.empty? ? [] : Account.find_accounts_or_initialize(users)
     accounts.collect! { |account| account.all_accounts } if accounts
     accounts.flatten! if accounts

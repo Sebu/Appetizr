@@ -49,8 +49,8 @@ module Qt4Backend
         def dropEvent(event)
           incomming = event.mimeData.text 
           data = ActiveSupport::JSON.decode(incomming)
-          @controller.send(@dnd_drop_method,*(@dnd_drop_args+[data]))
-          simple_accept(event)
+          @controller.send(@dnd_drop_method,*(@dnd_drop_args+[data])) unless self == event.source
+          simple_accept(event) 
         end
       }
     end
@@ -118,7 +118,6 @@ module Qt4Backend
     end
 
     def parse_params(params)
-      #puts "#{params[:text]}"
       posx = params[:posx] || 100 
       posy = params[:posy] || 100
       width = params[:width]
@@ -331,6 +330,8 @@ module Qt4Backend
     def initialize(p)
       @widget = Qt::TableView.new
       @widget.setMouseTracking(true)
+      @widget.selectionBehavior=Qt::AbstractItemView::SelectRows
+      @widget.selectionMode=Qt::AbstractItemView::MultiSelection
       @widget.connect(@widget, SIGNAL("entered(const QModelIndex &)"), @widget, SLOT("edit(const QModelIndex &)"))
       p.add_element(self) 
       model = nil
@@ -342,8 +343,16 @@ module Qt4Backend
       @widget.model
     end
     def selection
-      indices = @widget.selectionModel.selectedIndexes
+      indices = @widget.selectionModel.selectedRows
       indices.collect{|i| @widget.model.data_raw(i) }
+    end
+    
+    def select_all
+      topLeft = model.index(0, 0, @widget.parent)
+      bottomRight = model.index(model.rowCount-1, model.columnCount-1)
+      selection =  Qt::ItemSelection.new(topLeft, bottomRight)
+      p selection
+      @widget.selectionModel.select(selection, Qt::ItemSelectionModel::Select)
     end
 
     def column(col, type, params={})

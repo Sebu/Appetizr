@@ -16,9 +16,8 @@ class Account < UserAccountDB
 
   named_scope :private,  :conditions => ["account not like '___-___'"] do
     def other_accounts
-      each { |user| i.update_attribute(:active, true) }
+      collect { |user| Account.find_all_by_barcode(user.barcode) }
     end
-
   end
 
   
@@ -41,6 +40,14 @@ class Account < UserAccountDB
     (is_private? and barcode) ? Account.find_all_by_barcode(barcode) : self
   end
 
+  def is_private?
+    not /.{3}-[0-9a-f]{3}$/ === account 
+  end
+  
+  
+  
+  
+  
   #TODO: workaround ( for our non rails conform tables ) 
   def update(attribute_names = @attributes.keys)
         quoted_attributes = attributes_with_quotes(false, false, attribute_names)
@@ -51,11 +58,6 @@ class Account < UserAccountDB
           "WHERE #{connection.quote_column_name(self.class.primary_key)} = #{quote_value(id)} AND account=#{quote_value(self.account_was)}",
           "#{self.class.name} Update"
         )
-  end
-
- 
-  def is_private?
-    not /.{3}-[0-9a-f]{3}$/ === account 
   end
   
   def locked=(value)

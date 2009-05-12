@@ -5,8 +5,6 @@ class ARTableModel < Qt::AbstractTableModel
 
     attr_reader :rows
 
-    def selected
-    end
     
     def initialize(rows,columns=nil)
         super()
@@ -25,11 +23,15 @@ class ARTableModel < Qt::AbstractTableModel
         @labels||=@keys.collect { |k| k.humanize }
     end
 
-    def rowCount(parent)
+    def index(row,col,parent=nil)
+      createIndex(row,col)
+    end
+    
+    def rowCount(parent=nil)
         @rows.size
     end
 
-   def columnCount(parent)
+   def columnCount(parent=nil)
         @keys.size
    end
 

@@ -76,7 +76,7 @@ module Indigo
 
     #region: actions
     def undo_action(w)
-      cmds.undo
+      undo
     end
     def close_action(w)
       eval "@#{model_name.downcase}_view.hide"
