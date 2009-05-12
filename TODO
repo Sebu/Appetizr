@@ -1,15 +1,17 @@
 demo app TODO
 
-- read prectab and update view
-- printer view
+
+- fix checkbox edit focus bug :) or ask for unlock?
+- read prectab and update buttons (in a clever way)
+- printer view (also show fancy tray infos, load and errors)
 - validate users
 - dbus signaling/obsattr
-- reEvaluate & lazy :) 
+- rEvaluate & lazy :) 
   menu do
     show_observe @c, :User   in show   render "user_list", :c => @c 
   end
-- better locale support (change locale)
-- speed! ( ruby1.9 + gobject for signaling )
+- better locale support (allow change of locale and rEval)
+- speed! ( ruby1.9 + thread safty + gobject/qt_signals for signaling )
 
 
 
