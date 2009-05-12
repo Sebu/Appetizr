@@ -153,7 +153,7 @@ class MainController
         users << n
       end
     end
-    p Account.find_accounts(users).private
+#   p Account.find_accounts(users).private
     accounts =  users.empty? ? [] : Account.find_accounts_or_initialize(users)
     accounts.collect! { |account| account.all_accounts } if accounts
     accounts.flatten! if accounts
