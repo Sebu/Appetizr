@@ -26,7 +26,6 @@ window t('main.title'),  :opacity=>0.7  do
         end
         @account_table = table do
           drop :drop_users_on_table
-          column 1, :CheckBox
           menu "context" do
             action "add users", :add_users
             action "remove users", :remove_users

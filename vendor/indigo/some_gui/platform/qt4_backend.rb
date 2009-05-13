@@ -268,6 +268,7 @@ module Qt4Backend
     end
   end
 
+=begin
   class CheckBoxD < Qt::ItemDelegate
     attr_accessor :filter_func, :controller
 
@@ -277,7 +278,8 @@ module Qt4Backend
       box
     end
 
-    def setEditorData(editor,index)
+    def setEditorData(editor, index)
+      puts index.column
       value = index.model.data(index, Qt::DisplayRole).toBool
       editor.setCheckState( value ? Qt::Checked : Qt::Unchecked )
     end
@@ -297,9 +299,8 @@ module Qt4Backend
       @opts.rect = option.rect
   		Qt::Application.style.drawControl(Qt::Style::CE_CheckBox, @opts, painter)
     end  
-    
   end
-
+=end
 
   class ProgressBarD < Qt::ItemDelegate
     attr_accessor :filter_func, :controller
@@ -329,10 +330,10 @@ module Qt4Backend
 
     def initialize(p)
       @widget = Qt::TableView.new
-      @widget.setMouseTracking(true)
+      #@widget.setMouseTracking(true)
+      #@widget.connect(@widget, SIGNAL("entered(const QModelIndex &)"), @widget, SLOT("edit(const QModelIndex &)"))
       @widget.selectionBehavior=Qt::AbstractItemView::SelectRows
       @widget.selectionMode=Qt::AbstractItemView::MultiSelection
-      @widget.connect(@widget, SIGNAL("entered(const QModelIndex &)"), @widget, SLOT("edit(const QModelIndex &)"))
       p.add_element(self) 
       model = nil
     end
@@ -344,14 +345,13 @@ module Qt4Backend
     end
     def selection
       indices = @widget.selectionModel.selectedRows
-      indices.collect{|i| @widget.model.data_raw(i) }
+      indices.collect{ |i| @widget.model.data_raw(i) }
     end
     
     def select_all
       topLeft = model.index(0, 0, @widget.parent)
       bottomRight = model.index(model.rowCount-1, model.columnCount-1)
       selection =  Qt::ItemSelection.new(topLeft, bottomRight)
-      p selection
       @widget.selectionModel.select(selection, Qt::ItemSelectionModel::Select)
     end
 

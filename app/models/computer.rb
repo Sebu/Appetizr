@@ -27,8 +27,7 @@ class Computer < ActiveRecord::Base
   end
   
   def prectab
-    @prectab
-    #"<u><b><font color=#FEFEAA>itc</b></u>"
+    "<u><b><font color=#FEFEAA>#{@prectab}</b></u>"
   end
   obsattr :prectab
   

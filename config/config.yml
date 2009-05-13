@@ -6,12 +6,15 @@ all:
   colors: {0: '#d7d7c5', 1: '#4cadc5', 2: '#f0e81b', 3: '#fe5b00', 4: '#fe00a9', 5: '#fe2f2f', 6: '#44d804', 7: '#9d57f4'}
   pw_check_file: "/net/adm/pyadm/passwordAbfrage_pyadm"
   admin_sh_file: "/net/adm/bin/admin.sh"
+  clients:
+    Haupt:
+      [c71, c72, c73, c74, c81, c82, c83, c84, c91, c92, c93, c94, c101, c102]
 
 development:
   VALIDTAB_PATH: "vtabs/"
-
+  prectab_path: "resources/pyadm.prectab"
 test:
 
 production:
   VALIDTAB_PATH: "/net/adm/access/"
-
+  prectab_path: "/net/adm/pyadm-new/pyadm.prectab"

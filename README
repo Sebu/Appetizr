@@ -27,7 +27,7 @@ Indigo uses ...
   ... rubigen to create app templaes
   ... active_record/resource for db and webservice access
   ... active_support for nice ruby extensions and I18n
-  ... qtruby for the underlying widget rendering (can change in the future)
+  ... qtruby and qtext for the underlying widget rendering (can change in the future)
   ... some other extensions and ideas from RoR
   ... ruby-opengl for opengl support ;) (more on the why later)
 

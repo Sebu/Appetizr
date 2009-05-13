@@ -44,8 +44,8 @@ class MainController
     users = other_pc["User"].split(" ")
     accounts = Account.find_accounts_or_initialize(users)
     fill_accounts(accounts)
-    puts accounts
-    puts users
+    Debug.log.debug accounts
+    Debug.log.debug users
   end
 
   
@@ -137,11 +137,9 @@ class MainController
     else
       @main.status = ["#{account_string}", t("account.scanned"), "barcode"] 
     end
-    @account_table.model = accounts.length > 0 ? AccountList.new(accounts, ["account","locked"]) : @account_table.model = nil
-
-    @account_table.select_all
-    # workaround: otherwise the GC loses @mode_table.model reference and detroys the model
-    @tmp_model = @account_table.model
+    model = accounts.length > 0 ? AccountList.new(accounts,["account","locked"]) : nil
+    @account_table.model = model
+    @account_table.select_all if model
   end
 
 
@@ -185,9 +183,8 @@ class MainController
   
     # generate pc model shortcuts
     @main.clusters.each do |computers|
-      computers.each { |c| name c, "#{c.Cname}_model" }
+      computers.each { |c| @main.computers[c.Cname]=c }
     end
-
 
     # load user names from yppassed
     users = []
@@ -195,9 +192,23 @@ class MainController
     @main.user_list = users
     
 
+    prectab = Prectab.scan_file(CONFIG["prectab_path"])
+    
     # refresh cache
     refresh = Thread.new {
       while true
+        hour = 11 #Time.now.hour
+        Debug.log.debug prectab[hour].inspect
+        prectab[hour].each_pair do |kurs, daten|
+          count, ort = daten[0].to_i, daten[1]   
+          index = 0
+          while count > 0
+            c_i = CONFIG["clients"][ort][index]
+            @main.computers[c_i].prectab = kurs
+            count -= 1
+            index += 1
+          end
+        end
         sleep 20
         @main.clusters.each { |c| Computer.reload(c) }
       end  
@@ -224,7 +235,7 @@ class MainController
             accounts = Account.find_accounts_by_barcode(@main.scan_string)
             fill_accounts(accounts)
           when :key
-            pc = eval "@#{@main.scan_string}_model"
+            pc = @main.computers[@main.scan_string]
             if @account_table.model
               table_register(pc)
             else

@@ -18,9 +18,9 @@ module CommandPattern
     def undoit
       @commands.reverse_each { |c| c.undoit }
     end
-    def doit
-      @commands.last.run
-    end
+#    def doit
+#      @commands.last.run
+#    end
     def undo
       if @commands.last
         Debug.log.debug "undo:  #{@commands.last.desc}"
@@ -89,6 +89,7 @@ module CommandPattern
       @cmds_stacks.pop
     end
   end
+  
   
 end
 

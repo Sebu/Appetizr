@@ -3,7 +3,9 @@
 
 # nice extensions (set in initializer ext_mod = [Qt,Gl,...])
 autoload :Gl, 'gl'
-autoload :Qt, 'Qt4'
+#autoload :Qt, 'Qt4'
+require 'qtext'
+#autoload :ObjectTableModel, 'qtext/object_table_model'
 
 # extensions to Ruby libs
 autoload :CommandPattern, 'command_pattern'
@@ -39,6 +41,7 @@ module Indigo
   autoload :ActiveNode, 'indigo/active_node'
   autoload :EventHandleGenerator, 'indigo/event_handle_generator'
   autoload :Controller, 'indigo/controller'
+  autoload :TableModel, 'indigo/table_model'
   autoload :ARTableModel, 'indigo/ar_table_model'
   autoload :App,'app'
   

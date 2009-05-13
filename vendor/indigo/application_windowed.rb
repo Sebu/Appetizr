@@ -39,7 +39,7 @@ class IdleKicker < Qt::Object
 
     timer = Qt::Timer.new
     connect(timer, SIGNAL(:timeout), self, SLOT(:give_up))
-    timer.start(0)
+    timer.start(4)
   end
 end
 

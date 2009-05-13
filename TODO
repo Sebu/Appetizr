@@ -1,8 +1,5 @@
 demo app TODO
 
-
-- fix checkbox edit focus bug :) or ask for unlock?
-- read prectab and update buttons (in a clever way)
 - printer view (also show fancy tray infos, load and errors)
 - validate users
 - dbus signaling/obsattr

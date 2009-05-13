@@ -17,7 +17,7 @@ class Main
     @scan_string = "2222"
     @status = ["indigoAdm", "gestartet", "application-x-ruby"]
     @clusters = []
-    
+    @computers = {}
   
     16.downto(1) do |n|
       @clusters << Computer.find_cluster(n)
