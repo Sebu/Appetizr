@@ -3,8 +3,9 @@ class Main
   include Indigo::ActiveNode
   include ObserveAttr
 
-  attr_accessor :account_text, :scan_string, :status, :user_list
+  attr_accessor :account_text, :scan_string, :status, :user_list, :printers
   obsattr :account_text
+  obsattr_writer :printers
   obsattr_writer :scan_string
   obsattr_writer :status
   obsattr :user_list
@@ -12,9 +13,11 @@ class Main
   
   
   def initialize
+    @printers = Indigo::Printer.printers
+    #@printers.each { |p| p.update_job_count }
     @user_list = ["seb"]
     @account_text = ""
-    @scan_string = "2222"
+    @scan_string = "220683"
     @status = ["indigoAdm", "gestartet", "application-x-ruby"]
     @clusters = []
     @computers = {}

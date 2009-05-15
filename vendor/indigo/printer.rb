@@ -3,6 +3,7 @@
 module Indigo
   class PrinterJob
     attr_reader :id, :size, :user, :printer
+
     def initialize(id, user, size, printer)
       @id = id
       @size = size
@@ -18,7 +19,12 @@ module Indigo
   end
 
   class Printer
-    attr_reader :name
+    include ObserveAttr
+    include Signaling
+    attr_accessor :name, :job_count, :accepts, :enabled
+    obsattr :job_count
+    obsattr :accepts
+    obsattr :enabled
     
     def self.default
       @default ||= Printer.new(Printer.default_name)
@@ -49,21 +55,30 @@ module Indigo
     end
     
     def enabled?
-      `LANG=EN; lpstat -p #{@name}`.split(" ")[4] == "enabled"
+      self.enabled
     end
 
     def accepts?
-      `LANG=EN; lpstat -a #{@name}`.split(" ")[1] == "accepting"
+      self.accepts
     end
 
     def self.job_count
       Printer.jobs_command.split("\n").size
     end
 
-    def job_count
-      Printer.jobs_command(self.name).split("\n").size
-    end
-    
+
+    def update_enabled
+      self.enabled = `LANG=EN; lpstat -p #{@name}`.split(" ")[4] == "enabled"
+    end  
+
+    def update_accept
+      self.accept = `LANG=EN; lpstat -a #{@name}`.split(" ")[1] == "accepting"
+    end  
+   
+    def update_job_count
+      self.job_count = Printer.jobs_command(self.name).split("\n").size
+    end    
+
     def jobs
       status = Printer.jobs_command(self.name)
       jobs = status.collect do |line|
@@ -84,8 +99,8 @@ module Indigo
       `LANG=EN; lpstat -d`.chomp!.split(": ")[1]
     end
     def self.printer_names
-      text = `LANG=EN; lpstat -p`
-      text.collect { |printer| printer.split(" ")[1] }
+      text = `LANG=EN; lpstat -a | grep -v "/"`
+      text.collect { |printer| printer.split(" ")[0] }
     end
   end
 end

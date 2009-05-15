@@ -17,7 +17,7 @@ button :id => @c.Cname, :height => 60 do
     flow do
     label "<b>#{@c.Cname}</b>" , :size => 8
     stretch
-    label(:size => 8) { text_observe @c, :prectab }
+    label(:size => 8) { text_observe @c, :prectab, :filter=> :prectab_format }
 
     end
     label(:size => 7) { text_observe @c, :User, :filter=> :user_list_format }

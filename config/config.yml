@@ -3,17 +3,40 @@ all:
   locale: de
   controller: main
   color_mapping: {:normal: 1, :no_passwd: 2, :locked: 3, :tutor: 4, :nobody: 5, :wheel: 6, :jeder: 7}  
-  colors: {0: '#d7d7c5', 1: '#4cadc5', 2: '#f0e81b', 3: '#fe5b00', 4: '#fe00a9', 5: '#fe2f2f', 6: '#44d804', 7: '#9d57f4'}
+  colors: {0: '#d7d7c5', 1: '#4cadc5', 2: '#f0e81b', 3: '#fe5b00', 4: '#fe00a9', 5: '#fe2f2f', 6: '#44d804', 7: '#9d57f4', 8: '#bAbA9A'}
+  colors_new: {0: '#82bc68', 1: '#7d9197', 2: '#aca86d', 3: '#cb7240', 4: '#ab3a84', 5: '#ae5050', 6: '#659d4d', 7: '#9367c9', 8: '#dcd121'}
   pw_check_file: "/net/adm/pyadm/passwordAbfrage_pyadm"
   admin_sh_file: "/net/adm/bin/admin.sh"
   clients:
     Haupt:
-      [c71, c72, c73, c74, c81, c82, c83, c84, c91, c92, c93, c94, c101, c102]
+      ["c71", "c72", "c73", "c74", 
+       "c81" , "c82" , "c83" , "c84" , "c85" , "c86" , "c87" , "c88" ,  
+       "c91" , "c92" , "c93" , "c94" , "c95" , "c96" , "c97" , "c98" , 
+       "c101" , "c102" , "c103" , "c104" , "c105" , "c106" , "c107" , 
+       "c111" , "c112" , "c113" , "c114" , "c115" , "c116" , "c117" , "c118",
+       "c121" , "c122" , "c123" , "c124" , "c125" , "c126" , "c127" , "c128" , 
+       "c131" , "c132" , "c133" , "c134" , "c135" , "c136" , "c137" , 
+       "c141" , "c142" , "c143" , "c144" , "c145" , "c146" , "c147" , "c148" , 
+       "c151" , "c152" , "c153" , "c154" , "c155" , "c156" , "c157" , "c158" ,
+       "c161" , "c162" , "c163" , "c164" , "c165"]
+    West:
+      ["c11" , "c12" , "c13" , "c14" , "c15" , "c16" , "c17" , 
+       "c21" , "c22" , "c23" , "c24" , "c25" , "c26" , "c27" , 
+       "c31" , "c32" , "c33" , "c34" , "c35" , "c36" , "c37" , 
+       "c41" , "c42" , "c43" , "c44" , "c45" , "c46" , "c47" , 
+       "c51" , "c52" , "c53" , "c54" , "c55" , "c56" , "c57" , 
+       "c61" , "c62" , "c63" , "c64" , "c65" , "c66" , "c67" ]
+    Schul:
+      ["c170" , "c171" , "c172" , "c173" , "c174" , "c175" , "c176" , "c177" , "c178" , "c179", 
+       "c180" , "c181" , "c182" , "c183" , "c184" , "c185" ]
 
 development:
   VALIDTAB_PATH: "vtabs/"
   prectab_path: "resources/pyadm.prectab"
+
 test:
+  VALIDTAB_PATH: "vtabs/"
+  prectab_path: "resources/pyadm.prectab"
 
 production:
   VALIDTAB_PATH: "/net/adm/access/"

@@ -385,7 +385,7 @@ module Qt4Backend
     end
 
     def text=(value)
-      @widget.setText(value)
+      @widget.setText(value.to_s)
     end
     def text
       @widget.text

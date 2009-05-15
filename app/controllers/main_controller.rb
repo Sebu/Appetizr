@@ -19,6 +19,10 @@ class MainController
   def user_list_format(a)
     a.tr(" ","\n")
   end
+
+  def prectab_format(prectab)
+    "<u><b><font color=#FEFEAA>#{prectab}</b></u>" 
+  end
   
   def status_format(status)
     time = Time.now.strftime("%H:%M:%S")
@@ -31,7 +35,6 @@ class MainController
   def code_to_color(code)
     CONFIG['colors'][code]
   end
-
 
   def cbutton_click(w, pc)
     if @account_table.model
@@ -80,6 +83,7 @@ class MainController
       pc.User = ""
       pc.Color = 0
       pc.save!
+      pc.Color = 8 if pc.prectab #TODO: hackety hack
     end.un do
       pc.User = old_user
       pc.Color  = old_color
@@ -196,17 +200,26 @@ class MainController
     
     # refresh cache
     refresh = Thread.new {
+      old_hour = 0
       while true
-        hour = 11 #Time.now.hour
-        Debug.log.debug prectab[hour].inspect
-        prectab[hour].each_pair do |kurs, daten|
-          count, ort = daten[0].to_i, daten[1]   
-          index = 0
-          while count > 0
-            c_i = CONFIG["clients"][ort][index]
-            @main.computers[c_i].prectab = kurs
-            count -= 1
-            index += 1
+        @main.printers.each { |p| p.update_job_count }
+        hour = Time.now.hour
+        if hour != old_hour
+          @main.computers.each_value {|computer| computer.prectab = nil }
+          old_hour = hour
+          Debug.log.debug prectab[hour].inspect
+          prectab[hour].each_pair do |kurs, daten|
+            count, ort = daten[0].to_i, daten[1]   
+            index = 0
+            while count > 0
+              c_i = CONFIG["clients"][ort][index]
+              computer = @main.computers[c_i]
+              if computer and computer.prectab == nil then
+                computer.prectab = kurs 
+                count -= 1
+              end
+              index += 1
+            end
           end
         end
         sleep 20
