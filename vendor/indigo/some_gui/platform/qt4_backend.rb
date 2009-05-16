@@ -134,6 +134,10 @@ module Qt4Backend
       self.text=name
     end
 
+    def statusbar
+      @widget.statusBar
+    end
+
     def parse_params(params)
       posx = params[:posx] || 100 
       posy = params[:posy] || 100
@@ -152,7 +156,14 @@ module Qt4Backend
 
     
     def add_element(w)
-      @widget.setCentralWidget(w.widget)
+      case w.class.name
+      when "Indigo::SomeGui::Qt4Backend::Menu"
+        @widget.menuBar.addMenu(w.widget)
+      when "Indigo::SomeGui::Qt4Backend::Dock"
+        @widget.addDockWidget(Qt::LeftDockWidgetArea, w.widget)
+      else
+        @widget.setCentralWidget(w.widget)
+      end
     end
     def show_all
       super
@@ -164,6 +175,22 @@ module Qt4Backend
     end
   end
 
+
+  class Dock
+    include QtWidget
+
+    def initialize(p, title)
+      @widget = Qt::DockWidget.new(title, p.widget)
+      p.add_element(self)
+    end
+  
+    def add_element(w)
+      @widget.setWidget(w)
+    end
+
+  end
+
+    
   class Dialog 
     include QtWidget
     include ObserveAttr
