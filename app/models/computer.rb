@@ -9,8 +9,10 @@ class Computer < ActiveRecord::Base
   set_table_name "Cache"
   set_primary_key "Cname"
 
-  obsattr_writer :User, :override => true
-  obsattr_writer :Color, :override => true
+  observe_attr :User
+  observe_attr :Color
+  observe_attr :prectab
+
 
   validates_numericality_of :Color, :greater_than_or_equal_to => 0, :less_than => 8
 
@@ -32,7 +34,6 @@ class Computer < ActiveRecord::Base
   def prectab
     @prectab
   end
-  obsattr :prectab
   
   
   def change_vtab

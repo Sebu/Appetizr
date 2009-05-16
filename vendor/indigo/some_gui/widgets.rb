@@ -2,7 +2,6 @@ module Indigo::SomeGui
 
   module Widget
     include Create
-    include Signaling
     include ObserveAttr
     attr_accessor :controller
     attr_accessor :block
@@ -27,6 +26,8 @@ module Indigo::SomeGui
 
       include Widget
       include ObserveAttr
+      observe_attr :message
+
     
       def initialize(p, *args)
         
@@ -67,10 +68,7 @@ module Indigo::SomeGui
         notify(title,body, Res[icon])
       end
       
-      def message
-      end
-      obsattr :message
-      
+     
     end
   
   end

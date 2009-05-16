@@ -59,8 +59,10 @@ module SomeGui
     end
 
     def method_missing(method,*params)
-      if @parent.respond_to?(method)
+      if @parent #.respond_to?(method)
          @parent.send(method,*params)
+      else
+        super
       end
     end
 

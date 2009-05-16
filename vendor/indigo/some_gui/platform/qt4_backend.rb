@@ -10,6 +10,14 @@ module Qt4Backend
 
     attr_accessor :widget
 
+    def qt_class
+      @widget.class.name.sub("Qt::","Q")
+    end
+
+    def background=(value)
+      @widget.setStyleSheet("#{qt_class} { background-color:  #{value} }")
+    end
+
     def add(w)
       add_element(w)
     end
@@ -111,9 +119,10 @@ module Qt4Backend
   class Window 
     include QtWidget
     include ObserveAttr
+    observe_attr :text
 
     def initialize(p, name)
-      @widget = Qt::MainWindow.new(p.widget)
+      @widget = Qt::MainWindow.new(nil)
       self.text=name
     end
 
@@ -133,8 +142,7 @@ module Qt4Backend
       @widget.windowTitle
     end
 
-    obsattr :text
-
+    
     def add_element(w)
       @widget.setCentralWidget(w.widget)
     end
@@ -151,6 +159,7 @@ module Qt4Backend
   class Dialog 
     include QtWidget
     include ObserveAttr
+    observe_attr :text
 
     def initialize(p, title)
       @widget = Qt::Dialog.new(p.widget) #, Qt::CustomizeWindowHint | Qt::WindowTitleHint)
@@ -177,7 +186,6 @@ module Qt4Backend
     def text
       @widget.windowTitle
     end
-    obsattr :text
 
 
     def add_element(w)
@@ -196,7 +204,7 @@ module Qt4Backend
     include QtWidget
     include ObserveAttr
 
-    obsattr_reader :update, :func => :gl_update
+#   obsattr_reader :update, :func => :gl_update
 
     def initialize(p)
       @widget = Qt::GraphicsView.new(p.widget)
@@ -371,7 +379,7 @@ module Qt4Backend
   class Label
     include QtWidget
     include ObserveAttr
-    obsattr :background, :func=>"background", :override => true
+    observe_attr :text
 
     def initialize(p, *args)
       @widget = Qt::Label.new
@@ -385,17 +393,13 @@ module Qt4Backend
         super
     end
 
-    def background(value)
-      @widget.setStyleSheet("QLabel { background-color:  #{value} }")
-    end
-
     def text=(value)
       @widget.setText(value.to_s)
     end
     def text
       @widget.text
     end
-    obsattr :text
+
 
   end
 
@@ -405,9 +409,7 @@ module Qt4Backend
     include QtWidget
     include ObserveAttr
     include EventHandleGenerator
-
-    obsattr :background, :func=>"background", :override => true
-    obsattr :tool_tip, :func=>"tool_tip", :override => true
+    observe_attr :text
 
     def text=(value) 
       @widget.setText(value)
@@ -415,7 +417,6 @@ module Qt4Backend
     def text
       @widget.text
     end
-    obsattr :text
 
     
     def initialize(p, *args)
@@ -431,13 +432,8 @@ module Qt4Backend
       self.text=args[0]
     end
 
-    def tool_tip(value)
+    def tool_tip=(value)
       @widget.tool_tip=value
-    end
-
-
-    def background(value)
-      @widget.setStyleSheet("QPushButton { background-color:  #{value} }")
     end
 
     def parse_params(params)
@@ -459,6 +455,7 @@ module Qt4Backend
     include QtWidget
     include ObserveAttr
 
+
     def initialize(p, *args)
       @widget = Qt::TextEdit.new(p.widget)
       p.add_element(self)
@@ -472,13 +469,14 @@ module Qt4Backend
     def text=(value)
       @widget.append("#{value.to_s}") # text = @text.to_s
     end
-    obsattr_reader :text
   end
 
 
   class Field 
     include QtWidget
     include ObserveAttr
+    observe_attr :completion
+    observe_attr :text
 
     def initialize(p, *args)
       @widget = Qt::LineEdit.new
@@ -494,17 +492,13 @@ module Qt4Backend
       @completer.case_sensitivity = Qt::CaseInsensitive
       @widget.setCompleter(@completer)
     end
-    def completion
-    end
-    obsattr :completion
-  
+
     def text=(value)
       @widget.setText(value.to_s)
     end
     def text
       @widget.text
     end
-    obsattr :text
   end
 
   class Svg
@@ -525,6 +519,8 @@ module Qt4Backend
   class Spin
     include QtWidget
     include ObserveAttr
+    observe_attr :value
+
     def initialize(p, *args)
       @widget = Qt::SpinBox.new
       @widget.connect(SIGNAL("valueChanged(int)")) {|m| emit("value_changed", m) }
@@ -536,7 +532,6 @@ module Qt4Backend
     def value
       @widget.value
     end
-    obsattr :value
 
     def parse_params(params)
       @widget.maximum = params[:max] || 100
@@ -581,7 +576,7 @@ module Qt4Backend
   class HSlider
     include Slider
     include ObserveAttr
-    obsattr :value
+    observe_attr :value
 
     def initialize(p)
       @widget = Qt::Slider.new(Qt::Horizontal)
@@ -592,7 +587,7 @@ module Qt4Backend
   class VSlider
     include Slider
     include ObserveAttr
-    obsattr :value
+    observe_attr :value
 
     def initialize(p)
       @widget = Qt::Slider.new(Qt::Vertical)

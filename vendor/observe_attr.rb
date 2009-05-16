@@ -1,14 +1,25 @@
 
-#TODO: after first rewrite still not convinced :/
+
+#TODO: works my ass geil
 # add filter chain
-# remove some fixed code
 # add lazy reading of data
-# use alias method chain
+
 
 module ObserveAttr
+  include Signaling
   def self.included(base)
     base.class_eval do
       extend ObserveAttr::ClassMethods
+    end
+  end
+
+
+  def method_missing(name, *args)
+    match = /_observe/.match(name.to_s)
+    if match
+      observe(self, match.pre_match.to_sym, *args)
+    else
+      super
     end
   end
 
@@ -16,12 +27,10 @@ module ObserveAttr
   def observe(m1, key1, m2, key2, options={})
     options.to_options!
 
-    #puts "#{m1} #{key1} #{m2} #{key2}"    
-
     # emited signal
     signal = m2.class.obs_calls[key2.to_sym][:signal]
     # reader function to call
-    func = m1.class.obs_calls[key1.to_sym][:func]
+    func = "#{key1}=" #m1.class.obs_calls[key1.to_sym][:func]
 
     controller = options[:controller] || @controller
 
@@ -47,23 +56,7 @@ module ObserveAttr
   module ClassMethods
     attr_accessor :obs_calls
 
-
-    def obsattr_reader(name, params ={})
-      params = {:func => "#{name}="}.merge(params)
-      @obs_calls ||= {}
-      @obs_calls[name] = if @obs_calls[name]
-                           @obs_calls[name].merge(params)
-                         else 
-                           params
-                         end     
-     class_eval %{
-        def #{name}_observe(model,key,params={})
-          observe(self, "#{name}".to_sym, model, key, params)
-        end
-      }
-    end
-
-    def obsattr_writer(name, params = {})
+    def observe_attr(name, params = {})
       params = {:signal => "#{name}_changed", :func => "#{name}="}.merge(params)
 
       @obs_calls ||= {}
@@ -73,6 +66,7 @@ module ObserveAttr
                            params
                          end     
 
+      params[:override]=true unless method_defined?(params[:func])        
       alias_method "o_assign_#{name}", params[:func] unless params[:override]
 
       class_eval %{
@@ -91,11 +85,6 @@ module ObserveAttr
           end
         end
       }
-    end
-
-    def obsattr(name, params = {})
-      obsattr_writer name, params
-      obsattr_reader name, params
     end
 
   end

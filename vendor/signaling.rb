@@ -12,12 +12,12 @@ module Signaling
   # or
   # connect(signal, receiver, method, args)
   
-  def connect(signal, *args, &pr)
+  def connect(signal, *args, &block)
     @connections = Hash.new unless @connections
     @connections[signal] = [] unless @connections[signal]
-    data =  if pr 
-              [pr, nil, args] 
-            elsif (args[0] and args[1])
+    data =  if block
+              [block, nil, args] 
+            elsif (args[0] and args[1]) # receiver and method
               [ args[0], args[1], args[2..-1] ] 
             else
               nil

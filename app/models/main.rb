@@ -4,11 +4,11 @@ class Main
   include ObserveAttr
 
   attr_accessor :account_text, :scan_string, :status, :user_list, :printers
-  obsattr :account_text
-  obsattr_writer :printers
-  obsattr_writer :scan_string
-  obsattr_writer :status
-  obsattr :user_list
+  observe_attr :account_text
+  observe_attr :printers
+  observe_attr :scan_string
+  observe_attr :status
+  observe_attr :user_list
   attr_accessor :clusters, :computers
   
   
