@@ -28,10 +28,8 @@ class Account < UserAccountDB
     end if accounts
     accounts ||= []
     users.each do |user|
-       accounts << Account.new do |account| 
-                                 account.account = user 
-                                 account.barcode = nil       
-                               end
+        new_account = Account.new(:account => user, :barcode => nil)
+        accounts << new_account if new_account.valid_account?
     end if users
     accounts
   end
@@ -71,6 +69,10 @@ class Account < UserAccountDB
 
   def after_initialize
    self[:locked] ||= get_lock_state(self.account)
+  end
+
+  def valid_account?
+    Account.get_passwd(self.account) != :is_no_user
   end
 
   def self.get_passwd(user)

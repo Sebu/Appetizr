@@ -9,9 +9,7 @@ class Computer < ActiveRecord::Base
   set_table_name "Cache"
   set_primary_key "Cname"
 
-  observe_attr :User
-  observe_attr :Color
-  observe_attr :prectab
+  observe_attr :User, :Color, :prectab
 
 
   validates_numericality_of :Color, :greater_than_or_equal_to => 0, :less_than => 8

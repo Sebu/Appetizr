@@ -20,11 +20,8 @@ module Indigo
 
   class Printer
     include ObserveAttr
-    include Signaling
     attr_accessor :name, :job_count, :accepts, :enabled
-    observe_attr :job_count
-    observe_attr :accepts
-    observe_attr :enabled
+    observe_attr :job_count, :accepts, :enabled
     
     def self.default
       @default ||= Printer.new(Printer.default_name)

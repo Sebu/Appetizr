@@ -55,7 +55,7 @@ module Indigo::SomeGui
       def notify(title,body,icon)
         case @send_mode
         when :dbus then
-          @notifier.Notify(INDIGO_APP_NAME, 0, icon, title, body, [], {},-1)
+          @notifier.Notify(INDIGO_APP_NAME, 0, icon, title, body, [], {"x-canonical-append"=>['s',"true"]},-1)
         when :send then
           system("notify-send '#{title} ' '#{body}' -i #{icon}")
         end

@@ -56,35 +56,37 @@ module ObserveAttr
   module ClassMethods
     attr_accessor :obs_calls
 
-    def observe_attr(name, params = {})
-      params = {:signal => "#{name}_changed", :func => "#{name}="}.merge(params)
+    def observe_attr(*names) #, params = {})
+      names.each do |name|
+        params = {:signal => "#{name}_changed", :func => "#{name}="} #.merge(params)
 
-      @obs_calls ||= {}
-      @obs_calls[name] = if @obs_calls[name]
-                           @obs_calls[name].merge(params)
-                         else 
-                           params
-                         end     
+        @obs_calls ||= {}
+        @obs_calls[name] = if @obs_calls[name]
+                             @obs_calls[name].merge(params)
+                           else 
+                             params
+                           end     
 
-      params[:override]=true unless method_defined?(params[:func])        
-      alias_method "o_assign_#{name}", params[:func] unless params[:override]
+        params[:override]=true unless method_defined?(params[:func])        
+        alias_method "o_assign_#{name}", params[:func] unless params[:override]
 
-      class_eval %{
-        def #{name}_changed
-          emit "#{params[:signal]}", self.#{name}
-        end
-        if not params[:override]
-          def #{params[:func]}(value)
-            send("o_assign_#{name}", value)
-            emit "#{params[:signal]}", value
+        class_eval %{
+          def #{name}_changed
+            emit "#{params[:signal]}", self.#{name}
           end
-        else
-          def #{params[:func]}(value)
-            super
-            emit "#{params[:signal]}", value
+          if not params[:override]
+            def #{params[:func]}(value)
+              send("o_assign_#{name}", value)
+              emit "#{params[:signal]}", value
+            end
+          else
+            def #{params[:func]}(value)
+              super
+              emit "#{params[:signal]}", value
+            end
           end
-        end
-      }
+        }
+      end
     end
 
   end
