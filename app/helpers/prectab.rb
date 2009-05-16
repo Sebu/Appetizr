@@ -5,7 +5,7 @@ class Prectab
     prectab = {}
     
     # get current day
-    day =  Time.now.wday
+    day =  2 #Time.now.wday
     
     Debug.log.debug "day: #{day}"
     

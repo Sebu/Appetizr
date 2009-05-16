@@ -21,13 +21,12 @@ class Computer < ActiveRecord::Base
   end
 
   def after_reload
-    self.Color_changed unless self.Color==0
+    self.Color_changed
     self.User_changed
   end
 
   def prectab=(value)
     @prectab = value
-    self.Color = 8 if self.Color == 0 and self.prectab != nil
   end
   
   def prectab

@@ -32,7 +32,7 @@ all:
 
 development:
   VALIDTAB_PATH: "vtabs/"
-  prectab_path: "resources/pyadm.prectab1"
+  prectab_path: "resources/pyadm.prectab"
 
 test:
   VALIDTAB_PATH: "vtabs/"

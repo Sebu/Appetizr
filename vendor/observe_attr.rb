@@ -31,8 +31,13 @@ module ObserveAttr
 
     if options[:fiter].is_a?(Array)
     elsif options[:filter].is_a?(Symbol) or options[:filter].is_a?(String)
-      m2.connect(signal) {|args| m1.send(func, controller.send(options[:filter],args) ) }
-      m1.send( func, controller.send(options[:filter],m2.send(key2)) ) 
+      additional_args = options[:args] || []
+      m2.connect(signal) do |local_args| 
+        args = [local_args]+additional_args
+        m1.send(func, controller.send(options[:filter],*args) ) 
+      end
+      args = [m2.send(key2)]+additional_args
+      m1.send( func, controller.send(options[:filter],*args) ) 
     else
       m2.connect(signal, m1, func)
       m1.send(func, m2.send(key2)) 

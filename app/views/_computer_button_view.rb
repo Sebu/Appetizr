@@ -3,7 +3,7 @@
 button :id => @c.Cname, :height => 60 do
   tool_tip_observe @c, :User
   click :cbutton_click, @c
-  background_observe @c, :Color, :filter=> :code_to_color
+  background_observe @c, :Color, :filter=> :code_to_color, :args=>[@c]
 
   drag_start :direct, @c
   drag_delete :key_clear

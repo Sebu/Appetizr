@@ -41,8 +41,12 @@ class MainController
   end
 
 
-  def code_to_color(code)
-    CONFIG['colors'][code]
+  def code_to_color(code,computer)
+    if computer.prectab and computer.User == ""
+      CONFIG['colors'][8]
+    else
+      CONFIG['colors'][code]
+    end
   end
 
   def cbutton_click(w, pc)
@@ -92,7 +96,6 @@ class MainController
       pc.User = ""
       pc.Color = 0
       pc.save!
-      pc.Color = 8 if pc.prectab #TODO: hackety hack
     end.un do
       pc.User = old_user
       pc.Color  = old_color
