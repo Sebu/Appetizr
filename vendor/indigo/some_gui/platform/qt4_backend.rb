@@ -10,12 +10,20 @@ module Qt4Backend
 
     attr_accessor :widget
 
-    def qt_class
+    def qt_class_name
       @widget.class.name.sub("Qt::","Q")
     end
 
     def background=(value)
-      @widget.setStyleSheet("#{qt_class} { background-color:  #{value} }")
+      @widget.setStyleSheet("#{qt_class_name} { background-color:  #{value} }")
+    end
+
+    def status_tip=(value)
+      @widget.status_tip=value
+    end
+
+    def tool_tip=(value)
+      @widget.tool_tip=value
     end
 
     def add(w)
@@ -389,7 +397,7 @@ module Qt4Backend
       @font = Qt::Font.new
       @font.PointSize =  params[:size] || 10 
       @widget.setFont(@font)
-        super
+      super
     end
 
     def text=(value)
@@ -431,9 +439,6 @@ module Qt4Backend
       self.text=args[0]
     end
 
-    def tool_tip=(value)
-      @widget.tool_tip=value
-    end
 
     def parse_params(params)
       method_click = params[:click]
