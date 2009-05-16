@@ -8,7 +8,8 @@ de:
     title: "indigoAdm 0.1a vom seb geschraubt"
   account:
     scanned: "eingelesen"
-
+    ask_remove: "wirklick accounts entfernen?"  
+    
 en:
   open_files: 'open files'
   scanner:
@@ -17,4 +18,5 @@ en:
     title: 'indigoAdm 0.1a by seb'
   account:
     scanned: "scanned"
+    ask_remove: "removek accounts from card?"  
 

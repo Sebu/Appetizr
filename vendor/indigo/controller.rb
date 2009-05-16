@@ -27,7 +27,6 @@ module Indigo
       @controller = self
       @model_name = self.class.to_s[0..-11] 
       eval "@#{model_name.downcase} = #{model_name}.one"
-      after_initialize if respond_to? :after_initialize
       self
     end
 
@@ -38,6 +37,7 @@ module Indigo
     
     def show
       view = load_context
+      after_initialize if respond_to? :after_initialize
       view.show_all
       view
     end
@@ -54,6 +54,19 @@ module Indigo
       file_dialog(mode, params)
     end
 
+
+    def confirm(text, params={})
+      box = Qt::MessageBox.new @parent.widget
+      box.text = text
+      box.window_title="Are you sure?"
+      box.icon = Qt::MessageBox::Question
+      box.informative_text = params[:info] || nil
+      box.detailed_text = params[:details] || nil
+      box.standard_buttons= Qt::MessageBox::No|Qt::MessageBox::Yes
+      value = box.exec
+      value == Qt::MessageBox::Yes or value == Qt::MessageBox::Ok
+      end
+    
     def file_dialog(mode, params={})
       title  = params[:title] || ""
       root   = params[:root]  || ""

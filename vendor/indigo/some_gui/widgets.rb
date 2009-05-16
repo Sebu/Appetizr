@@ -26,8 +26,6 @@ module Indigo::SomeGui
 
       include Widget
       include ObserveAttr
-      observe_attr :message
-
     
       def initialize(p, *args)
         
@@ -66,7 +64,7 @@ module Indigo::SomeGui
         title,body,icon = args
         notify(title,body, Res[icon])
       end
-      
+      observe_attr :message      
      
     end
   

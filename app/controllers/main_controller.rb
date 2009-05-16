@@ -12,8 +12,7 @@ class MainController
   end
 
   def restart(w, c)
-    puts c
-    c.xdm_restart
+    c.xdm_restart if confirm "wirklick xdm auf #{c.Cname} killen?"
   end
 
   def drop_pool_store(*args)
@@ -73,10 +72,12 @@ class MainController
   
   def remove_users(w)
     accounts = @account_table.selection
-    accounts.each { |account| Account.delete_all("barcode='#{account.barcode}' AND account='#{account.account}'") }
-    account_string = accounts.collect { |a| a.account }.join(", ")
-    @main.status = ["#{account_string}", "von Barcode: #{@main.scan_string} enfernt","trashcan_full"]
-    #fill_accounts(@account_table.model.rows.remove(users))    
+    if confirm t"account.ask_remove"
+      accounts.each { |account| Account.delete_all("barcode='#{account.barcode}' AND account='#{account.account}'") }
+      account_string = accounts.collect { |a| a.account }.join(", ")
+      @main.status = ["#{account_string}", "von Barcode: #{@main.scan_string} enfernt","trashcan_full"]
+      #fill_accounts(@account_table.model.rows.remove(users))    
+    end
   end
   
   
@@ -235,8 +236,8 @@ class MainController
             end
           end
         end
-        sleep 20
         @main.clusters.each { |c| Computer.reload(c) }
+        sleep 20
       end  
     }
 

@@ -1,5 +1,6 @@
 
 
+require 'indigo/some_gui/platform/qflowlayout'
 
 module Indigo
 module SomeGui
@@ -31,7 +32,7 @@ module Qt4Backend
     end
     
     def parse_params(params)
-      @widget.windowOpacity =  params[:opacity] || 1.0
+      #@widget.windowOpacity =  params[:opacity] || 1.0
     end
 
     def drop(method, *args)
@@ -127,13 +128,16 @@ module Qt4Backend
   class Window 
     include QtWidget
     include ObserveAttr
-    observe_attr :text
 
     def initialize(p, name)
       @widget = Qt::MainWindow.new(nil)
       self.text=name
     end
 
+    def status=(value)
+      @widget.statusBar.showMessage(value)
+    end
+    
     def statusbar
       @widget.statusBar
     end
@@ -150,6 +154,8 @@ module Qt4Backend
     def text=(value) 
       @widget.setWindowTitle(value)
     end
+    observe_attr :text
+    
     def text
       @widget.windowTitle
     end
@@ -179,7 +185,7 @@ module Qt4Backend
   class Dock
     include QtWidget
 
-    def initialize(p, title)
+    def initialize(p, title="dock")
       @widget = Qt::DockWidget.new(title, p.widget)
       p.add_element(self)
     end
@@ -194,7 +200,6 @@ module Qt4Backend
   class Dialog 
     include QtWidget
     include ObserveAttr
-    observe_attr :text
 
     def initialize(p, title)
       @widget = Qt::Dialog.new(p.widget) #, Qt::CustomizeWindowHint | Qt::WindowTitleHint)
@@ -218,6 +223,8 @@ module Qt4Backend
     def text=(value) 
       @widget.setWindowTitle(value)
     end
+    observe_attr :text
+    
     def text
       @widget.windowTitle
     end
@@ -311,6 +318,37 @@ module Qt4Backend
     end
   end
 
+
+  class LinkD < Qt::ItemDelegate
+    attr_accessor :filter_func, :controller
+
+    def createEditor(parent, item, index) 
+      box = Qt::Label.new(parent)
+      connect(box, SIGNAL("stateChanged(int)")) { emit commitData(box) }
+      box
+    end
+
+    def setEditorData(editor, index)
+      puts index.column
+      value = index.model.data(index, Qt::DisplayRole).toBool
+      editor.setCheckState( value ? Qt::Checked : Qt::Unchecked )
+    end
+ 
+    def setModelData(editor, model, index) 
+      model.setData(index, Qt::Variant.new(editor.isChecked))
+    end
+
+    def updateEditorGeometry(editor, item,  index)
+      editor.setGeometry(item.rect)
+    end
+
+    def paint(painter, option, index)
+      data = index.model.data(index)
+      @opts ||= Qt::StyleOptionButton.new
+      @opts.rect = option.rect
+  		Qt::Application.style.drawText(options.rect, @opts, painter)
+    end  
+  end
 =begin
   class CheckBoxD < Qt::ItemDelegate
     attr_accessor :filter_func, :controller
@@ -387,7 +425,7 @@ module Qt4Backend
       @widget.model
     end
     def selection
-      indices = @widget.selectionModel.selectedRows
+      indices = @widget.selectionModel ? @widget.selectionModel.selectedRows : []
       indices.collect{ |i| @widget.model.data_raw(i) }
     end
     
@@ -415,10 +453,10 @@ module Qt4Backend
     include QtWidget
     include ObserveAttr
 
-    def initialize(p, *args)
+    def initialize(p, text=nil)
       @widget = Qt::Label.new
       p.add_element(self)
-      self.text=args[0]
+      self.text=text
     end
     def parse_params(params)
       @font = Qt::Font.new
@@ -437,8 +475,7 @@ module Qt4Backend
 
   end
 
-
-  
+  # qbutton with extra decoration via layout
   class Button 
     include QtWidget
     include ObserveAttr
@@ -482,23 +519,24 @@ module Qt4Backend
 
   end
 
+
+  #qtextedit with text= append mode
   class Text
     include QtWidget
     include ObserveAttr
 
 
-    def initialize(p, *args)
+    def initialize(p, text=nil)
       @widget = Qt::TextEdit.new(p.widget)
       p.add_element(self)
-
-      self.text=args[0]
+      self.text=text
     end
     def parse_params(params)
       @widget.read_only = params[:value] || true
       super
     end
     def text=(value)
-      @widget.append("#{value.to_s}") # text = @text.to_s
+      @widget.append("#{value.to_s}")
     end
   end
 
@@ -506,15 +544,13 @@ module Qt4Backend
   class Field 
     include QtWidget
     include ObserveAttr
-    observe_attr :text
 
-    def initialize(p, *args)
+    def initialize(p, text=nil)
       @widget = Qt::LineEdit.new
       @widget.connect(SIGNAL("textChanged(const QString &)")) {|m| emit("text_changed", m) }
       @widget.connect(SIGNAL(:returnPressed)) { emit(:enter, self) }
-
       p.add_element(self)
-      self.text=args[0]
+      self.text=text
     end
 
     def completion=(value)
@@ -526,10 +562,13 @@ module Qt4Backend
     def text=(value)
       @widget.setText(value.to_s)
     end
+    observe_attr :text
+    
     def text
       @widget.text
     end
   end
+
 
   class Svg
     include QtWidget
@@ -549,7 +588,6 @@ module Qt4Backend
   class Spin
     include QtWidget
     include ObserveAttr
-    observe_attr :value
 
     def initialize(p, *args)
       @widget = Qt::SpinBox.new
@@ -559,6 +597,7 @@ module Qt4Backend
     def value=(value)
       @widget.value=value
     end
+    observe_attr :value
     def value
       @widget.value
     end
@@ -629,13 +668,10 @@ module Qt4Backend
   class Check
     include QtWidget
 
-    def initialize(p, *args)
+    def initialize(p, text=nil)
       @widget = Qt::CheckBox.new
       p.add_element(self)
-      self.text=(args[0])
-    end
-    def parse_params(params)
-      super
+      self.text=text
     end
     def text=(value) 
       @widget.setText(value)
@@ -645,13 +681,10 @@ module Qt4Backend
   class Radio
     include QtWidget
 
-    def initialize(p, *args)
+    def initialize(p, text=nil)
       @widget = Qt::RadioButton.new(p.widget)
       p.add_element(self)
-      self.text=(args[0])
-    end
-    def parse_params(params)
-      super
+      self.text=text
     end
     def text=(value) 
       @widget.setText(value)
@@ -692,13 +725,11 @@ module Qt4Backend
     
 
     def stretch
-      @layout.addStretch(1)
+      #@layout.addStretch #(1)
     end
     def parse_params(params)
       @widget.layout.spacing = params[:spacing] || 1
       @widget.layout.margin = params[:margin] || 1
-  #    filename =  "resources/images/" + (params[:file] || "")
-  #    if filename @widget.load(filename)
       super
     end
 
@@ -765,10 +796,10 @@ module Qt4Backend
   class Menu
     include QtWidget
 
-    def initialize(p, *args)
-      widget = @widget = Qt::Menu.new( args[0] || "menu", p.widget)
+    def initialize(p, title="menu")
+      widget = @widget = Qt::Menu.new( title, p.widget)
       
-      case args[0].to_s
+      case title
       when "context"
         p.widget.instance_eval %{
           @menu = widget
@@ -776,12 +807,13 @@ module Qt4Backend
             @menu.popup(event.globalPos)
           end
         }
+      else
+        p.add_element(self) 
       end
-      p.add_element(self) 
     end
 
     def separator
-      @widget.addSeparator()
+      @widget.addSeparator
     end
 
  

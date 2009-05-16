@@ -13,7 +13,6 @@ Differences to Rails
 3. more 
 
 TODO before first usefull release
-* improve ObserveAttr (see file)
 * create a real initializer (with better internel config support for framework and app)
 * improve ...
    ... Signaling (maybe use GObject?)
@@ -28,13 +27,13 @@ Indigo uses ...
   ... active_record/resource for db and webservice access
   ... active_support for nice ruby extensions and I18n
   ... qtruby and qtext for the underlying widget rendering (can change in the future)
-  ... some other extensions and ideas from RoR
+  ... some other extensions (dbus) and ideas from RoR
   ... ruby-opengl for opengl support ;) (more on the why later)
 
 
 How it should work(but does not right now):
   indigo my_app
   cd my_app
-  .. create models and views
+  script/generate .. create models and views
   script/start
   

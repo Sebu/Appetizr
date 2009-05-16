@@ -28,7 +28,7 @@ class Account < UserAccountDB
     end if accounts
     accounts ||= []
     users.each do |user|
-        new_account = Account.new(:account => user, :barcode => nil)
+        new_account = Account.new(:account => "<a href=/affe>#{user}</a>", :barcode => nil)
         accounts << new_account if new_account.valid_account?
     end if users
     accounts

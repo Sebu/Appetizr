@@ -9,11 +9,9 @@ class Computer < ActiveRecord::Base
   set_table_name "Cache"
   set_primary_key "Cname"
 
-  observe_attr :User, :Color, :prectab
-
-
+  observe_attr :User, :Color
+  
   validates_numericality_of :Color, :greater_than_or_equal_to => 0, :less_than => 8
-
   after_update :change_vtab
 
   def xdm_restart
@@ -30,8 +28,9 @@ class Computer < ActiveRecord::Base
   end
   
   def prectab
-    @prectab
+    @prectab ||= nil
   end
+  observe_attr :prectab
   
   
   def change_vtab

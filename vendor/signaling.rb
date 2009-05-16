@@ -13,7 +13,7 @@ module Signaling
   # connect(signal, receiver, method, args)
   
   def connect(signal, *args, &block)
-    @connections = Hash.new unless @connections
+    @connections ||= {}
     @connections[signal] = [] unless @connections[signal]
     data =  if block
               [block, nil, args] 
