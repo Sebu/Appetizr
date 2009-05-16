@@ -371,6 +371,7 @@ module Qt4Backend
   class Label
     include QtWidget
     include ObserveAttr
+    obsattr :background, :func=>"background", :override => true
 
     def initialize(p, *args)
       @widget = Qt::Label.new
@@ -382,6 +383,10 @@ module Qt4Backend
       @font.PointSize =  params[:size] || 10 
       @widget.setFont(@font)
         super
+    end
+
+    def background(value)
+      @widget.setStyleSheet("QLabel { background-color:  #{value} }")
     end
 
     def text=(value)

@@ -11,6 +11,11 @@ class MainController
     @pool_store
   end
 
+  def restart(w, c)
+    puts c
+    c.xdm_restart
+  end
+
   def drop_pool_store(*args)
     @pool_store = *args
     @main.status = ["#{@pool_store['User']}", "von <b>#{@pool_store['Cname']}</b> in store verschoben","trashcan_full"]
@@ -18,6 +23,10 @@ class MainController
 
   def user_list_format(a)
     a.tr(" ","\n")
+  end
+
+  def color_please(value)
+    value ? "#00ff00" : "#ff0000"
   end
 
   def prectab_format(prectab)
@@ -202,8 +211,8 @@ class MainController
     refresh = Thread.new {
       old_hour = 0
       while true
-        @main.printers.each { |p| p.update_job_count }
-        hour = Time.now.hour
+        @main.printers.each { |p| p.update_job_count; p.update_accepts; p.update_enabled }
+        hour = 13 #Time.now.hour
         if hour != old_hour
           @main.computers.each_value {|computer| computer.prectab = nil }
           old_hour = hour
@@ -218,6 +227,7 @@ class MainController
                 computer.prectab = kurs 
                 count -= 1
               end
+              count -= 1 unless computer
               index += 1
             end
           end

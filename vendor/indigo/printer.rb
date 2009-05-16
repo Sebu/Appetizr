@@ -55,11 +55,11 @@ module Indigo
     end
     
     def enabled?
-      self.enabled
+      self.enabled ||= update_enabled
     end
 
     def accepts?
-      self.accepts
+      self.accepts ||= update_accepts
     end
 
     def self.job_count
@@ -71,8 +71,8 @@ module Indigo
       self.enabled = `LANG=EN; lpstat -p #{@name}`.split(" ")[4] == "enabled"
     end  
 
-    def update_accept
-      self.accept = `LANG=EN; lpstat -a #{@name}`.split(" ")[1] == "accepting"
+    def update_accepts
+      self.accepts = `LANG=EN; lpstat -a #{@name}`.split(" ")[1] == "accepting"
     end  
    
     def update_job_count

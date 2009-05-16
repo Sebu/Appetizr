@@ -14,8 +14,11 @@ window t('main.title'),  :opacity=>0.7  do
       stack do
         @main.printers.each do | printer| 
           flow do
-            label "#{printer.name}"
-            label { text_observe printer, :job_count }
+            label("#{printer.name}"){ background_observe printer, :enabled, :filter=>:color_please }
+            label { 
+              text_observe printer, :job_count
+              background_observe printer, :accepts, :filter=>:color_please
+            }
           end
         end
         stretch

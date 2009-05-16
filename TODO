@@ -1,7 +1,7 @@
 demo app TODO
 
-- printer view (also show fancy tray infos, load and errors)
 - validate users
+- printer view (also show fancy tray infos, load and errors)
 - dbus signaling/obsattr
 - rEvaluate & lazy :) 
   menu do

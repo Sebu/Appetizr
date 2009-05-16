@@ -14,7 +14,6 @@ class Main
   
   def initialize
     @printers = Indigo::Printer.printers
-    #@printers.each { |p| p.update_job_count }
     @user_list = ["seb"]
     @account_text = ""
     @scan_string = "220683"

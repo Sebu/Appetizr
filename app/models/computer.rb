@@ -16,7 +16,10 @@ class Computer < ActiveRecord::Base
 
   after_update :change_vtab
 
-  
+  def xdm_restart
+    `ssh -f root@s8 -- "ssh {self.Cname} -- /etc/init.d/xdm restart"`
+  end
+
   def after_reload
     self.Color_changed unless self.Color==0
     self.User_changed

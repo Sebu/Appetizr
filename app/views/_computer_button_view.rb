@@ -11,6 +11,10 @@ button :id => @c.Cname, :height => 60 do
 
   menu "context" do
     action "nothing", :nothing
+    separator
+    menu "hardcore" do
+      action "xdm restart", :restart, @c
+    end
   end
 
   stack :margin => 2 do
