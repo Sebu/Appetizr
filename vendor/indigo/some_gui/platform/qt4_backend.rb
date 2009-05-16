@@ -379,7 +379,6 @@ module Qt4Backend
   class Label
     include QtWidget
     include ObserveAttr
-    observe_attr :text
 
     def initialize(p, *args)
       @widget = Qt::Label.new
@@ -409,11 +408,11 @@ module Qt4Backend
     include QtWidget
     include ObserveAttr
     include EventHandleGenerator
-    observe_attr :text
 
     def text=(value) 
       @widget.setText(value)
     end
+
     def text
       @widget.text
     end
@@ -475,7 +474,6 @@ module Qt4Backend
   class Field 
     include QtWidget
     include ObserveAttr
-    observe_attr :completion
     observe_attr :text
 
     def initialize(p, *args)
