@@ -34,7 +34,8 @@ module SomeGui
               widget.block = block
               widget.parse_block(&block)
               @parent = widget.parent
-              widget
+              @widgets[widget.object_id.to_s] = widget
+              widget.respond
             end
 
           }

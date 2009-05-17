@@ -12,6 +12,10 @@ module Indigo::SomeGui
       end
     end
 
+    def respond
+      self
+    end    
+
     def show_all
       #parse_block(&@block)
       #self.children.each { |c| puts c } if self.children
