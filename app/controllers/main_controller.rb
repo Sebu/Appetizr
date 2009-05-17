@@ -8,16 +8,17 @@ class MainController
 
   #TODO: remove and implicit generate in dnd functions
   def drag_pool_store
-    @pool_store
+    Main.active.pool_store
   end
 
-  def restart(w, c)
+  def restart(c)
     c.xdm_restart if confirm "wirklick xdm auf #{c.Cname} killen?"
   end
 
   def drop_pool_store(*args)
-    @pool_store = *args
-    @main.status = ["#{@pool_store['User']}", "von <b>#{@pool_store['Cname']}</b> in store verschoben","trashcan_full"]
+    @main = Main.active
+    @main.pool_store = *args
+    @main.status = ["#{@main.pool_store['User']}", "von <b>#{@main.pool_store['Cname']}</b> in store verschoben","trashcan_full"]
   end
 
   def user_list_format(a)
@@ -48,8 +49,8 @@ class MainController
     end
   end
 
-  def cbutton_click(w, pc)
-    if @account_table.model
+  def cbutton_click(pc)
+    if Main.active.account_table.model
       table_register(pc)
     end
   end
@@ -64,27 +65,26 @@ class MainController
   end
 
   
-  def add_users(w)
-    @add_window ||= part :add
-    @add_window.show_all
+  def add_user
+    redirect_to '/adds/1'
   end
   
   
-  def remove_users(w)
-    accounts = @account_table.selection
+  def remove_user
+    accounts = Main.active.account_table.selection
     if confirm t"account.ask_remove"
       accounts.each { |account| Account.delete_all("barcode='#{account.barcode}' AND account='#{account.account}'") }
       account_string = accounts.collect { |a| a.account }.join(", ")
-      @main.status = ["#{account_string}", "von Barcode: #{@main.scan_string} enfernt","trashcan_full"]
+      Main.active.status = ["#{account_string}", "von Barcode: #{Main.active.scan_string} enfernt","trashcan_full"]
       #fill_accounts(@account_table.model.rows.remove(users))    
     end
   end
   
   
   def table_register(pc)
-    new_users = @account_table.selection.collect { |a| a.account } if @account_table.model
+    new_users = Main.active.account_table.selection.collect { |a| a.account } if Main.active.account_table.model
     users_register(new_users, pc)
-    @account_table.model = nil
+    Main.active.account_table.model = nil
   end
   
   
@@ -112,7 +112,7 @@ class MainController
       pc.User = users.join(" ") #(pc.User.split(" ") | (users)).join(" ")
       pc.Color = CONFIG['color_mapping'][ Account.gen_color(users) ]
       pc.save!
-      @main.status = ["#{pc.User}", "auf <b>#{pc.Cname}</b> angemeldet", "chair"]
+      Main.active.status = ["#{pc.User}", "auf <b>#{pc.Cname}</b> angemeldet", "chair"]
     end.un do
       pc.User = old_user
       pc.Color = old_color
@@ -120,19 +120,19 @@ class MainController
     end.run
   end
 
-  def drop_users(pc, other_pc)
+  def drop_user(pc, other_pc)
     old_user, old_color = pc.User, pc.Color
     commands_begin "dnd user"
     command("drop users") do
       pc.User=other_pc["User"]
       pc.Color=other_pc["Color"]
       pc.save!
-      @main.status = ["#{pc.User}", "von <b>#{other_pc['Cname']}</b> auf <b>#{pc.Cname}</b> verschoben","redo"]
+      Main.active.status = ["#{pc.User}", "von <b>#{other_pc['Cname']}</b> auf <b>#{pc.Cname}</b> verschoben","redo"]
     end.un do
       pc.User = old_user
       pc.Color = old_color
       pc.save!
-      @main.status = ["#{pc.User}", "von <b>#{pc.Cname}</b> auf <b>#{other_pc['Cname']}</b> verschoben","undo"]
+      Main.active.status = ["#{pc.User}", "von <b>#{pc.Cname}</b> auf <b>#{other_pc['Cname']}</b> verschoben","undo"]
     end.run
   end
 
@@ -148,23 +148,23 @@ class MainController
     end
     account_string = accounts.collect { |a| a.account }.join(", ")
     if not accounts or accounts.empty?
-      @main.status = ["#{@main.scan_string}", "hat keinen Account", "barcode"]
+      Main.active.status = ["#{Main.active.scan_string}", "hat keinen Account", "barcode"]
     elsif not message == ""
-      @main.status = ["#{account_string}", "#{t("account.scanned")}\n\n#{message}", "important"]
+      Main.active.status = ["#{account_string}", "#{t("account.scanned")}\n\n#{message}", "important"]
     else
-      @main.status = ["#{account_string}", t("account.scanned"), "barcode"] 
+      Main.active.status = ["#{account_string}", t("account.scanned"), "barcode"] 
     end
     model = accounts.length > 0 ? AccountList.new(accounts,["account","locked"]) : nil
-    @account_table.model = model
-    @account_table.select_all if model
+    Main.active.account_table.model = model
+    Main.active.account_table.select_all if model
   end
 
 
   # TODO: improve code (see also Account.find_account_or_initialize)
-  def account_return(w)
+  def account_return
     direct_login = []
     users = []
-    @main.account_text.split(',').each do |n| 
+    Main.active.account_text.split(',').each do |n| 
       case n.strip!
       when /.*@[0-9]{2,3}$/ 
         direct_login << n.split("@")
@@ -199,14 +199,14 @@ class MainController
   def after_initialize
   
     # generate pc model shortcuts
-    @main.clusters.each do |computers|
-      computers.each { |c| @main.computers[c.Cname]=c }
+    Main.active.clusters.each do |computers|
+      computers.each { |c| Main.active.computers[c.Cname]=c }
     end
 
     # load user names from yppassed
     users = []
     IO.popen("ypcat passwd").each { |line| users << line.split(':')[0] }
-    @main.user_list = users
+    Main.active.user_list = users
     
 
     prectab = Prectab.scan_file(CONFIG["prectab_path"])
@@ -215,10 +215,10 @@ class MainController
     refresh = Thread.new {
       old_hour = 0
       while true
-        @main.printers.each { |p| p.update_job_count; p.update_accepts; p.update_enabled }
+        Main.active.printers.each { |p| p.update_job_count; p.update_accepts; p.update_enabled }
         hour = 13 #Time.now.hour
         if hour != old_hour
-          @main.computers.each_value {|computer| computer.prectab = nil }
+          Main.active.computers.each_value {|computer| computer.prectab = nil }
           old_hour = hour
           Debug.log.debug prectab[hour].inspect
           prectab[hour].each_pair do |kurs, daten|
@@ -226,7 +226,7 @@ class MainController
             index = 0
             while count > 0
               c_i = CONFIG["clients"][ort][index]
-              computer = @main.computers[c_i]
+              computer = Main.active.computers[c_i]
               if computer and computer.prectab == nil then
                 computer.prectab = kurs 
                 count -= 1
@@ -236,7 +236,7 @@ class MainController
             end
           end
         end
-        @main.clusters.each { |c| Computer.reload(c) }
+        Main.active.clusters.each { |c| Computer.reload(c) }
         sleep 20
       end  
     }
@@ -253,29 +253,29 @@ class MainController
         while true
           scan = socket.recvfrom(25)
           Debug.log.debug "Scanner says #{scan}"
-          type, @main.scan_string = check_scanner_string(scan[0])
+          type, Main.active.scan_string = check_scanner_string(scan[0])
           case type
           when :card
-            accounts = User.find_accounts_by_barcode(@main.scan_string)
+            accounts = User.find_accounts_by_barcode(Main.active.scan_string)
             fill_accounts(accounts)
           when :matrikel
-            accounts = Account.find_accounts_by_barcode(@main.scan_string)
+            accounts = Account.find_accounts_by_barcode(Main.active.scan_string)
             fill_accounts(accounts)
           when :key
-            pc = @main.computers[@main.scan_string]
-            if @account_table.model
+            pc = Main.active.computers[Main.active.scan_string]
+            if Main.active.account_table.model
               table_register(pc)
             else
               case pc.User
               when ""
-                @main.status = ["#{pc.Cname}", "ist schon frei", "key"] 
+                Main.active.status = ["#{pc.Cname}", "ist schon frei", "key"] 
               else
-                @main.status = ["#{pc.User}", "von <b>#{pc.Cname}</b> abgemeldet", "trashcan_full"]
+                Main.active.status = ["#{pc.User}", "von <b>#{pc.Cname}</b> abgemeldet", "trashcan_full"]
               end
               key_clear(pc)
             end
           else
-            Debug.log.debug "#{type}, #{@main.scan_string}"
+            Debug.log.debug "#{type}, #{Main.active.scan_string}"
           end
           sleep 1
         end

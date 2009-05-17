@@ -43,6 +43,7 @@ module Indigo::SomeGui
       end 
 
       eval "@#{name}_view_content ||= load_file(@filename)"
+#     puts eval "@#{name}_view_content"
       eval "@#{name}_view = self.instance_eval(@#{name}_view_content, @filename)"
     end  
   end

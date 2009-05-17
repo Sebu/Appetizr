@@ -7,7 +7,7 @@ button :id => @c.Cname, :height => 60 do
 
   drag_start :direct, @c
   drag_delete :key_clear
-  drop :drop_users, @c
+  drop :drop_user, @c
 
   menu "context" do
     action "nothing", :nothing

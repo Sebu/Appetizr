@@ -11,8 +11,8 @@ module Indigo
     end
 
     module ClassMethods
-      def one
-        @one ||= self.new
+      def active
+        @active ||= self.new
       end
     end
     

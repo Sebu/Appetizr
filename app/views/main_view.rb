@@ -38,14 +38,14 @@ window t('main.title') do
           enter :account_return
         end
         flow do
-          button "undo", :click => :undo_action
-          button "add", :click => :add_users
+          button "undo", :click => "/undo"
+          button "add", :click => "/add_user"
         end
-        @account_table = table do
+        @main.account_table = table do
           drop :drop_users_on_table
           menu "context" do
-            action "add users", :add_users
-            action "remove users", :remove_users
+            action "add users", :add_user
+            action "remove users", :remove_user
           end
         end
       end

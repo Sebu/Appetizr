@@ -28,7 +28,7 @@ module Indigo
       @widgets = {}
       @controller = self
       @model_name = self.class.to_s[0..-11] 
-      eval "@#{model_name.downcase} = #{model_name}.one"
+      after_initialize if respond_to? :after_initialize
       self
     end
 
@@ -38,19 +38,43 @@ module Indigo
     end
     
     def show
+      eval "@#{model_name.downcase} = #{model_name}.active"
+      #TODO: put into perform_action
       view = load_context
-      after_initialize if respond_to? :after_initialize
       view.show_all
       view
     end
-  
-    def part(name)
-      controller = eval "#{name.to_s.capitalize}Controller.one"
-      controller.parent = @parent
-      view = controller.load_context
-      view
+    
+    def perform_action(action)
+      send(action)
     end
-
+  
+    def redirect_to(uri)
+      data = /(\/([a-z_]+)s)?(\/([a-z_]+))?(\/(\d+))?$/.match(uri)
+      Debug.log.debug self.class.name
+      controller_name = data[2] ? "#{data[2].capitalize}Controller" : self.class.name
+      action = data[4] || "show"
+      id = data[5]
+      puts controller_name, action, id
+      new_controller = Kernel.const_get(controller_name).one
+      new_controller.parent = @parent 
+      new_controller.perform_action(action)
+    end
+    
+    # /model/action/id 
+    def self.redirect_to(uri)
+             
+      data = /(\/([a-z_]+)s)?(\/([a-z_]+))?(\/(\d+))?$/.match(uri)
+      #Debug.log.debug
+      controller_name = "#{data[2].capitalize}Controller"
+      action = data[4] || "show"
+      id = data[5]
+      puts controller_name, action, id
+      new_controller = Kernel.const_get(controller_name).one
+      new_controller.parent = @parent 
+      new_controller.perform_action(action)
+    end
+    
     def open(mode, params={})
       params = {:title=>t(:open_files)}.merge(params)
       file_dialog(mode, params)
@@ -90,10 +114,8 @@ module Indigo
     end
 
     #region: actions
-    def undo_action(w)
-      undo
-    end
-    def close_action(w)
+
+    def close
       eval "@#{model_name.downcase}_view.hide"
     end
 

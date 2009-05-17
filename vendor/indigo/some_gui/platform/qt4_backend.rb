@@ -202,7 +202,7 @@ module Qt4Backend
     include ObserveAttr
 
     def initialize(p, title)
-      @widget = Qt::Dialog.new(p.widget) #, Qt::CustomizeWindowHint | Qt::WindowTitleHint)
+      @widget = Qt::Dialog.new(nil) #p.widget) #, Qt::CustomizeWindowHint | Qt::WindowTitleHint)
       @layout = Qt::HBoxLayout.new
       @widget.setLayout(@layout)
       self.text=title
@@ -492,7 +492,7 @@ module Qt4Backend
     
     def initialize(p, *args)
       @widget = Qt::PushButton.new
-      @widget.connect(SIGNAL(:clicked)) { emit(:click, self) }
+      @widget.connect(SIGNAL(:clicked)) { emit(:click) }
 
       # CONTAINER layout
       @layout = Qt::HBoxLayout.new
@@ -506,10 +506,11 @@ module Qt4Backend
 
     def parse_params(params)
       method_click = params[:click]
+      @widget.connect(SIGNAL(:clicked)) { @controller.redirect_to method_click } if method_click
       height = params[:height]
       @widget.setMinimumSize( Qt::Size.new(height, height) ) if height
       #@widget.setMaximumSize( Qt::Size.new(60,60) )
-      click(method_click) if method_click
+      #click(method_click) if method_click
       super
     end
 
@@ -548,7 +549,7 @@ module Qt4Backend
     def initialize(p, text=nil)
       @widget = Qt::LineEdit.new
       @widget.connect(SIGNAL("textChanged(const QString &)")) {|m| emit("text_changed", m) }
-      @widget.connect(SIGNAL(:returnPressed)) { emit(:enter, self) }
+      @widget.connect(SIGNAL(:returnPressed)) { emit(:enter) }
       p.add_element(self)
       self.text=text
     end
@@ -785,7 +786,7 @@ module Qt4Backend
      
     def initialize(p, text, method, *args)
       @qt_action = Qt::Action.new(text, p.widget)
-      @qt_action.connect(SIGNAL("triggered(bool)")) { emit(:click, self) }
+      @qt_action.connect(SIGNAL("triggered(bool)")) { emit(:click) }
       self.connect(:click, p.controller, method, *args)
       p.add_element(self) 
     end

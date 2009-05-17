@@ -26,7 +26,6 @@ module SomeGui
               widget = Widgets::#{name}.new(@parent,*args)
               widget.controller = @controller
               gen_accessor(params[:id], widget) if params[:id]
-
               @parent.children ||= []
               @parent.children <<  widget
               @parent, widget.parent = widget, @parent

@@ -11,7 +11,7 @@ module Windowed
     t = IdleKicker.new
 
     name = CONFIG["controller"].to_s
-    @main_view = eval "#{name.capitalize}Controller.one.show"
+    Controller.redirect_to "/#{name}s/1"
 
     #Qt Stuff
     a.exec 

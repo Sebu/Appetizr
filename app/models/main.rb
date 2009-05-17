@@ -3,7 +3,7 @@ class Main
   include Indigo::ActiveNode
   include ObserveAttr
 
-  attr_accessor :account_text, :scan_string, :status, :user_list, :printers
+  attr_accessor :account_text, :pool_store, :account_table, :pool_store, :scan_string, :status, :user_list, :printers
   observe_attr :account_text, :scan_string, :status, :user_list, :printers
   attr_accessor :clusters, :computers
   
