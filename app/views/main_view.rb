@@ -44,8 +44,8 @@ window t('main.title') do
         @main.account_table = table do
           drop :drop_users_on_table
           menu "context" do
-            action "add users", :add_user
-            action "remove users", :remove_user
+            action "add users", "/add_user"
+            action "remove users", '/remove_user'
           end
         end
       end

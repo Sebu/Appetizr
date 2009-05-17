@@ -10,10 +10,10 @@ button :id => @c.Cname, :height => 60 do
   drop :drop_user, @c
 
   menu "context" do
-    action "nothing", :nothing
+    action "nothing", "/nothing"
     separator
     menu "hardcore" do
-      action "xdm restart", :restart, @c
+      action "xdm restart", '/restart', @c
     end
   end
 

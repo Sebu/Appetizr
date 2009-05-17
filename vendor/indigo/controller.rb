@@ -45,20 +45,19 @@ module Indigo
       view
     end
     
-    def perform_action(action)
-      send(action)
+    def perform_action(action, *args)
+      send(action, *args)
     end
   
-    def redirect_to(uri)
+    def redirect_to(uri, *args)
       data = /(\/([a-z_]+)s)?(\/([a-z_]+))?(\/(\d+))?$/.match(uri)
-      Debug.log.debug self.class.name
       controller_name = data[2] ? "#{data[2].capitalize}Controller" : self.class.name
       action = data[4] || "show"
-      id = data[5]
-      puts controller_name, action, id
+      id = data[6]
+      Debug.log.debug "#{controller_name} #{action} #{id}"
       new_controller = Kernel.const_get(controller_name).one
       new_controller.parent = @parent 
-      new_controller.perform_action(action)
+      new_controller.perform_action(action, *args)
     end
     
     # /model/action/id 

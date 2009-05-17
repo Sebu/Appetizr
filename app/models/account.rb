@@ -8,6 +8,7 @@ class Account < UserAccountDB
   attr_readonly :barcode, :account
   attr_accessible :account, :locked, :barcode
 
+  validate :valid_account
   validates_presence_of :barcode
   validates_length_of :account, :maximum=>30
   
@@ -29,7 +30,7 @@ class Account < UserAccountDB
     accounts ||= []
     users.each do |user|
         new_account = Account.new(:account => user, :barcode => nil)
-        accounts << new_account if new_account.valid_account?
+        accounts << new_account if new_account.valid_account
     end if users
     accounts
   end
@@ -71,7 +72,7 @@ class Account < UserAccountDB
    self[:locked] ||= get_lock_state(self.account)
   end
 
-  def valid_account?
+  def valid_account
     Account.get_passwd(self.account) != :is_no_user
   end
 

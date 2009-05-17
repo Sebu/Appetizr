@@ -786,8 +786,9 @@ module Qt4Backend
      
     def initialize(p, text, method, *args)
       @qt_action = Qt::Action.new(text, p.widget)
-      @qt_action.connect(SIGNAL("triggered(bool)")) { emit(:click) }
-      self.connect(:click, p.controller, method, *args)
+      #@qt_action.connect(SIGNAL("triggered(bool)")) { emit(:click) }
+      #self.connect(:click, p.controller, method, *args)
+      @qt_action.connect(SIGNAL("triggered(bool)")) { @controller.redirect_to(method,*args)  }
       p.add_element(self) 
     end
     def parse_params(params)
