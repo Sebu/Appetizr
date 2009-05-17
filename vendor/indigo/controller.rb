@@ -15,6 +15,7 @@ module Indigo
 
  
     attr_accessor :model_name
+    attr_accessor :widgets
     attr_accessor :controller
 
     def self.included(base)
@@ -24,6 +25,7 @@ module Indigo
     end
 
     def initialize
+      @widgets = {}
       @controller = self
       @model_name = self.class.to_s[0..-11] 
       eval "@#{model_name.downcase} = #{model_name}.one"
