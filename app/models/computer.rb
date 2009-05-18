@@ -13,11 +13,19 @@ class Computer < ActiveRecord::Base
   
   validates_numericality_of :Color, :greater_than_or_equal_to => 0, :less_than => 8
   after_update :change_vtab
+  before_save :update_time
+  named_scope :updated_after, lambda { |time| {:conditions => ["Time > ?", time]} }
 
   def xdm_restart
     `ssh -f root@s8 -- "ssh {self.Cname} -- /etc/init.d/xdm restart"`
   end
 
+
+  
+  def update_time
+    self.Time = Time.now.strftime("%j%H%M%S")
+  end
+  
   def after_reload
     self.Color_changed
     self.User_changed
@@ -59,5 +67,10 @@ class Computer < ActiveRecord::Base
     # old REGEXP '^c?.$'  
     find(:all, :select=>"Cname,Color,User", :conditions=> ["Cname LIKE 'c?_'",cluster], :order => "Cname ASC") 
   end
+
+  protected  
+  def after_initialize
+  end
+
 end
 

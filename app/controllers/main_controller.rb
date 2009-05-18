@@ -8,17 +8,12 @@ class MainController
 
   #TODO: remove and implicit generate in dnd functions
   def drag_pool_store
-    Main.active.pool_store
-  end
-
-  def restart(c)
-    c.xdm_restart if confirm "wirklick xdm auf #{c.Cname} killen?"
+    session[:pool_store]
   end
 
   def drop_pool_store(*args)
-    @main = Main.active
-    @main.pool_store = *args
-    @main.status = ["#{@main.pool_store['User']}", "von <b>#{@main.pool_store['Cname']}</b> in store verschoben","trashcan_full"]
+    session[:pool_store] = *args
+    Main.active.status = ["#{session[:pool_store]['User']}", "von <b>#{session[:pool_store]['Cname']}</b> in store verschoben","trashcan_full"]
   end
 
   def user_list_format(a)
@@ -40,12 +35,12 @@ class MainController
     #"[#{time}] <img src=#{Res[icon]} height=24> <b>#{title}</b> #{body}"
   end
 
-
-  def code_to_color(code,computer)
+  def code_to_color(code, computer)
+  #def code_to_color(computer)
     if computer.prectab and computer.User == ""
       CONFIG['colors'][8]
     else
-      CONFIG['colors'][code]
+      CONFIG['colors'][computer.Color]
     end
   end
 
@@ -64,12 +59,7 @@ class MainController
     Debug.log.debug users
   end
 
-  
-  def add_user
-    redirect_to '/adds/1'
-  end
-  
-  
+ 
   def remove_user
     accounts = Main.active.account_table.selection
     if confirm t"account.ask_remove"
@@ -107,6 +97,7 @@ class MainController
 
   def users_register(users, pc)
     return if users.empty?
+    
     old_user, old_color = pc.User, pc.Color
     command("register users") do
       pc.User = users.join(" ") #(pc.User.split(" ") | (users)).join(" ")
@@ -118,9 +109,10 @@ class MainController
       pc.Color = old_color
       pc.save!
     end.run
-  end
+    end
 
   def drop_user(pc, other_pc)
+    #pc = Computer.find(pc_id.id)
     old_user, old_color = pc.User, pc.Color
     commands_begin "dnd user"
     command("drop users") do
@@ -134,6 +126,7 @@ class MainController
       pc.save!
       Main.active.status = ["#{pc.User}", "von <b>#{pc.Cname}</b> auf <b>#{other_pc['Cname']}</b> verschoben","undo"]
     end.run
+     #widgets[pc_id.id].background=code_to_color(nil,pc)
   end
 
 
@@ -212,9 +205,16 @@ class MainController
     prectab = Prectab.scan_file(CONFIG["prectab_path"])
     
     # refresh cache
-    refresh = Thread.new {
+
+    @refresh_timer = Qt::Timer.new
+    @refresh_timer.connect(SIGNAL("timeout()")) {
+    #refresh = Thread.new {
       old_hour = 0
-      while true
+      session[:old_timestamp] = 0
+
+      #while true
+        puts "refresh"
+#       sleep 10
         Main.active.printers.each { |p| p.update_job_count; p.update_accepts; p.update_enabled }
         hour = 13 #Time.now.hour
         if hour != old_hour
@@ -237,10 +237,17 @@ class MainController
           end
         end
         Main.active.clusters.each { |c| Computer.reload(c) }
-        sleep 20
-      end  
+        #comps =  Computer.updated_after @old_timestamp
+        #comps.each do |computer| 
+        #  eval "puts @#{computer.id}.background=code_to_color(computer.Color,computer) if  "
+        #end
+        session[:old_timestamp] = Time.now.strftime("%j%H%M%S")
+    #  end  
     }
+    @refresh_timer.timeout
+    @refresh_timer.start(10000)
 
+    
     # read data from scanner and dispatch
     require 'socket'
     begin
@@ -268,9 +275,9 @@ class MainController
             else
               case pc.User
               when ""
-                Main.active.status = ["#{pc.Cname}", "ist schon frei", "key"] 
+                Main.active.status = ["#{pc.id}", "ist schon frei", "key"] 
               else
-                Main.active.status = ["#{pc.User}", "von <b>#{pc.Cname}</b> abgemeldet", "trashcan_full"]
+                Main.active.status = ["#{pc.User}", "von <b>#{pc.id}</b> abgemeldet", "trashcan_full"]
               end
               key_clear(pc)
             end

@@ -17,6 +17,9 @@ module Indigo
     attr_accessor :model_name
     attr_accessor :widgets
     attr_accessor :controller
+    attr_accessor :params
+    attr_accessor :session
+    attr_accessor :flash
 
     def self.included(base)
       base.class_eval do
@@ -26,6 +29,9 @@ module Indigo
 
     def initialize
       @widgets = {}
+      @params = {}
+      @session = {}
+      @flash = {}
       @controller = self
       @model_name = self.class.to_s[0..-11] 
       after_initialize if respond_to? :after_initialize
@@ -45,32 +51,41 @@ module Indigo
       view
     end
     
-    def perform_action(action, *args)
-      send(action, *args)
+    def perform_action(action)
+      if respond_to?(action)
+        send(action)
+      else
+        Debug.log.debug "Sorry :/ No action responded to #{action}."
+      end
+      #render!!!
     end
   
-    def redirect_to(uri, *args)
-      data = /(\/([a-z_]+)s)?(\/([a-z_]+))?(\/(\d+))?$/.match(uri)
-      controller_name = data[2] ? "#{data[2].capitalize}Controller" : self.class.name
+    def redirect_to(uri)
+      data = /(\/([a-z_]+)s)?(\/([a-z_]+))?(\/([a-z]*\d+))?$/.match(uri)
+      model_name = data[2] ? data[2] : self.class.name[0..-11].downcase
+      controller_name = "#{model_name.capitalize}Controller"
       action = data[4] || "show"
-      id = data[6]
-      Debug.log.debug "#{controller_name} #{action} #{id}"
+      id = data[6] || params[:id]
+      Debug.log.debug "\nVISIT org.indigo.indigoRuby/#{model_name}s/#{action}/#{id}"    
+      Debug.log.debug "Processing #{controller_name}##{action} #{id}"
       new_controller = Kernel.const_get(controller_name).one
-      new_controller.parent = @parent 
-      new_controller.perform_action(action, *args)
+      new_controller.parent = @parent
+      new_controller.params[:id] = id
+      new_controller.perform_action(action)
     end
     
-    # /model/action/id 
+    # /model/id/action/
     def self.redirect_to(uri)
-             
-      data = /(\/([a-z_]+)s)?(\/([a-z_]+))?(\/(\d+))?$/.match(uri)
-      #Debug.log.debug
-      controller_name = "#{data[2].capitalize}Controller"
+      data = /(\/([a-z_]+)s)?(\/([a-z_]+))?(\/([a-z]*\d+))?$/.match(uri)
+      model_name = data[2]
+      controller_name = "#{model_name.capitalize}Controller"
       action = data[4] || "show"
-      id = data[5]
-      puts controller_name, action, id
+      id = data[6] || params[:id]
+      Debug.log.debug "\nVISIT org.indigo.indigoRuby/#{model_name}s/#{action}/#{id}"      
+      Debug.log.debug "Processing #{controller_name}##{action} #{id}"
       new_controller = Kernel.const_get(controller_name).one
-      new_controller.parent = @parent 
+      new_controller.parent = @parent
+      new_controller.params[:id] = id 
       new_controller.perform_action(action)
     end
     

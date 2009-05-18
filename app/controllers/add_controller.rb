@@ -3,8 +3,9 @@
 class AddController  
   include Indigo::Controller
   
-  def after_initialize
+  def show
     @main = Main.active
+    super
   end
   
   def scan_string_format(scan_string)

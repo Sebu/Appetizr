@@ -36,10 +36,9 @@ class IdleKicker < Qt::Object
 
   def initialize
     super
-
-    timer = Qt::Timer.new
-    connect(timer, SIGNAL(:timeout), self, SLOT(:give_up))
-    timer.start(0)
+    #@timer = Qt::Timer.new
+    #connect(@timer, SIGNAL("timeout()"), self, SLOT(:give_up))
+    #@timer.start
   end
 end
 

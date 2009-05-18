@@ -25,7 +25,7 @@ module SomeGui
 
               widget = Widgets::#{name}.new(@parent,*args)
               widget.controller = @controller
-              gen_accessor(params[:id], widget) if params[:id]
+              #gen_accessor(params[:id], widget) if params[:id]
               @parent.children ||= []
               @parent.children <<  widget
               @parent, widget.parent = widget, @parent
@@ -33,7 +33,8 @@ module SomeGui
               widget.block = block
               widget.parse_block(&block)
               @parent = widget.parent
-              @widgets[widget.object_id.to_s] = widget
+              id_name = params[:id] || widget.object_id.to_s
+              @widgets[id_name] = widget
               widget.respond
             end
 

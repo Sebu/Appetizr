@@ -1,4 +1,4 @@
-
+  
 
 #TODO: works my ass geil
 # add filter chain
@@ -17,7 +17,21 @@ module ObserveAttr
   def method_missing(name, *args)
     match = /_observe/.match(name.to_s)
     if match
-      observe(self, match.pre_match.to_sym, *args)
+      setter = match.pre_match.to_sym
+      if args[0].is_a?(String)
+        #disassamble args[0] /model/id/attribute'
+        #model.send(observe_attr_after_initialize, :key=>id, :attr=>attribute)        
+        # '/computer/c12/Color'
+        # Computer.send( observe_after_initialize, :receiver=>self, :setter=>setter, :key=>id, :attr=> 'Color')
+        # after_initialize
+        #   if id == key
+        #     instance_eval ...
+        #     observe(options[:receiver], options[:setter], self, options[:attr])
+        #   end
+        # end
+      else
+        observe(self, setter, *args)
+      end
     else
       super
     end
@@ -28,11 +42,10 @@ module ObserveAttr
     options.to_options!
 
     # emited signal
-    signal = m2.class.obs_calls[key2.to_sym][:signal]
+    signal = "#{key2}_changed"
     # reader function to call
-    func = "#{key1}=" #m1.class.obs_calls[key1.to_sym][:func]
-
-    controller = options[:controller] || @controller
+    func = "#{key1}="
+    controller = @controller #options[:controller] || @controller
 
     #TODO: prep filter chain
     #options[:filter].each do | f |
@@ -54,35 +67,28 @@ module ObserveAttr
   end
 
   module ClassMethods
-    attr_accessor :obs_calls
 
     def observe_attr(*names) #, params = {})
       names.each do |name|
-        params = {:signal => "#{name}_changed", :func => "#{name}="} #.merge(params)
-
-        @obs_calls ||= {}
-        @obs_calls[name] = if @obs_calls[name]
-                             @obs_calls[name].merge(params)
-                           else 
-                             params
-                           end     
-
-        params[:override]=true unless method_defined?(params[:func])        
-        alias_method "o_assign_#{name}", params[:func] unless params[:override]
+   
+        func = "#{name}="
+        signal = "#{name}_changed"
+        @override = !method_defined?(func)        
+        alias_method "o_assign_#{name}", func unless @override
 
         class_eval %{
           def #{name}_changed
-            emit "#{params[:signal]}", self.#{name}
+            emit "#{signal}", self.#{name}
           end
-          if not params[:override]
-            def #{params[:func]}(value)
+          if not @override
+            def #{func}(value)
               send("o_assign_#{name}", value)
-              emit "#{params[:signal]}", value
+              emit "#{signal}", value
             end
           else
-            def #{params[:func]}(value)
+            def #{func}(value)
               super
-              emit "#{params[:signal]}", value
+              emit "#{signal}", value
             end
           end
         }

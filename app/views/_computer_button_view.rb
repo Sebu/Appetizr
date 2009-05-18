@@ -1,8 +1,12 @@
 
 
-button :id => @c.Cname, :height => 60 do
+button :id => @c.id, :height => 60 do #, :click=> "/computers/cbutton_click/#{@c.id}" do
   tool_tip_observe @c, :User
+
+  #click "/computers/cbutton_click/#{@c.id}"
   click :cbutton_click, @c
+
+  #background_observe "/computer/#{@c.Cname}/Color", :filter=> :code_to_color
   background_observe @c, :Color, :filter=> :code_to_color, :args=>[@c]
 
   drag_start :direct, @c
@@ -13,13 +17,13 @@ button :id => @c.Cname, :height => 60 do
     action "nothing", "/nothing"
     separator
     menu "hardcore" do
-      action "xdm restart", '/restart', @c
+      action "xdm restart", "/computers/restart/#{@c.id}" #, @c
     end
   end
 
   stack :margin => 2 do
     flow do
-    label "<b>#{@c.Cname}</b>" , :size => 8
+    label "<b>#{@c.id}</b>" , :size => 8
     stretch
     label(:size => 8) { text_observe @c, :prectab, :filter=> :prectab_format }
 

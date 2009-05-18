@@ -202,7 +202,7 @@ module Qt4Backend
     include ObserveAttr
 
     def initialize(p, title)
-      @widget = Qt::Dialog.new(nil) #p.widget) #, Qt::CustomizeWindowHint | Qt::WindowTitleHint)
+      @widget = Qt::Dialog.new(p.widget) #, Qt::CustomizeWindowHint | Qt::WindowTitleHint)
       @layout = Qt::HBoxLayout.new
       @widget.setLayout(@layout)
       self.text=title
@@ -788,7 +788,7 @@ module Qt4Backend
       @qt_action = Qt::Action.new(text, p.widget)
       #@qt_action.connect(SIGNAL("triggered(bool)")) { emit(:click) }
       #self.connect(:click, p.controller, method, *args)
-      @qt_action.connect(SIGNAL("triggered(bool)")) { @controller.redirect_to(method,*args)  }
+      @qt_action.connect(SIGNAL("triggered(bool)")) { @controller.redirect_to(method)  }
       p.add_element(self) 
     end
     def parse_params(params)

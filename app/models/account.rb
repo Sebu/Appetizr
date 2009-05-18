@@ -36,7 +36,7 @@ class Account < UserAccountDB
   end
 
   def all_accounts
-    (is_private? and barcode) ? Account.find_all_by_barcode(barcode) : self
+    (is_private? and barcode?) ? Account.find_all_by_barcode(barcode) : self
   end
 
   def is_private?
