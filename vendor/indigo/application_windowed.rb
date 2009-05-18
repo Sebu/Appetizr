@@ -2,24 +2,23 @@
 
 
 module Indigo
-module Application
-module Windowed
+  module Application
+    module Windowed
 
-  def run
-    #Qt Stuff
-    a = Qt::Application.new(ARGV)
-    t = IdleKicker.new
+      def run
+        #Qt Stuff
+        a = Qt::Application.new(ARGV)
+        t = IdleKicker.new
 
-    name = CONFIG["controller"].to_s
-    Controller.redirect_to "/#{name}s/1"
+        name = CONFIG["controller"].to_s
+        Controller.redirect_to "/#{name}s/1"
 
-    #Qt Stuff
-    a.exec 
+        #Qt Stuff
+        a.exec 
+      end
+
+    end
   end
-
-end
-
-end
 end
 
 
@@ -36,8 +35,8 @@ class IdleKicker < Qt::Object
 
   def initialize
     super
-    #@timer = Qt::Timer.new
-    #connect(@timer, SIGNAL("timeout()"), self, SLOT(:give_up))
+    @timer = Qt::Timer.new
+    connect(@timer, SIGNAL("timeout()"), self, SLOT(:give_up))
     #@timer.start
   end
 end

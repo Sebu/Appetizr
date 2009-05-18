@@ -62,8 +62,9 @@ class MainController
  
   def remove_user
     accounts = Main.active.account_table.selection
-    if confirm t"account.ask_remove"
+    if !accounts.empty? and confirm t"account.ask_remove"
       accounts.each { |account| Account.delete_all("barcode='#{account.barcode}' AND account='#{account.account}'") }
+      puts "SDSD"
       account_string = accounts.collect { |a| a.account }.join(", ")
       Main.active.status = ["#{account_string}", "von Barcode: #{Main.active.scan_string} enfernt","trashcan_full"]
       #fill_accounts(@account_table.model.rows.remove(users))    
@@ -216,7 +217,7 @@ class MainController
         puts "refresh"
 #       sleep 10
         Main.active.printers.each { |p| p.update_job_count; p.update_accepts; p.update_enabled }
-        hour = 13 #Time.now.hour
+        hour = 10 #Time.now.hour
         if hour != old_hour
           Main.active.computers.each_value {|computer| computer.prectab = nil }
           old_hour = hour

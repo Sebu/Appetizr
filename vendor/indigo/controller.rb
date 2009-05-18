@@ -61,31 +61,21 @@ module Indigo
     end
   
     def redirect_to(uri)
-      data = /(\/([a-z_]+)s)?(\/([a-z_]+))?(\/([a-z]*\d+))?$/.match(uri)
-      model_name = data[2] ? data[2] : self.class.name[0..-11].downcase
-      controller_name = "#{model_name.capitalize}Controller"
-      action = data[4] || "show"
-      id = data[6] || params[:id]
-      Debug.log.debug "\nVISIT org.indigo.indigoRuby/#{model_name}s/#{action}/#{id}"    
-      Debug.log.debug "Processing #{controller_name}##{action} #{id}"
-      new_controller = Kernel.const_get(controller_name).one
-      new_controller.parent = @parent
-      new_controller.params[:id] = id
-      new_controller.perform_action(action)
+      Controller.redirect_to(uri, self)
     end
     
     # /model/id/action/
-    def self.redirect_to(uri)
+    def self.redirect_to(uri, object=nil)
       data = /(\/([a-z_]+)s)?(\/([a-z_]+))?(\/([a-z]*\d+))?$/.match(uri)
-      model_name = data[2]
+      model_name = data[2] ? data[2] : object.class.name[0..-11].downcase
       controller_name = "#{model_name.capitalize}Controller"
       action = data[4] || "show"
-      id = data[6] || params[:id]
+      id = data[6] || object.params[:id]
+      new_controller = Kernel.const_get(controller_name).one
+      new_controller.parent = object.parent if object
+      new_controller.params[:id] = id 
       Debug.log.debug "\nVISIT org.indigo.indigoRuby/#{model_name}s/#{action}/#{id}"      
       Debug.log.debug "Processing #{controller_name}##{action} #{id}"
-      new_controller = Kernel.const_get(controller_name).one
-      new_controller.parent = @parent
-      new_controller.params[:id] = id 
       new_controller.perform_action(action)
     end
     
