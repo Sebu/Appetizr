@@ -1,7 +1,7 @@
 
 all:
   locale: de
-  controller: fluid
+  controller: main
   color_mapping: {:normal: 1, :no_passwd: 2, :locked: 3, :tutor: 4, :nobody: 5, :wheel: 6, :jeder: 7}  
   colors: {0: '#d7d7c5', 1: '#4cadc5', 2: '#f0e81b', 3: '#fe5b00', 4: '#fe00a9', 5: '#fe2f2f', 6: '#44d804', 7: '#9d57f4', 8: '#bAbA9A'}
   colors_new: {0: '#82bc68', 1: '#7d9197', 2: '#aca86d', 3: '#cb7240', 4: '#ab3a84', 5: '#ae5050', 6: '#659d4d', 7: '#9367c9', 8: '#dcd121'}
