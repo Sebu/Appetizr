@@ -1,7 +1,8 @@
 
 
-window "add user" do
-  button "bla"
-  tabs :opacity=>0.7
+window "fluid" do
+  button "bla" do
+    button "bbla"
+  end 
 end
 

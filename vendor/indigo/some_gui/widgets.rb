@@ -1,30 +1,28 @@
 module Indigo::SomeGui
+  module Widgets
+  
+    module Widget
+      include Create
+      include ObserveAttr
+      attr_accessor :controller
+      attr_accessor :block
+      
+      def parse_block(&block)
+        if block_given? 
+          block.call @parent
+        end
+      end
 
-  module Widget
-    include Create
-    include ObserveAttr
-    attr_accessor :controller
-    attr_accessor :block
-    
-    def parse_block(&block)
-      if block_given? 
-        block.call @parent
+      def respond
+        self
+      end    
+
+      def show_all
+        #parse_block(&@block)
+        #self.children.each { |c| puts c } if self.children
       end
     end
 
-    def respond
-      self
-    end    
-
-    def show_all
-      #parse_block(&@block)
-      #self.children.each { |c| puts c } if self.children
-    end
-  end
-
-    
-  module Widgets
-    include Indigo::SomeGui::Qt4Backend
 
     class Notification
 

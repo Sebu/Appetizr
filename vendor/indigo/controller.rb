@@ -1,10 +1,6 @@
 
 
-FileModes = {:files=>Qt::FileDialog::ExistingFiles,
-               :file=>Qt::FileDialog::ExistingFile,
-               :dir_file=>Qt::FileDialog::Directory,
-               :dir=>Qt::FileDialog::DirectoryOnly,
-               :any=>Qt::FileDialog::AnyFile}
+
 
 module Indigo
   module Controller
@@ -79,34 +75,6 @@ module Indigo
       new_controller.perform_action(action)
     end
     
-    def open(mode, params={})
-      params = {:title=>t(:open_files)}.merge(params)
-      file_dialog(mode, params)
-    end
-
-
-    def confirm(text, params={})
-      box = Qt::MessageBox.new @parent.widget
-      box.text = text
-      box.window_title="Are you sure?"
-      box.icon = Qt::MessageBox::Question
-      box.informative_text = params[:info] || nil
-      box.detailed_text = params[:details] || nil
-      box.standard_buttons= Qt::MessageBox::No|Qt::MessageBox::Yes
-      value = box.exec
-      value == Qt::MessageBox::Yes or value == Qt::MessageBox::Ok
-      end
-    
-    def file_dialog(mode, params={})
-      title  = params[:title] || ""
-      root   = params[:root]  || ""
-      filter = params[:ext]   || ["*.*"]
-      file_mode = FileModes[mode]
-      fdialog = Qt::FileDialog.new(nil, title, root, filter.join(";;"))
-      fdialog.setFileMode(file_mode)
-      fdialog.exec
-      fdialog.selectedFiles
-    end
     
 
     def t(*params)
