@@ -207,15 +207,15 @@ class MainController
     
     # refresh cache
 
-    @refresh_timer = Qt::Timer.new
-    @refresh_timer.connect(SIGNAL("timeout()")) {
-    #refresh = Thread.new {
+    #@refresh_timer = Qt::Timer.new
+    #@refresh_timer.connect(SIGNAL("timeout()")) {
+    refresh = Thread.new {
       old_hour = 0
       session[:old_timestamp] = 0
 
-      #while true
+      while true
         puts "refresh"
-#       sleep 10
+        sleep 10
         Main.active.printers.each { |p| p.update_job_count; p.update_accepts; p.update_enabled }
         hour = 10 #Time.now.hour
         if hour != old_hour
@@ -243,10 +243,10 @@ class MainController
         #  eval "puts @#{computer.id}.background=code_to_color(computer.Color,computer) if  "
         #end
         session[:old_timestamp] = Time.now.strftime("%j%H%M%S")
-    #  end  
+      end  
     }
-    @refresh_timer.timeout
-    @refresh_timer.start(10000)
+    #@refresh_timer.timeout
+    #@refresh_timer.start(10000)
 
     
     # read data from scanner and dispatch
