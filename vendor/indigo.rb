@@ -36,6 +36,7 @@ module Indigo
   
   require 'indigo/core_ext'
   autoload :Application, 'indigo/application'
+  autoload :View, 'indigo/view'
   autoload :SomeGui, 'indigo/some_gui'
   autoload :ActiveNode, 'indigo/active_node'
   autoload :EventHandleGenerator, 'indigo/event_handle_generator'
