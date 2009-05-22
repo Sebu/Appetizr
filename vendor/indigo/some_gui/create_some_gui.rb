@@ -24,17 +24,24 @@ module SomeGui
               params.to_options!
 
               widget = Widgets::#{name}.new(@parent,*args)
-              widget.controller = @controller
+
+              widget.controller = self
+              id_name = params[:id] || widget.object_id.to_s
+              View.widgets[id_name] = widget
+             
               #gen_accessor(params[:id], widget) if params[:id]
               @parent.children ||= []
               @parent.children <<  widget
+              
+              # push
               @parent, widget.parent = widget, @parent
+
               widget.parse_params(params)
-              widget.block = block
               widget.parse_block(&block)
+              
+              # pop
               @parent = widget.parent
-              id_name = params[:id] || widget.object_id.to_s
-              @widgets[id_name] = widget
+
               widget.respond
             end
 

@@ -5,6 +5,7 @@ class AddController
   
   def show
     @main = Main.active
+    "show add"
     super
   end
   

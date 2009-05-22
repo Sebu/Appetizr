@@ -234,9 +234,9 @@ module SomeGui
       
       def add_element(w)
         case w.class.name
-        when "Indigo::SomeGui::Qt4Backend::Menu"
+        when "Indigo::SomeGui::Widgets::Menu"
           @widget.menuBar.addMenu(w.widget)
-        when "Indigo::SomeGui::Qt4Backend::Dock"
+        when "Indigo::SomeGui::Widgets::Dock"
           @widget.addDockWidget(Qt::LeftDockWidgetArea, w.widget)
         else
           @widget.setCentralWidget(w.widget)
@@ -859,7 +859,7 @@ module SomeGui
         @qt_action = Qt::Action.new(text, p.widget)
         #@qt_action.connect(SIGNAL("triggered(bool)")) { emit(:click) }
         #self.connect(:click, p.controller, method, *args)
-        @qt_action.connect(SIGNAL("triggered(bool)")) { @controller.redirect_to(method)  }
+        @qt_action.connect(SIGNAL("triggered(bool)")) { self.redirect_to(method)  }
         p.add_element(self) 
       end
       def parse_params(params)
@@ -892,9 +892,9 @@ module SomeGui
    
       def add_element(w)
         case w.class.name
-        when "Indigo::SomeGui::Qt4Backend::Menu"
+        when "Indigo::SomeGui::Widgets::Menu"
           @widget.addMenu(w.widget)
-        when "Indigo::SomeGui::Qt4Backend::Action"
+        when "Indigo::SomeGui::Widgets::Action"
           @widget.addAction(w.qt_action)  
         end
       end

@@ -8,7 +8,8 @@ module Indigo::SomeGui
       attr_accessor :block
       
       def parse_block(&block)
-        if block_given? 
+        if block_given?
+          @block = block
           block.call @parent
         end
       end

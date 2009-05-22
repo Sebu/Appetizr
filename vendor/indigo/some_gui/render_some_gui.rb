@@ -3,28 +3,18 @@
 module Indigo::SomeGui
   module Render
 
-    def load_file(filename)
-      content = ''
-      File.open(filename, 'r') { |f| content = f.read }
-
-      Debug.log.debug "loading render block #{filename}"
-      #Debug.log.debug content
-      content
-    end  
-
-
     def render(params = {}, locals = {}, &block)
       if params.is_a?(String)
         render_file(params, true, locals)
       else
-        render_file(params, false, locals) 
+        render_file(params[:model], false, locals) 
       end
     end
 
     def render_file(name, partial, locals)
       @children ||= []
   
-      params = {:path => 'app/views'} #.merge(params)
+      params = {:path => 'app/views'}
   
       if partial
         @filename = "#{params[:path]}/_#{name}_view.rb"
@@ -35,16 +25,13 @@ module Indigo::SomeGui
       else
 
         #TODO: not so pretty
-        name = self.class.to_s.downcase[0..-11].to_sym
         @parent ||= self
-        @controller = self
+        #@controller = self
 
         @filename = "#{params[:path]}/#{name}_view.rb"
       end 
 
-      eval "@#{name}_view_content ||= load_file(@filename)"
-#     puts eval "@#{name}_view_content"
-      eval "@#{name}_view = self.instance_eval(@#{name}_view_content, @filename)"
+      Indigo::View.widgets["#{name}_view"] = self.instance_eval(Indigo::View[@filename], @filename)
     end  
   end
 end

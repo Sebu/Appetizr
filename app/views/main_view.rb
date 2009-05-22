@@ -1,6 +1,7 @@
 
 
 window t('main.title') do
+
   statusbar
   menu "demo"
 
@@ -9,7 +10,7 @@ window t('main.title') do
   # TODO: not the best place :)
   notification { message_observe @main, :status }
   
-  
+#=begin  
   stack do
     drop :drop_pool_store
     drag_start :drag_pool_store
@@ -59,5 +60,6 @@ window t('main.title') do
       end
     end
   end
+#=end  
 end
 

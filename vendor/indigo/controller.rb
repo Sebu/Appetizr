@@ -11,8 +11,6 @@ module Indigo
 
  
     attr_accessor :model_name
-    attr_accessor :widgets
-    attr_accessor :controller
     attr_accessor :params
     attr_accessor :session
     attr_accessor :flash
@@ -24,11 +22,9 @@ module Indigo
     end
 
     def initialize
-      @widgets = {}
       @params = {}
       @session = {}
       @flash = {}
-      @controller = self
       @model_name = self.class.to_s[0..-11] 
       after_initialize if respond_to? :after_initialize
       self
@@ -36,7 +32,7 @@ module Indigo
 
 
     def load_context
-      @parent = render
+      @parent = render :model => "#{model_name.downcase}"
     end
     
     def show
@@ -88,7 +84,7 @@ module Indigo
     #region: actions
 
     def close
-      eval "@#{model_name.downcase}_view.hide"
+      View.widgets["#{model_name.downcase}_view"].hide #eval "@#{model_name.downcase}_view.hide"
     end
 
     module ClassMethods
