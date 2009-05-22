@@ -38,7 +38,7 @@ module Indigo
     def show
       eval "@#{model_name.downcase} = #{model_name}.active"
       #TODO: put into perform_action
-      view = load_context
+      view = session[:view] = load_context
       view.show_all
       view
     end
@@ -84,7 +84,7 @@ module Indigo
     #region: actions
 
     def close
-      View.widgets["#{model_name.downcase}_view"].hide #eval "@#{model_name.downcase}_view.hide"
+      session[:view].hide
     end
 
     module ClassMethods

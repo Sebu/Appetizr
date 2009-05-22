@@ -19,10 +19,10 @@ window t('main.title') do
       stack do
         @main.printers.each do | printer| 
           flow do
-            label("#{printer.name}"){ background_observe printer, :enabled, :filter=>:color_please }
+            label("#{printer.name}"){ background_observe printer, :accepts, :filter=>:color_please }
             label { 
               text_observe printer, :job_count
-              background_observe printer, :accepts, :filter=>:color_please
+              background_observe printer, :enabled, :filter=>:color_please
             }
           end
         end

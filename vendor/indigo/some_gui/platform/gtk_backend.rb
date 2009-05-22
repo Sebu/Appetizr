@@ -8,6 +8,7 @@ module SomeGui
 
   require 'webkit'
 
+=begin
   class Application
 
     def initialize(args)
@@ -16,7 +17,7 @@ module SomeGui
       Gtk.main
     end
   end
-
+=end
         
   module Widgets
     module GtkWidget
