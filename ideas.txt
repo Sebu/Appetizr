@@ -2,6 +2,16 @@
 
 
 
+button.click { @bla.show_n_hide }
+
+
+
+drag {}
+drag args
+drag "method"
+
+drop {|data| @text = data }
+
 QCompleter
 
 

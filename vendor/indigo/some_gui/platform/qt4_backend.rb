@@ -44,14 +44,14 @@ module Indigo
   end
 
 module SomeGui
-    class Application < Qt::Application
+    class Application #< Qt::Application
 
       def initialize(args)
-        super
+        @app = Qt::Application.new(args)
         @idle_thread = IdleKicker.new
       end
       def main_loop
-        self.exec 
+        @app.exec 
       end
     end
   
@@ -186,7 +186,8 @@ module SomeGui
              
              dropAction = drag.exec(Qt::CopyAction | Qt::MoveAction)
              if (@dnd_drag_delete_method and dropAction == Qt::MoveAction and drag.source != drag.target)
-               @controller.send(@dnd_drag_delete_method, *@dnd_drag_args)
+               #@controller.send(@dnd_drag_delete_method, *@dnd_drag_args)
+               @controller.redirect_to @dnd_drag_delete_method
              end
              @drag_in_progress = false
           end

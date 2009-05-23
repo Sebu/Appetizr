@@ -215,7 +215,7 @@ class MainController
 
       while true
         puts "refresh"
-        sleep 10
+
         Main.active.printers.each { |p| p.update_job_count; p.update_accepts; p.update_enabled }
         hour = Time.now.hour
         if hour != old_hour
@@ -243,6 +243,7 @@ class MainController
         #  eval "puts @#{computer.id}.background=code_to_color(computer.Color,computer) if  "
         #end
         session[:old_timestamp] = Time.now.strftime("%j%H%M%S")
+        sleep 20
       end  
     }
     #@refresh_timer.timeout
