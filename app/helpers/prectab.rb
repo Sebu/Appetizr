@@ -9,11 +9,12 @@ class Prectab
     
     Debug.log.debug "day: #{day}"
     
-    if File.exist?(filename)
-      prectab = parsePrectab(filename, day)      
-    else
-      Debug.log.debug "can't find prectab file: #{filename} creating empty list"
-    end
+    prectab = if File.exist?(filename)
+                parsePrectab(filename, day)      
+              else
+                Debug.log.debug "can't find prectab file: #{filename} creating empty list"
+                {}
+              end
     
     Debug.log.debug "...done scanning prectab"
     return prectab
@@ -24,8 +25,8 @@ class Prectab
     prectab = {}
     prev = nil
     day = today-1
-    return prectab unless 0.upto(5).include?(day)
-    8.upto(23) { |h| prectab[h] = {} }
+    return prectab unless 0.upto(4).include?(day)
+    0.upto(23) { |h| prectab[h] = {} }
     File.open(file, 'r').each do |line|
       ln = line.split('\n')
       tokens = ln[0].split(' ')

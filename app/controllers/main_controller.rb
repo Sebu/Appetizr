@@ -217,7 +217,7 @@ class MainController
         puts "refresh"
         sleep 10
         Main.active.printers.each { |p| p.update_job_count; p.update_accepts; p.update_enabled }
-        hour = 10 #Time.now.hour
+        hour = Time.now.hour
         if hour != old_hour
           Main.active.computers.each_value {|computer| computer.prectab = nil }
           old_hour = hour
