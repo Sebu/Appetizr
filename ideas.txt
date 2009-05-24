@@ -1,39 +1,47 @@
 
 
-# idea from shoes
-class Controller
-  route /return\/(\d+)/, :blaaa
-end
 
-buttons/actions/links
+# request types
 
-button :ok   # default stock
-button "ok"  # text
-
-button.click :symbol, args             # fastest
-button.click "/uri/to/action/" args    # link to other controller 
-button.click { block }                 # direct for simple view actions  
-
-button :ok, :click => :sym/"uri"
-button :ok do
-  click {}/:sym/"uri"
-end
+# ideas from shoes
+  class Controller
+    route /return\/(\d+)/, :add_user
+  end
 
 
-drag {}
-drag args
-drag "method"
-drop {|data| @text = data }
 
-QCompleter
+#buttons/actions/links
+  button :ok   # default stock
+  button "ok"  # text
+
+  button.click :symbol                   # fastest (GET?)
+  button.click :symbol, args             # fastest (POST?)
+  button.click "/uri/to/action/" args    # link to other controller 
+  button.click { block }                 # direct for simple view actions  
+
+  button :ok, :click => :sym/"uri"
+  button :ok do
+    click {}/:sym/"uri"
+  end
+
+# dnd
+  drag {}                       # block result
+  drag args                     # direct data
+  drag method, args             # filter through  method
+  drop {|data| @text = data }   # block
+  drop method, args             # 
 
 
-wordList << "alpha" << "omega" << "omicron" << "zeta"
 
-lineEdit = QLineEdit.new
-completer = QCompleter.new(wordList, this)
-completer.case_sensitivity = Qt::CaseInsensitive
-lineEdit.setCompleter(completer)
+image "uri"
+
+
+#QCompleter
+#wordList << "alpha" << "omega" << "omicron" << "zeta"
+#lineEdit = QLineEdit.new
+#completer = QCompleter.new(wordList, this)
+#completer.case_sensitivity = Qt::CaseInsensitive
+#lineEdit.setCompleter(completer)
 
 
 # require 'rubygems'

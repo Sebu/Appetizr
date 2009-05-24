@@ -17,7 +17,7 @@ class MainController
   end
 
   def user_list_format(a)
-    a.tr(" ","\n")
+    "<span size='x-small'>#{a.tr(" ","\n")}</span>"
   end
 
   def color_please(value)

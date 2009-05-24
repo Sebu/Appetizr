@@ -13,7 +13,7 @@ button :id => @c.id, :height => 60, :width=> 60 do #, :click=> "/computers/cbutt
   drag_delete :key_clear, @c # "/#{@c.id}/key_clear/"
   drop :drop_user, @c
 
-  menu "context" do
+  menu :context do
     action "nothing", "/nothing"
     separator
     menu "hardcore" do
