@@ -6,7 +6,6 @@ module Indigo
     module Windowed
 
       def run
-        require 'Qt4'
 
         the_app = SomeGui::Application.new(ARGV)
         Controller.redirect_to "/#{CONFIG["controller"].to_s}s/1"

@@ -1,11 +1,11 @@
 
 class Account < UserAccountDB
   include ObserveAttr
-
+  
   set_table_name "map"
   belongs_to :user
 
-  attr_readonly :barcode, :account
+  attr_readonly :barcode #, :account
   attr_accessible :account, :locked, :barcode
 
   validate :valid_account

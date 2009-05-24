@@ -22,6 +22,7 @@ module Indigo
     end
 
     def initialize
+      @current = self
       @params = {}
       @session = {}
       @flash = {}
@@ -32,7 +33,7 @@ module Indigo
 
 
     def load_context
-      @parent = render :model => "#{model_name.downcase}"
+      self.current = render :model => "#{model_name.downcase}"
     end
     
     def show
@@ -47,7 +48,7 @@ module Indigo
       if respond_to?(action)
         send(action)
       else
-        Debug.log.debug "Sorry :/ No action responded to #{action}."
+        Debug.log.debug "  \e[1;91mSorry\e[0m :/ No action responded to \e[1m#{action}\e[0m"
       end
       #render!!!
     end
@@ -64,10 +65,11 @@ module Indigo
       action = data[4] || "show"
       id = data[6] || object.params[:id]
       new_controller = Kernel.const_get(controller_name).one
-      new_controller.parent = object.parent if object
+      new_controller.current = object.current  if object
       new_controller.params[:id] = id 
-      Debug.log.debug "\nVISIT org.indigo.indigoRuby/#{model_name}s/#{action}/#{id}"      
-      Debug.log.debug "Processing #{controller_name}##{action} #{id}"
+      Debug.log.debug "\n  \e[1;36mVISIT\e[0m \e[4morg.indigo.indigoRuby/#{model_name}s/#{action}/#{id}\e[0m"      
+
+      Debug.log.debug "  Processing #{controller_name}##{action} #{id}"
       new_controller.perform_action(action)
     end
     
@@ -84,6 +86,10 @@ module Indigo
     #region: actions
 
     def close
+      session[:view].close
+    end
+    
+    def hide
       session[:view].hide
     end
 

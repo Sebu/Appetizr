@@ -5,7 +5,7 @@ class ComputerController
   
   def restart
     @pc = Computer.find(params[:id])
-    @pc.xdm_restart if confirm "wirklick xdm auf #{params[:id]} mit user: #{@pc.User} killen?"
+    @pc.xdm_restart if confirm "wirklich xdm auf #{params[:id]} mit user: #{@pc.User} killen?"
   end
 
 =begin  

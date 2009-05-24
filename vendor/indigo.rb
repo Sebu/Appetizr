@@ -42,6 +42,7 @@ module Indigo
   autoload :EventHandleGenerator, 'indigo/event_handle_generator'
   autoload :Controller, 'indigo/controller'
   autoload :TableModel, 'indigo/table_model'
+  autoload :ActiveTreeStore, 'indigo/active_tree_store'
   autoload :ARTableModel, 'indigo/ar_table_model'
   autoload :App,'app'
   autoload :Printer, 'indigo/printer'

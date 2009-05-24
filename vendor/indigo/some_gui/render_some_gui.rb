@@ -25,7 +25,6 @@ module Indigo::SomeGui
       else
 
         #TODO: not so pretty
-        @parent ||= self
         #@controller = self
 
         @filename = "#{params[:path]}/#{name}_view.rb"

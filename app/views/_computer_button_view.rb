@@ -1,6 +1,6 @@
 
 
-button :id => @c.id, :height => 60 do #, :click=> "/computers/cbutton_click/#{@c.id}" do
+button :id => @c.id, :height => 60, :width=> 60 do #, :click=> "/computers/cbutton_click/#{@c.id}" do
   tool_tip_observe @c, :User
 
   #click "/computers/cbutton_click/#{@c.id}"

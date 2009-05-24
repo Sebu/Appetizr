@@ -33,6 +33,7 @@ module ObserveAttr
         observe(self, setter, *args)
       end
     else
+      Debug.log.debug "  \e[1;31mObserveAttr is missing\e[0m #{name} in #{self}"
       super
     end
   end

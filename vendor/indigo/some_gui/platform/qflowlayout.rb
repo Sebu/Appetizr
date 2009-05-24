@@ -24,8 +24,18 @@
 
 ** Translated to QtRuby by Richard Dale
 =end
+
+class Gtk::HBox
+
+  def size_allocate(alloc)
+    puts "bla"  
+    self
+  end
+
+
+end
 	
-	
+=begin	
 class FlowLayout < Qt::Layout
 	
 	def initialize(parent = nil, spacing = -1)
@@ -108,7 +118,7 @@ class FlowLayout < Qt::Layout
 	    return y + lineHeight - rect.y()
 	end
 end
-
+=end
 
 =begin
 class QFlowLayout < Qt::Layout

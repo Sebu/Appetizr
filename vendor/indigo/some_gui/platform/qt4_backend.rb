@@ -1,30 +1,27 @@
 require 'qtext'
 
-require 'indigo/some_gui/platform/qflowlayout'
-
-
-
 
 module Indigo
   module Controller
+
+
+    def confirm(text, params={})
+      box = Qt::MessageBox.new current.widget
+      box.text = text
+      box.window_title="Are you sure?"
+      box.icon = Qt::MessageBox::Question
+      box.informative_text = params[:info] || nil
+      #box.detailed_text = params[:details] || nil
+      box.standard_buttons= Qt::MessageBox::No|Qt::MessageBox::Yes
+      value = box.exec
+      value == Qt::MessageBox::Yes
+    end
+    
     def open(mode, params={})
       params = {:title=>t(:open_files)}.merge(params)
       file_dialog(mode, params)
     end
 
-
-    def confirm(text, params={})
-      box = Qt::MessageBox.new @parent.widget
-      box.text = text
-      box.window_title="Are you sure?"
-      box.icon = Qt::MessageBox::Question
-      box.informative_text = params[:info] || nil
-      box.detailed_text = params[:details] || nil
-      box.standard_buttons= Qt::MessageBox::No|Qt::MessageBox::Yes
-      value = box.exec
-      value == Qt::MessageBox::Yes or value == Qt::MessageBox::Ok
-      end
-    
     def file_dialog(mode, params={})
       title  = params[:title] || ""
       root   = params[:root]  || ""
@@ -77,8 +74,7 @@ module SomeGui
   module Widgets
 
 
-    module QtWidget
-      include Widget
+    module Widget
 
       attr_accessor :widget
 
@@ -91,11 +87,11 @@ module SomeGui
       end
 
       def status_tip=(value)
-        @widget.status_tip=value
+        widget.status_tip=value
       end
 
       def tool_tip=(value)
-        @widget.tool_tip=value
+        widget.tool_tip=value
       end
 
       def add(w)
@@ -143,7 +139,7 @@ module SomeGui
         }
       end
 
-      def drag_delete(method)
+      def drag_delete(method, *args)
         @widget.instance_eval %{
           @dnd_drag_delete_method = method
         }
@@ -186,8 +182,8 @@ module SomeGui
              
              dropAction = drag.exec(Qt::CopyAction | Qt::MoveAction)
              if (@dnd_drag_delete_method and dropAction == Qt::MoveAction and drag.source != drag.target)
-               #@controller.send(@dnd_drag_delete_method, *@dnd_drag_args)
-               @controller.redirect_to @dnd_drag_delete_method
+               @controller.send(@dnd_drag_delete_method, *@dnd_drag_args)
+               #@controller.redirect_to @dnd_drag_delete_method
              end
              @drag_in_progress = false
           end
@@ -198,7 +194,7 @@ module SomeGui
     end
 
     class Window 
-      include QtWidget
+      include Widget
       include ObserveAttr
 
       def initialize(p, name)
@@ -255,7 +251,7 @@ module SomeGui
 
 
     class Dock
-      include QtWidget
+      include Widget
 
       def initialize(p, title="dock")
         @widget = Qt::DockWidget.new(title, p.widget)
@@ -270,7 +266,7 @@ module SomeGui
 
       
     class Dialog 
-      include QtWidget
+      include Widget
       include ObserveAttr
 
       def initialize(p, title)
@@ -315,7 +311,7 @@ module SomeGui
 
    
     class GlArea
-      include QtWidget
+      include Widget
       include ObserveAttr
 
   #   obsattr_reader :update, :func => :gl_update
@@ -479,7 +475,7 @@ module SomeGui
 
 
     class Table 
-      include QtWidget
+      include Widget
 
       def initialize(p)
         @widget = Qt::TableView.new
@@ -522,7 +518,7 @@ module SomeGui
     end
 
     class Label
-      include QtWidget
+      include Widget
       include ObserveAttr
 
       def initialize(p, text=nil)
@@ -549,7 +545,7 @@ module SomeGui
 
     # qbutton with extra decoration via layout
     class Button 
-      include QtWidget
+      include Widget
       include ObserveAttr
       include EventHandleGenerator
 
@@ -595,7 +591,7 @@ module SomeGui
 
     #qtextedit with text= append mode
     class Text
-      include QtWidget
+      include Widget
       include ObserveAttr
 
 
@@ -615,7 +611,7 @@ module SomeGui
 
 
     class Field 
-      include QtWidget
+      include Widget
       include ObserveAttr
 
       def initialize(p, text=nil)
@@ -644,7 +640,7 @@ module SomeGui
 
 
     class Svg
-      include QtWidget
+      include Widget
       include ObserveAttr
 
       def initialize(p)
@@ -659,7 +655,7 @@ module SomeGui
     end
 
     class Spin
-      include QtWidget
+      include Widget
       include ObserveAttr
 
       def initialize(p, *args)
@@ -684,22 +680,22 @@ module SomeGui
     end
 
     class Tabs
-      include QtWidget 
+      include Widget 
       
       def initialize(p, *args)
-        @widget = Qt::TabWidget.new
+        self.widget = Qt::TabWidget.new
         p.add_element(self) 
       end
       def add(title, element)
-        @widget.addTab(element.widget, title)
+        widget.addTab(element.widget, title)
       end
       def add_element(w)
-        @widget.addTab(w.widget, w.class.name || "")
+        #widget.addTab(w.widget, w.class.name || "")
       end
     end
 
     module Slider
-      include QtWidget
+      include Widget
       include ObserveAttr
       def parse_params(params)
         @widget.maximum = params[:max] || 100
@@ -739,7 +735,7 @@ module SomeGui
     end
 
     class Check
-      include QtWidget
+      include Widget
 
       def initialize(p, text=nil)
         @widget = Qt::CheckBox.new
@@ -752,7 +748,7 @@ module SomeGui
     end
 
     class Radio
-      include QtWidget
+      include Widget
 
       def initialize(p, text=nil)
         @widget = Qt::RadioButton.new(p.widget)
@@ -765,7 +761,7 @@ module SomeGui
     end
 
     class Group
-      include QtWidget
+      include Widget
 
       def initialize(p, *args)
         @widget = Qt::GroupBox.new(p.widget)
@@ -787,7 +783,7 @@ module SomeGui
     end
 
     class Flow 
-      include QtWidget
+      include Widget
       
       def initialize(p)
         @widget = Qt::Widget.new(p.widget)
@@ -821,7 +817,7 @@ module SomeGui
 
 
     class Stack 
-      include QtWidget
+      include Widget
       
       def initialize(p)
         @widget = Qt::Widget.new(p.widget)
@@ -853,22 +849,20 @@ module SomeGui
     end
     
     class Action
-      include QtWidget
+      include Widget
       attr_accessor :qt_action
        
       def initialize(p, text, method, *args)
         @qt_action = Qt::Action.new(text, p.widget)
         #@qt_action.connect(SIGNAL("triggered(bool)")) { emit(:click) }
         #self.connect(:click, p.controller, method, *args)
-        @qt_action.connect(SIGNAL("triggered(bool)")) { self.redirect_to(method)  }
+        @qt_action.connect(SIGNAL("triggered(bool)")) { @controller.redirect_to(method)  }
         p.add_element(self) 
-      end
-      def parse_params(params)
       end
     end
     
     class Menu
-      include QtWidget
+      include Widget
 
       def initialize(p, title="menu")
         widget = @widget = Qt::Menu.new( title, p.widget)

@@ -25,7 +25,7 @@ class MainController
   end
 
   def prectab_format(prectab)
-    "<u><b><font color=#FEFEAA>#{prectab}</b></u>" 
+    "<u><b><span color='#FEFEAA'>#{prectab}</span></b></u>" 
   end
   
   def status_format(status)
@@ -148,8 +148,12 @@ class MainController
     else
       Main.active.status = ["#{account_string}", t("account.scanned"), "barcode"] 
     end
-    model = accounts.length > 0 ? AccountList.new(accounts,["account","locked"]) : nil
-    Main.active.account_table.model = model
+    model = AccountList.new(Account, ["account"]) #,"locked"])
+    y accounts
+    model.apply_to_tree(Main.active.account_table.widget)
+    model.populate(accounts)
+    #model = accounts.length > 0 ?  : nil
+    #Main.active.account_table.model = model
     Main.active.account_table.select_all if model
   end
 
@@ -214,7 +218,7 @@ class MainController
       session[:old_timestamp] = 0
 
       while true
-        puts "refresh"
+        puts "refresh start"
 
         Main.active.printers.each { |p| p.update_job_count; p.update_accepts; p.update_enabled }
         hour = Time.now.hour
@@ -222,18 +226,20 @@ class MainController
           Main.active.computers.each_value {|computer| computer.prectab = nil }
           old_hour = hour
           Debug.log.debug prectab[hour].inspect
-          prectab[hour].each_pair do |kurs, daten|
-            count, ort = daten[0].to_i, daten[1]   
-            index = 0
-            while count > 0
-              c_i = CONFIG["clients"][ort][index]
-              computer = Main.active.computers[c_i]
-              if computer and computer.prectab == nil then
-                computer.prectab = kurs 
-                count -= 1
+          if prectab[hour] then
+            prectab[hour].each_pair do |kurs, daten|
+              count, ort = daten[0].to_i, daten[1]   
+              index = 0
+              while count > 0
+                c_i = CONFIG["clients"][ort][index]
+                #computer = Main.active.computers[c_i]
+                #if computer and computer.prectab == nil then
+                #  computer.prectab = kurs 
+                #  count -= 1
+                #end
+                count -= 1 unless computer
+                index += 1
               end
-              count -= 1 unless computer
-              index += 1
             end
           end
         end
@@ -242,7 +248,9 @@ class MainController
         #comps.each do |computer| 
         #  eval "puts @#{computer.id}.background=code_to_color(computer.Color,computer) if  "
         #end
+        
         session[:old_timestamp] = Time.now.strftime("%j%H%M%S")
+        puts "refresh end"
         sleep 20
       end  
     }

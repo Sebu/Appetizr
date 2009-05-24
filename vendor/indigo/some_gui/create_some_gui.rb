@@ -4,6 +4,9 @@ module Indigo
 module SomeGui
   module CreatesWidgets
 
+    attr_accessor :slots
+    attr_accessor :current
+    
     def self.included(base)
       base.class_eval do
         extend ClassMethods
@@ -11,11 +14,19 @@ module SomeGui
     end
 
     def gen_accessor(name, widget)
-      eval "@#{name} = widget"
+      instance_variable_set(name, widget)
+    end
+    
+    def parse_block(&block)
+      if block_given?
+        current.block = block
+        block.call self.current
+      end
     end
 
     module ClassMethods
       def create_widget(*names)
+      
         names.each do | name |
           class_eval %{
 
@@ -23,24 +34,21 @@ module SomeGui
               params = args.extract_options!
               params.to_options!
 
-              widget = Widgets::#{name}.new(@parent,*args)
+              widget = Widgets::#{name}.new(current,*args)
 
               widget.controller = self
               id_name = params[:id] || widget.object_id.to_s
               View.widgets[id_name] = widget
-             
-              #gen_accessor(params[:id], widget) if params[:id]
-              @parent.children ||= []
-              @parent.children <<  widget
-              
-              # push
-              @parent, widget.parent = widget, @parent
+              #current.children ||= [] ## @parent.children ||= []
+              #current.children <<  widget ## @parent.children <<  widget
 
+              self.slots ||= []
+              slots.push current
+              self.current = widget
               widget.parse_params(params)
-              widget.parse_block(&block)
-              
-              # pop
-              @parent = widget.parent
+              parse_block(&block)
+              ## pop
+              self.current = slots.pop
 
               widget.respond
             end
@@ -54,22 +62,19 @@ module SomeGui
   module Create
     include CreatesWidgets
 
+    
     create_widget :Dock, :Action, :Menu, :Notification, :Text, :GlArea, :Dialog, :Svg, :Spin, :Combo, :Tabs, :VSlider, :HSlider, :Radio, :Check, :Window, :Flow, :Stack, :Field, :Label, :Button, :Group, :Table
     
     attr_accessor :children
-    attr_accessor :parent
 
     def add_element(widget)
     end
 
-    def name(model, name)
-      eval "@#{name} = model"
-    end
-
     def method_missing(method,*params)
-      if @parent #.respond_to?(method)
-         @parent.send(method,*params)
+      if current and current != self
+         current.send(method,*params)
       else
+        puts "Create is missing #{method} in #{self} move to #{self.current}"
         super
       end
     end

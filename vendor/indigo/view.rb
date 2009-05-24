@@ -11,16 +11,10 @@ module Indigo
     def self.load_file(filename)
       content = ''
       File.open(filename, 'r') { |f| content = f.read }
-      Debug.log.debug "loading render block #{filename}"
-      #Debug.log.debug content
+      Debug.log.debug "  \e[1;36mloading render block\e[0m #{filename}"
       content
     end  
    
-#    def initialize
-#      @views = {}
-#      @widgets = {}
-#    end
-    
     def self.widgets
       @@widgets ||= {}
     end

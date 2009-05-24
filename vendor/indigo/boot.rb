@@ -28,7 +28,7 @@ config_files = ["#{APP_DIR}/config/config_defaults.yml",   # defaults
                 "#{APP_DIR}/config/config.yml"]            # readonly
 config_files.each do |config_filename|
   if File.exist?(config_filename) then
-    Debug.log.debug "Loading config #{config_filename}"
+    Debug.log.debug "  \e[1;36mLoading config\e[0m #{config_filename}"
     config_file = YAML.load_file(config_filename)
     CONFIG.merge!(config_file["all"])
     CONFIG.merge!(config_file[INDIGO_ENV])

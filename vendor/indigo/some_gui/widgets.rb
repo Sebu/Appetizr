@@ -2,18 +2,13 @@ module Indigo::SomeGui
   module Widgets
   
     module Widget
-      include Create
       include ObserveAttr
       attr_accessor :controller
       attr_accessor :block
       
-      def parse_block(&block)
-        if block_given?
-          @block = block
-          block.call @parent
-        end
-      end
 
+      def add_element(widget)
+      end
       def respond
         self
       end    

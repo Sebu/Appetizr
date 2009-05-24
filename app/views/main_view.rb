@@ -2,15 +2,15 @@
 
 window t('main.title') do
 
+  menu "demo" do
+    action "exit", "/close"
+  end
   statusbar
-  menu "demo"
-
   status_observe @main, :scan_string
   
   # TODO: not the best place :)
   notification { message_observe @main, :status }
   
-#=begin  
   stack do
     drop :drop_pool_store
     drag_start :drag_pool_store
@@ -33,16 +33,16 @@ window t('main.title') do
     stretch 
     flow do
       stack do
-        field @main.account_text do
+        field @main.account_text do |f|
           completion_observe @main, :user_list
-          @main.account_text_observe @parent, :text
+          @main.account_text_observe f, :text
           enter :account_return
         end
         flow do
           button "undo", :click => "/undo"
-          button "add", :click => "/add_user"
+          button "add", :click => "/adds/1"
         end
-        @main.account_table = table do
+        @main.account_table = table :height => 100 do
           drop :drop_users_on_table
           menu "context" do
             action "add users", "/adds/1"
@@ -52,7 +52,7 @@ window t('main.title') do
       end
 
       tabs :opacity=>0.7 do
-        add "L&og", text { text_observe @main, :status, :filter=>:status_format }
+        add "Log", text(:width => 250) { text_observe @main, :status, :filter=>:status_format }
       end
 #     stretch
       stack do       
@@ -60,6 +60,6 @@ window t('main.title') do
       end
     end
   end
-#=end  
+  
 end
 

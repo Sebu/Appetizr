@@ -1,5 +1,5 @@
 
-Indigo - rapid prototyping application framework inspired by RoR and Shoes
+Indigo/Appetizr - rapid prototyping application framework inspired by RoR and Shoes
 
 USAGE OF DEMO APP/FRAMEWORK
 * 'rake db:migrate'
@@ -26,13 +26,13 @@ Indigo uses ...
   ... rubigen to create app templaes
   ... active_record/resource for db and webservice access
   ... active_support for nice ruby extensions and I18n
-  ... qtruby and qtext for the underlying widget rendering (can change in the future)
+  ... gtk2 for the underlying widget rendering (can change in the future)
   ... some other extensions (dbus) and ideas from RoR
   ... ruby-opengl for opengl support ;) (more on the why later)
 
 
 How it should work(but does not right now):
-  indigo my_app
+  appetize my_app
   cd my_app
   script/generate .. create models and views
   script/start
