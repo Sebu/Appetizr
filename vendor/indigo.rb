@@ -35,6 +35,7 @@ module Indigo
   
   # extend core  
   require 'indigo/core_ext'
+  # core classes
   autoload :App,'app'
   autoload :Application, 'indigo/application'
   autoload :View, 'indigo/view'
@@ -42,7 +43,8 @@ module Indigo
   autoload :EventHandleGenerator, 'indigo/event_handle_generator'
   autoload :Controller, 'indigo/controller'
   autoload :Printer, 'indigo/printer'
-  autoload :ActiveNode, 'indigo/active_node'
+  # model classes
+  autoload :ActiveNode, 'indigo/models/active_node'
   autoload :TableModel, 'indigo/models/table_model'
   autoload :ActiveTreeStore, 'indigo/models/active_tree_store'
   autoload :ARTableModel, 'indigo/models/ar_table_model'  
