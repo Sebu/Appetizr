@@ -33,20 +33,19 @@ end
   
 module Indigo
   
-  
+  # extend core  
   require 'indigo/core_ext'
+  autoload :App,'app'
   autoload :Application, 'indigo/application'
   autoload :View, 'indigo/view'
   autoload :SomeGui, 'indigo/some_gui'
-  autoload :ActiveNode, 'indigo/active_node'
   autoload :EventHandleGenerator, 'indigo/event_handle_generator'
   autoload :Controller, 'indigo/controller'
-  autoload :TableModel, 'indigo/table_model'
-  autoload :ActiveTreeStore, 'indigo/active_tree_store'
-  autoload :ARTableModel, 'indigo/ar_table_model'
-  autoload :App,'app'
   autoload :Printer, 'indigo/printer'
-  
+  autoload :ActiveNode, 'indigo/active_node'
+  autoload :TableModel, 'indigo/models/table_model'
+  autoload :ActiveTreeStore, 'indigo/models/active_tree_store'
+  autoload :ARTableModel, 'indigo/models/ar_table_model'  
 
 
 end

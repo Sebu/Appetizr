@@ -1,35 +1,14 @@
 
 
 module Indigo
-module SomeGui
-  module CreatesWidgets
-
-    attr_accessor :slots
-    attr_accessor :current
-    
-    def self.included(base)
-      base.class_eval do
-        extend ClassMethods
-      end
-    end
-
-    def gen_accessor(name, widget)
-      instance_variable_set(name, widget)
-    end
-    
-    def parse_block(&block)
-      if block_given?
-        current.block = block
-        block.call self.current
-      end
-    end
-
-    module ClassMethods
-      def create_widget(*names)
+  module SomeGui
+    module Create
+   
+      attr_accessor :slots, :current, :children
       
+      def self.creates_widget(*names)
         names.each do | name |
           class_eval %{
-
             def #{name.to_s.downcase}(*args,&block)
               params = args.extract_options!
               params.to_options!
@@ -56,31 +35,34 @@ module SomeGui
           }
         end 
       end
-    end
-  end
+      creates_widget :Dock, :Action, :Menu, :Notification, :Text, :GlArea, :Dialog, :Svg, :Spin, :Combo
+      creates_widget :Tabs, :VSlider, :HSlider, :Radio, :Check, :Window, :Flow, :Stack, :Field, :Label, :Button, :Group, :Table
 
-  module Create
-    include CreatesWidgets
-
-    
-    create_widget :Dock, :Action, :Menu, :Notification, :Text, :GlArea, :Dialog, :Svg, :Spin, :Combo, :Tabs, :VSlider, :HSlider, :Radio, :Check, :Window, :Flow, :Stack, :Field, :Label, :Button, :Group, :Table
-    
-    attr_accessor :children
-
-    def add_element(widget)
-    end
-
-    def method_missing(method,*params)
-      if current and current != self
-         current.send(method,*params)
-      else
-        puts "Create is missing #{method} in #{self} move to #{self.current}"
-        super
+      def gen_accessor(name, widget)
+        instance_variable_set(name, widget)
       end
+      
+      def parse_block(&block)
+        if block_given?
+          current.block = block
+          block.call self.current
+        end
+      end
+          
+     
+      def add_element(widget)
+      end
+
+
+      def method_missing(method,*params)
+        if current and current != self
+           current.send(method,*params)
+        else
+          puts "Create is missing #{method} in #{self} trying #{self.current}"
+          super
+        end
+      end
+
     end
-
-  end
-
-
-end
-end
+  end # some_gui
+end # indigo
