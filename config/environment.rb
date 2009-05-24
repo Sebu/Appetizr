@@ -1,6 +1,16 @@
 
+
+
+#TODO: move somewhere else
+Dir.chdir "#{File.dirname(__FILE__)}/.."
+
+APP_DIR = Dir.pwd
+$:.unshift APP_DIR + '/vendor'
+$:.unshift APP_DIR + '/vendor/indigo'
+
 ENV['INDIGO_ENV'] ||= "development"
 INDIGO_ENV = ENV['INDIGO_ENV']
+require 'boot'
 
 
 #require File.join(File.dirname(__FILE__), 'boot')

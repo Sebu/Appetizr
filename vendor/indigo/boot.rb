@@ -4,8 +4,6 @@
 require 'rubygems'
 require 'activesupport'
 
-# get environment
-require APP_DIR + '/config/environment'
 
 # add paths to lib and ActiveSupport::Dependecies
 extra_paths = ['', '/app','/app/controllers', '/app/models', '/app/helpers']

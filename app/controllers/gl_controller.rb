@@ -1,7 +1,6 @@
 
 
-class AddController  
-  include Indigo::Controller
+class AddController <  Indigo::Controller
   include Gl
 
   def show

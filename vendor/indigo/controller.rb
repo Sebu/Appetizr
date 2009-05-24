@@ -1,13 +1,14 @@
 
 
-
-
 module Indigo
-  module Controller
+  class Controller
     include CommandPattern
     include EventHandleGenerator
     include SomeGui::Create
     include SomeGui::Render
+    include ActiveSupport::Callbacks
+
+    define_callbacks :after_initialize
 
  
     attr_accessor :model_name
@@ -15,29 +16,24 @@ module Indigo
     attr_accessor :session
     attr_accessor :flash
 
-    def self.included(base)
-      base.class_eval do
-        extend ClassMethods
-      end
-    end
-
     def initialize
       @current = self
       @params = {}
       @session = {}
       @flash = {}
-      @model_name = self.class.to_s[0..-11] 
-      after_initialize if respond_to? :after_initialize
+      @model_name = self.class.name.sub("Controller","").downcase.freeze
+      #after_initialize if respond_to? :after_initialize
       self
     end
 
 
     def load_context
-      self.current = render :model => "#{model_name.downcase}"
+      self.current = render :model => "#{model_name}"
     end
     
     def show
-      eval "@#{model_name.downcase} = #{model_name}.active"
+      instance_variable_set("@#{model_name}", model_name.camelize.constantize.active)
+#     eval "@#{model_name.downcase} = "
       #TODO: put into perform_action
       view = session[:view] = load_context
       view.show_all
@@ -60,7 +56,7 @@ module Indigo
     # /model/id/action/
     def self.redirect_to(uri, object=nil)
       data = /(\/([a-z_]+)s)?(\/([a-z_]+))?(\/([a-z]*\d+))?$/.match(uri)
-      model_name = data[2] ? data[2] : object.class.name[0..-11].downcase
+      model_name = data[2] ? data[2] : object.model_name.downcase
       controller_name = "#{model_name.capitalize}Controller"
       action = data[4] || "show"
       id = data[6] || object.params[:id]
@@ -74,7 +70,6 @@ module Indigo
     end
     
     
-
     def t(*params)
       I18n.t(*params)
     end
@@ -82,7 +77,6 @@ module Indigo
     def l(*params)
       I18n.l(*params)
     end
-
     #region: actions
 
     def close
@@ -93,11 +87,9 @@ module Indigo
       session[:view].hide
     end
 
-    module ClassMethods
-      def one
+      def self.one
         @one ||= self.new
       end
-    end
 
   end
 end

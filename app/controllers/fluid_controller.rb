@@ -1,6 +1,5 @@
 
 
-class FluidController  
-  include Indigo::Controller
+class FluidController  < Indigo::Controller
 end
 

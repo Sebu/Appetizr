@@ -1,7 +1,6 @@
 
 
-class MainController 
-  include Indigo::Controller
+class MainController < Indigo::Controller
   
   attr_accessor :main_view
 
@@ -37,10 +36,10 @@ class MainController
 
   def code_to_color(code, computer)
   #def code_to_color(computer)
-    if computer.prectab and computer.User == ""
+    if computer.prectab and computer.user == ""
       CONFIG['colors'][8]
     else
-      CONFIG['colors'][computer.Color]
+      CONFIG['colors'][computer.color]
     end
   end
 
@@ -83,14 +82,14 @@ class MainController
     
   # TODO: merge with users_register methods
   def key_clear(pc)
-    old_user, old_color = pc.User, pc.Color
+    old_user, old_color = pc.user, pc.color
     command("key clear") do
-      pc.User = ""
-      pc.Color = 0
+      pc.user = ""
+      pc.color = 0
       pc.save!
     end.un do
-      pc.User = old_user
-      pc.Color  = old_color
+      pc.user = old_user
+      pc.color  = old_color
       pc.save!
     end.run
     commands_end
@@ -99,33 +98,33 @@ class MainController
   def users_register(users, pc)
     return if users.empty?
     
-    old_user, old_color = pc.User, pc.Color
+    old_user, old_color = pc.user, pc.color
     command("register users") do
-      pc.User = users.join(" ") #(pc.User.split(" ") | (users)).join(" ")
-      pc.Color = CONFIG['color_mapping'][ Account.gen_color(users) ]
+      pc.user = users.join(" ") #(pc.User.split(" ") | (users)).join(" ")
+      pc.color = CONFIG['color_mapping'][ Account.gen_color(users) ]
       pc.save!
-      Main.active.status = ["#{pc.User}", "auf <b>#{pc.Cname}</b> angemeldet", "chair"]
+      Main.active.status = ["#{pc.user}", "auf <b>#{pc.id}</b> angemeldet", "chair"]
     end.un do
-      pc.User = old_user
-      pc.Color = old_color
+      pc.user = old_user
+      pc.color = old_color
       pc.save!
     end.run
     end
 
   def drop_user(pc, other_pc)
     #pc = Computer.find(pc_id.id)
-    old_user, old_color = pc.User, pc.Color
+    old_user, old_color = pc.user, pc.color
     commands_begin "dnd user"
     command("drop users") do
-      pc.User=other_pc["User"]
-      pc.Color=other_pc["Color"]
+      pc.user=other_pc["User"]
+      pc.color=other_pc["Color"]
       pc.save!
-      Main.active.status = ["#{pc.User}", "von <b>#{other_pc['Cname']}</b> auf <b>#{pc.Cname}</b> verschoben","redo"]
+      Main.active.status = ["#{pc.user}", "von <b>#{other_pc['Cname']}</b> auf <b>#{pc.id}</b> verschoben","redo"]
     end.un do
-      pc.User = old_user
-      pc.Color = old_color
+      pc.user = old_user
+      pc.color = old_color
       pc.save!
-      Main.active.status = ["#{pc.User}", "von <b>#{pc.Cname}</b> auf <b>#{other_pc['Cname']}</b> verschoben","undo"]
+      Main.active.status = ["#{pc.user}", "von <b>#{pc.id}</b> auf <b>#{other_pc['Cname']}</b> verschoben","undo"]
     end.run
      #widgets[pc_id.id].background=code_to_color(nil,pc)
   end
@@ -137,7 +136,7 @@ class MainController
     message = ""
     accounts.each do |account|
       exists = Computer.find(:all, :select=>"Cname", :conditions=> ["User LIKE ?", "%#{account.account}%"])
-      exists_string = exists.collect { |pc| pc.Cname }.join(", ")
+      exists_string = exists.collect { |pc| pc.id }.join(", ")
       message +="<b>#{account.account}</b> auf <b>#{exists_string}</b>\n" unless exists.empty?
     end
     account_string = accounts.collect { |a| a.account }.join(", ")
@@ -194,11 +193,11 @@ class MainController
 
   # add refresh and scanner threads 
   # TODO: move to somewhere else ( maybe computer and scanner controllers etc. )
-  def after_initialize
+  after_initialize do 
   
     # generate pc model shortcuts
     Main.active.clusters.each do |computers|
-      computers.each { |c| Main.active.computers[c.Cname]=c }
+      computers.each { |c| Main.active.computers[c.id]=c }
     end
 
     # load user names from yppassed
@@ -283,11 +282,11 @@ class MainController
             if Main.active.account_table.model
               table_register(pc)
             else
-              case pc.User
+              case pc.user
               when ""
                 Main.active.status = ["#{pc.id}", "ist schon frei", "key"] 
               else
-                Main.active.status = ["#{pc.User}", "von <b>#{pc.id}</b> abgemeldet", "trashcan_full"]
+                Main.active.status = ["#{pc.user}", "von <b>#{pc.id}</b> abgemeldet", "trashcan_full"]
               end
               key_clear(pc)
             end

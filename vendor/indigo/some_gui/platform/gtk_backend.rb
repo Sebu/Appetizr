@@ -3,7 +3,7 @@ require 'gtk2'
 
 module Indigo
 
-  module Controller
+  class Controller
 
       def confirm(text, params={})
         box = Gtk::MessageDialog.new(current.widget,
@@ -34,8 +34,13 @@ module Indigo
           
     module Widgets
 
+      STOCK_ITEMS = {:ok=> Gtk::Stock::OK, :cancel => Gtk::Stock::CANCEL}
       module Widget
         attr_accessor :widget
+
+        def get_stock(name)
+          STOCK_ITEMS[name.to_sym] || name
+        end
 
         def background=(value)
           widget.modify_bg(Gtk::StateType::NORMAL, Gdk::Color.parse(value))
@@ -156,18 +161,24 @@ module Indigo
           widget.label
         end
 
-        
         def initialize(p, *args)
-          self.widget = Gtk::Button.new
+          title = args[0]
+          self.widget = if title 
+            Gtk::Button.new(get_stock(title))
+          else 
+            Gtk::Button.new
+          end
+
           widget.signal_connect(:clicked) { emit(:click) }
           
-          # CONTAINER layout
-          @layout = Gtk::VBox.new 
-          @layout.spacing = 0
-          #@layout.margin = 0
-          widget.add(@layout)
+          unless title       # CONTAINER layout
+            @layout = Gtk::VBox.new 
+            @layout.spacing = 0
+            #@layout.margin = 0
+            widget.add(@layout)
+          end
           p.add_element(self)
-          self.text=args[0]
+          #self.text=args[0]
         end
 
 
@@ -181,11 +192,10 @@ module Indigo
         end
 
         def add_element(w)
-          @layout.add(w.widget)
+          @layout.add(w.widget) if @layout
         end
 
       end
-
 
 
       class Table 

@@ -8,7 +8,8 @@ class Computer < ActiveRecord::Base
 
   set_table_name "Cache"
   set_primary_key "Cname"
-
+  alias_attribute :user, :User
+  alias_attribute :color, :Color
   observe_attr :User, :Color
   
   validates_numericality_of :Color, :greater_than_or_equal_to => 0, :less_than => 8

@@ -12,7 +12,7 @@ button :id => @c.id, :height => 60, :width=> 60 do #, :click=> "/computers/cbutt
   drag :direct, @c # drag @c 
   drag_delete :key_clear, @c # "/#{@c.id}/key_clear/"
   drop :drop_user, @c
-
+  
   menu :context do
     action "nothing", "/nothing"
     separator
@@ -21,13 +21,13 @@ button :id => @c.id, :height => 60, :width=> 60 do #, :click=> "/computers/cbutt
     end
   end
 
-  stack :margin => 2 do
+#  stack :margin => 2 do
     flow do
       label "<b>#{@c.id}</b>" , :size => 8
       stretch
       label(:size => 8) { text_observe @c, :prectab, :filter=> :prectab_format }
     end
     label(:size => 7) { text_observe @c, :User, :filter=> :user_list_format }
-    stretch
-  end
+#   stretch
+#  end
 end
