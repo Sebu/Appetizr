@@ -64,7 +64,7 @@ module SomeGui
       end
       
       
-      def drag_start(method, *args)
+      def drag(method, *args)
         #Gtk::Drag.source_set(widget, Gdk::Window::SHIFT_MASK, [['text/json', 0, 0]], Gdk::DragContext::ACTION_COPY)
         Gtk::Drag.source_set(widget, Gdk::Window::BUTTON1_MASK, [['text/json', 0, 0]],  Gdk::DragContext::ACTION_MOVE)
         widget.signal_connect("drag-data-get") do |w, drag_context, selection_data, info, time|

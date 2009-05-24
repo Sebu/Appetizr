@@ -12,14 +12,6 @@ Differences to Rails
     migrations is db/migration/db_name/[0-9]*_*.rb
 3. more 
 
-TODO before first usefull release
-* create a real initializer (with better internel config support for framework and app)
-* improve ...
-   ... Signaling (maybe use GObject?)
-   ... the Rakefile
-   ... migration support (get it to work correctly)
-   ... the widgetery
-
 
 Indigo uses ...
   ... a DSL to create/format view similar to the DSL of shoes ( http://github.com/why/shoes/tree/master ).
@@ -34,6 +26,6 @@ Indigo uses ...
 How it should work(but does not right now):
   appetize my_app
   cd my_app
-  script/generate .. create models and views
+  script/generate window/model/controller .. create models and views
   script/start
   

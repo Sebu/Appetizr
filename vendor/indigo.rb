@@ -42,8 +42,8 @@ module Indigo
   autoload :SomeGui, 'indigo/some_gui'
   autoload :EventHandleGenerator, 'indigo/event_handle_generator'
   autoload :Controller, 'indigo/controller'
-  autoload :Printer, 'indigo/printer'
   # model classes
+  autoload :Printer, 'indigo/models/printer'
   autoload :ActiveNode, 'indigo/models/active_node'
   autoload :TableModel, 'indigo/models/table_model'
   autoload :ActiveTreeStore, 'indigo/models/active_tree_store'

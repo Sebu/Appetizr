@@ -6,6 +6,8 @@ Dir.chdir "#{File.dirname(__FILE__)}/.."
 APP_DIR = Dir.pwd
 $:.unshift APP_DIR + '/vendor'
 
+
+#require File.dirname(__FILE__) + '/../config/environment'
 require 'indigo/boot'
 require 'indigo/commands/start'
 

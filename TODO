@@ -1,14 +1,27 @@
 
-demo app TODO
-
-- printer view (also show fancy tray infos, load and errors)
-- rEvaluate & lazy :) 
+TODO before first usefull release
+* cleanup controller
+* create a real initializer (with better internel config support for framework and app)
+* improve ...
+   ... Signaling (maybe use GObject?)
+   ... the Rakefile
+   ... migration support (get it to work correctly)
+   ... the widgetery
+* rEvaluate & lazy :) 
   menu do
     show_observe @c, :User   in show   render "user_list", :c => @c 
   end
-- better locale support (allow change of locale and rEval)
-- dbus signaling/observe_attr
-- speed! ( ruby1.9 + thread safty + gobject/qt_signals for signaling )
+  render :update do
+    view[:hans] do 
+      label
+    end
+  end
+* better locale support (allow change of locale and rEval)
+* dbus signaling/observe_attr
+* speed! ( ruby1.9 + thread safty + gobject/qt_signals for signaling )
+
+demo app TODO
+* printer view (also show fancy tray infos, load and errors)
 
 
 

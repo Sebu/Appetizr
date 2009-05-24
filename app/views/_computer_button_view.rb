@@ -9,7 +9,7 @@ button :id => @c.id, :height => 60, :width=> 60 do #, :click=> "/computers/cbutt
   #background_observe "/computer/#{@c.Cname}/Color", :filter=> :code_to_color
   background_observe @c, :Color, :filter=> :code_to_color, :args=>[@c]
 
-  drag_start :direct, @c # drag @c 
+  drag :direct, @c # drag @c 
   drag_delete :key_clear, @c # "/#{@c.id}/key_clear/"
   drop :drop_user, @c
 

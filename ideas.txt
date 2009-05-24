@@ -1,15 +1,28 @@
 
 
+# idea from shoes
+class Controller
+  route /return\/(\d+)/, :blaaa
+end
 
+buttons/actions/links
 
-button.click { @bla.show_n_hide }
+button :ok   # default stock
+button "ok"  # text
 
+button.click :symbol, args             # fastest
+button.click "/uri/to/action/" args    # link to other controller 
+button.click { block }                 # direct for simple view actions  
+
+button :ok, :click => :sym/"uri"
+button :ok do
+  click {}/:sym/"uri"
+end
 
 
 drag {}
 drag args
 drag "method"
-
 drop {|data| @text = data }
 
 QCompleter
@@ -84,7 +97,6 @@ end
 
 #TODO: remove need for add_events
 #  def add_events
-
 #    clicked ['c81', 'c82'] do |s|
 #     Base.log.info "click0r"
 #     @main.account_text = "aaa"
@@ -100,16 +112,16 @@ end
 #    end
  
 #  observe: '@adm.name' do ||
-#    adm_name_update()??????
+#  @adm.on_name_changed do ||
+#    adm_name_update??????
 #  end
 
 #link_to ist hier clicked?
 # render stuff muss in controller.create
 
       table :id => :test_table do
-#        format :account, with => :acc_img
-#        format :real_name, with => :string
-#        format :lock_state, with => :bool
+#        format :account, :image, :via => :acc_img
+#        format :locked, :boolean
       end
 
 
@@ -119,7 +131,6 @@ name_was
 
 
 need i18n from active_support
-
 
 views/
   app_view
@@ -134,9 +145,10 @@ controllers/
   computer
   account
   printer
-  note
+  notify
 models/
   computer
   account
   printer (activecups<activeresource)
-  note
+  notify
+  
