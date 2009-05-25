@@ -8,16 +8,18 @@ class Indigo::ObjectListStore < Gtk::ListStore
 
   attr_accessor :columns
   
-  def self.after_edit(method)
-    @@after_edit = method
-  end
-   
+  
+  
   def self.keys
-    @@keys ||= []
-  end
-
+    @keys ||= []
+  end  
+  
   def self.types
-    @@types ||= []
+    @types ||= []
+  end  
+
+  def self.after_edit(method)
+    @after_edit = method
   end
   
   def self.column(key, type)
@@ -26,8 +28,7 @@ class Indigo::ObjectListStore < Gtk::ListStore
   end
   
   def initialize(records=[])
-    @@after_edit ||= nil
-    super(*@@types)
+    super(*self.class.types)
     add_objects(records)
   end
   
@@ -36,10 +37,21 @@ class Indigo::ObjectListStore < Gtk::ListStore
     return if records.empty?
     columns.each do |record|
       child = append
-      @@keys.each_with_index { |k,i| child[i] = record.send(k) }
+      self.class.keys.each_with_index { |k,i| child[i] = record.send(k) }
     end
   end
   
+  def add_object(record)
+    return unless record
+    @columns << record
+    child = append
+    self.class.keys.each_with_index { |k,i|  child[i] = record.send(k) }
+  end
+
+  def last
+    @columns.last
+  end
+
   def empty?
     @columns.empty?
   end
@@ -52,13 +64,13 @@ class Indigo::ObjectListStore < Gtk::ListStore
 
   def set_value(path,col, value)
     item = columns[path.to_s.to_i]
-    item.send("#{@@keys[col]}=",value)
-    item.send(@@after_edit) if @@after_edit
-    get_iter(path).set_value(col, item[@@keys[col]] ) 
+    item.send("#{self.class.keys[col]}=",value)
+    #item.send(Indigo::ObjectListStore.after_edit) if Indigo::ObjectListStore.after_edit
+    get_iter(path).set_value(col, item.send(self.class.keys[col]) ) 
   end
     
   def get_value(path,col)
-    columns[path.to_s.to_i][@@keys[col]]
+    columns[path.to_s.to_i].send(self.class.keys[col])
   end
 
   def [](path)

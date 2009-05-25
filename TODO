@@ -20,6 +20,12 @@ TODO before first usefull release
 * speed! ( ruby1.9 + thread safty + gobject/qt_signals for signaling )
 
 demo app TODO
+
+ 
+* dnd copy
+* belegung
+* printer menu
+* layouts
 * printer view (also show fancy tray infos, load and errors)
 
 

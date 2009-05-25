@@ -28,13 +28,6 @@ class MainController < Indigo::Controller
     "<u><b><span size='small' color='#FEFEAA'>#{prectab}</span></b></u>" 
   end
   
-  def status_format(status)
-    time = Time.now.strftime("%H:%M:%S")
-    title,body,icon = status
-    "[#{time}] <b>#{title}</b> #{body}"
-    #"[#{time}] <img src=#{Res[icon]} height=24> <b>#{title}</b> #{body}"
-  end
-
   def code_to_color(code, computer)
   #def code_to_color(computer)
     if computer.prectab and computer.user == ""
@@ -158,11 +151,13 @@ class MainController < Indigo::Controller
   def account_return
     direct_login = []
     users = []
-    Main.active.account_text.split(',').each do |n| 
-      case n.strip!
-      when /.*@[0-9]{2,3}$/ 
+    ulist =  Main.active.account_text.tr("\n ",",").split(",")
+    ulist.each do |n| 
+      n.strip!
+      case n
+      when /^.*@[0-9]{2,3}$/ 
         direct_login << n.split("@")
-      else
+      when /^.{0,8}$/
         users << n
       end
     end

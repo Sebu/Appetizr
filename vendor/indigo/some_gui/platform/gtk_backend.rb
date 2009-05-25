@@ -45,6 +45,7 @@ module Indigo
         def background=(value)
           widget.modify_bg(Gtk::StateType::NORMAL, Gdk::Color.parse(value))
         end
+        
         def status_tip=(value)
         end
         def tool_tip=(value)
@@ -68,7 +69,6 @@ module Indigo
         
         
         def drag(method, *args)
-          #Gtk::Drag.source_set(widget, Gdk::Window::SHIFT_MASK, [['text/json', 0, 0]], Gdk::DragContext::ACTION_COPY)
           Gtk::Drag.source_set(widget, Gdk::Window::BUTTON1_MASK, [['text/json', 0, 0]],  Gdk::DragContext::ACTION_MOVE)
           widget.signal_connect("drag-data-get") do |w, drag_context, selection_data, info, time|
             if method == :direct
@@ -228,7 +228,7 @@ module Indigo
         def model=(model)
           widget.model=model
           #TODO enabled when many_columns/long_rows
-          #@treeview.rules_hint=true
+          widget.rules_hint=true
 
         end
         def model
@@ -254,7 +254,7 @@ module Indigo
                 model.set_value(path, col, value)
               end
             end
-            Gtk::TreeViewColumn.new(name, renderer, :text => col)
+            Gtk::TreeViewColumn.new(name, renderer, :markup => col)
           when :boolean;    
             renderer = Gtk::CellRendererToggle.new
             if edit
@@ -299,11 +299,11 @@ module Indigo
       class Tabs
         include Widget 
 
-        def add(title, element)
-          add_tab(element, title)
+        def tab(title)
+          @current_title = title
         end
         def add_element(w)
-          add_tab(w, (w.title || ""))
+          add_tab(w, @current_title)
         end
               
         def initialize(p, *args)
@@ -368,7 +368,20 @@ module Indigo
           widget.text
         end
       end
-      
+
+
+      class Box
+        include Widget
+        
+        def initialize(p)
+          self.widget = Gtk::EventBox.new
+          p.add_element(self) 
+        end
+        
+        def add_element(w)
+          widget.add(w.widget)
+        end
+      end      
       
       class Layout
         include Widget
@@ -389,7 +402,7 @@ module Indigo
         end
         
         def add_element(w)
-          widget.pack_start(w.widget, true, false, 0)
+          widget.pack_start(w.widget, false, false, 1)
         end
       end
       

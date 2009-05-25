@@ -1,27 +1,26 @@
 
-Indigo/Appetizr - rapid prototyping application framework inspired by RoR and Shoes
+Appetizr (aka indigo) - (rapid) application framework inspired by RoR and Shoes
 
 USAGE OF DEMO APP/FRAMEWORK
 * 'rake db:migrate'
 * 'script/start'
 
 Differences to Rails
-1. indigo is not RAILS
-2. indigo uses multiple databases by default so
+1. Appetizr is not RAILS
+2. Appetizr uses multiple databases by default so
     schema.rb is db/schemas/db_name.rb
     migrations is db/migration/db_name/[0-9]*_*.rb
 3. more 
 
 
-Indigo uses ...
-  ... a DSL to create/format view similar to the DSL of shoes ( http://github.com/why/shoes/tree/master ).
-  ... rubigen to create app templaes
-  ... active_record/resource for db and webservice access
+Appetizr uses ...
+  ... a DSL to create/format view similar to the DSL of shoes ( http://github.com/why/shoes/ ).
   ... active_support for nice ruby extensions and I18n
-  ... gtk2 for the underlying widget rendering (can change in the future)
+  ... active_record/resource for db and webservice access
+  ... gtk2 for the underlying widget rendering
+  ... rubigen to create app templaes
   ... some other extensions (dbus) and ideas from RoR
-  ... ruby-opengl for opengl support ;) (more on the why later)
-
+ 
 
 How it should work(but does not right now):
   appetize my_app
