@@ -48,7 +48,7 @@ module Indigo
   autoload :ActiveNode, 'indigo/models/active_node'
   autoload :TableModel, 'indigo/models/table_model'
   autoload :ActiveTreeStore, 'indigo/models/active_tree_store'
-  autoload :ARTreeStore, 'indigo/models/ar_tree_store'  
+  autoload :ARListStore, 'indigo/models/ar_list_store'  
   autoload :ARTableModel, 'indigo/models/ar_table_model'  
 
 

@@ -1,6 +1,6 @@
 
 
-class Indigo::ARTreeStore < Gtk::ListStore
+class Indigo::ARListStore < Gtk::ListStore
 
   attr_accessor :columns, :keys, :types
   

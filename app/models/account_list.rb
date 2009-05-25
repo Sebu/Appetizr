@@ -1,6 +1,6 @@
 
 
-class AccountList < Indigo::ARTreeStore
+class AccountList < Indigo::ARListStore
 
 end
 
