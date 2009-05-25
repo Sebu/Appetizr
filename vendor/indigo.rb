@@ -42,10 +42,6 @@ module Indigo
   autoload :ActiveNode, 'indigo/models/active_node'
   autoload :ObjectListStore, 'indigo/models/object_list_store'  
 
-  #autoload :ARTableModel, 'indigo/models/ar_table_model'  
-  #autoload :TableModel, 'indigo/models/table_model'
-  #autoload :ActiveTreeStore, 'indigo/models/active_tree_store'
-
 
 end
 
