@@ -1,19 +1,14 @@
 
 
 
-#TODO: move somewhere else
 Dir.chdir "#{File.dirname(__FILE__)}/.."
-
 APP_DIR = Dir.pwd
 $:.unshift APP_DIR + '/vendor'
-$:.unshift APP_DIR + '/vendor/indigo'
 
 ENV['INDIGO_ENV'] ||= "development"
 INDIGO_ENV = ENV['INDIGO_ENV']
-require 'boot'
+require 'indigo/boot'
 
-
-#require File.join(File.dirname(__FILE__), 'boot')
 
 #Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence over those specified here.

@@ -3,7 +3,7 @@
 window t('main.title') do
 
   menu "demo" do
-    action "exit", "/close"
+    action :quit, "/close"
   end
   statusbar
   status_observe @main, :scan_string
@@ -39,12 +39,15 @@ window t('main.title') do
           enter :account_return
         end
         flow do
-          button "undo", :click => "/undo"
-          button "add", :click => "/adds/1"
+          button :undo, :click => "/undo"
+          button :add, :click => "/adds/1"
         end
-        @main.account_table = table :height => 100 do
+        @main.account_table = table :height => 300 do
+          column "Account", :string
+          column "gelockt?", :boolean, true
+          column "Barcode", :string
           drop :drop_users_on_table
-          menu "context" do
+          menu :context do
             action "add users", "/adds/1"
             action "remove users", '/remove_user'
           end

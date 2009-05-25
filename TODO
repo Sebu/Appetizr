@@ -1,6 +1,5 @@
 
 TODO before first usefull release
-* cleanup controller
 * create a real initializer (with better internel config support for framework and app)
 * improve ...
    ... Signaling (maybe use GObject?)

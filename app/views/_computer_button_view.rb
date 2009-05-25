@@ -14,7 +14,7 @@ button :id => @c.id, :height => 60, :width=> 60 do #, :click=> "/computers/cbutt
   drop :drop_user, @c
   
   menu :context do
-    action "nothing", "/nothing"
+    action :cancel, "/nothing"
     separator
     menu "hardcore" do
       action "xdm restart", "/computers/restart/#{@c.id}" #, @c

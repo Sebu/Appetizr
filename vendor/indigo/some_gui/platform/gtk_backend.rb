@@ -19,7 +19,7 @@ module Indigo
         value == Gtk::Dialog::RESPONSE_YES
       end
       
-  end
+  end # Controller
 
   module SomeGui
 
@@ -34,7 +34,7 @@ module Indigo
           
     module Widgets
 
-      STOCK_ITEMS = {:ok=> Gtk::Stock::OK, :cancel => Gtk::Stock::CANCEL}
+      STOCK_ITEMS = {:ok=> Gtk::Stock::OK, :cancel => Gtk::Stock::CANCEL, :add => Gtk::Stock::ADD, :undo => Gtk::Stock::UNDO, :quit => Gtk::Stock::QUIT}
       module Widget
         attr_accessor :widget
 
@@ -120,7 +120,7 @@ module Indigo
         def add_element(w)
           case w.class.name
           when "Indigo::SomeGui::Widgets::Menu"
-            sub_menu = Gtk::MenuItem.new(w.text)
+            sub_menu = Gtk::ImageMenuItem.new(get_stock(w.text))
             sub_menu.submenu=w.widget
             widget.append(sub_menu)
           when "Indigo::SomeGui::Widgets::Action"
@@ -139,7 +139,7 @@ module Indigo
         attr_accessor :action
 
         def initialize(p, text, method, *args)
-          self.action = Gtk::MenuItem.new(text)
+          self.action = Gtk::ImageMenuItem.new(get_stock(text))
           action.signal_connect(:activate)  { |w| @controller.redirect_to(method) }
           p.add_element(self) 
         end
@@ -153,13 +153,13 @@ module Indigo
         include ObserveAttr
         include EventHandleGenerator
 
-        def text=(value) 
-          widget.label = value
-        end
+        #def text=(value) 
+        #  widget.label = value
+        #end
 
-        def text
-          widget.label
-        end
+        #def text
+        #  widget.label
+        #end
 
         def initialize(p, *args)
           title = args[0]
@@ -178,16 +178,12 @@ module Indigo
             widget.add(@layout)
           end
           p.add_element(self)
-          #self.text=args[0]
         end
 
 
         def parse_params(params)
           method_click = params[:click]
           widget.signal_connect(:clicked) { @controller.redirect_to method_click } if method_click
-    #      @widget.setMinimumSize( Qt::Size.new(height, height) ) if height
-          #@widget.setMaximumSize( Qt::Size.new(60,60) )
-          #click(method_click) if method_click
           super
         end
 
@@ -196,47 +192,79 @@ module Indigo
         end
 
       end
+      
+      class Link < Button
+        def initialize(p, *args)
+          title = args[0]
+          label = Gtk::Label.new
+          label.set_markup("<span color='blue'><u>#{title}</u></span>")
+          self.widget = Gtk::EventBox.new
+          widget.add(label)
+          p.add_element(self)
+        end
+        
+        def parse_params(params)
+          method_click = params[:click]
+          widget.signal_connect("button-press-event") { @controller.redirect_to method_click } if method_click
+          #widget.signal_connect("enter-notify-event") { puts "enter"; widget.get_window.set_cursor(Gtk::Gdk::WACTCH)  }
+        end
+      end
 
 
       class Table 
         include Widget
 
         def initialize(p)
-          self.widget = Gtk::TreeView.new
-          renderer = Gtk::CellRendererText.new
-
-          #@widget.selectionBehavior=Qt::AbstractItemView::SelectRows
-          #@widget.selectionMode=Qt::AbstractItemView::MultiSelection
-          p.add_element(self) 
+          self.widget = Gtk::ScrolledWindow.new
+          widget.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
+          @treeview = Gtk::TreeView.new
+          @treeview.selection.mode=Gtk::SELECTION_MULTIPLE
+          widget.add(@treeview)
+          p.add_element(self)
+          @col = 0 
           model = nil
         end
         def model=(model)
-          @widget.model=model
+          @treeview.model=model
         end
         def model
-          @widget.model
+          @treeview.model
         end
         def selection
-        #  indices = @widget.selectionModel ? @widget.selectionModel.selectedRows : []
-        #  indices.collect{ |i| @widget.model.data_raw(i) }
+          selected = []
+          @treeview.selection.selected_each { |model, path, iter| selected << model.raw_data(path) }
+          selected
         end
         
         def select_all
-        #  topLeft = model.index(0, 0, @widget.parent)
-        #  bottomRight = model.index(model.rowCount-1, model.columnCount-1)
-        #  selection =  Qt::ItemSelection.new(topLeft, bottomRight)
-        #  widget.selectionModel.select(selection, Qt::ItemSelectionModel::Select)
+          @treeview.selection.select_all
         end
 
-        def column(col, type, params={})
-          case type
-          when :Text
-            return
+        def column(name, type, edit=true)
+          column = case type
+          when :string;
+            renderer = Gtk::CellRendererText.new
+            col = @col
+            if edit
+              renderer.editable = true 
+              renderer.signal_connect(:edited) do |renderer, path, value|
+                model.set_value(path, col, value)
+              end
+            end
+            Gtk::TreeViewColumn.new(name, renderer, :text => @col)
+          when :boolean;    
+            renderer = Gtk::CellRendererToggle.new
+            col = @col
+            if edit
+              renderer.signal_connect(:toggled) do |renderer, path|
+                value = model.get_value(path, col)
+                model.set_value(path, col, !value)
+              end
+            end
+            Gtk::TreeViewColumn.new(name, renderer, :active => @col)
           end
-          #@delegate = eval "#{type.to_s}D.new"
-          #@delegate.controller = @controller
-          #@delegate.filter_func = params[:filter]
-          #@widget.setItemDelegateForColumn(col, @delegate)
+          @treeview.append_column(column)
+          @col += 1
         end
 
       end
@@ -247,19 +275,23 @@ module Indigo
 
 
         def initialize(p, text=nil)
-          self.widget = Gtk::TextView.new
+          self.widget = Gtk::ScrolledWindow.new
+          widget.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
+
+          @textview = Gtk::TextView.new
+          widget.add(@textview)
           # widget.buffer.create_tag("b", {"weight" => Pango::WEIGHT_BOLD})
 
           p.add_element(self)
           self.text=text
         end
         def parse_params(params)
-          widget.editable = params[:value] || true
-          widget.wrap_mode = Gtk::TextTag::WRAP_WORD
+          @textview.editable = params[:value] || true
+          @textview.wrap_mode = Gtk::TextTag::WRAP_WORD
           super
         end
         def text=(value)
-          widget.buffer.insert_at_cursor("#{value.to_s}")
+          @textview.buffer.insert_at_cursor("#{value.to_s}\n")
         end
       end
       
@@ -296,10 +328,11 @@ module Indigo
           self.text=text
         end
 
-        def completion=(value)
-          #@completer = Qt::Completer.new(value)
-          #@completer.case_sensitivity = Qt::CaseInsensitive
-          #@widget.setCompleter(@completer)
+        def completion=(model)
+          completion = Gtk::EntryCompletion.new
+          completion.model = model
+          completion.text_column = 0
+          widget.completion = completion
         end
 
         def text=(value)

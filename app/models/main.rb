@@ -10,7 +10,8 @@ class Main
   
   def initialize
     @printers = Indigo::Printer.printers
-    @user_list = ["seb"]
+    @user_list = Gtk::ListStore.new(String,String)
+    [["seb","sdsd"]].each { |v| iter = user_list.append; iter[0] = v[0]; iter[1] = v[1] }
     @account_text = ""
     @scan_string = "220683"
     @status = ["indigoAdm", "gestartet", "application-x-ruby"]

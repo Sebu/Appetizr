@@ -4,7 +4,8 @@ class MainController < Indigo::Controller
   
   attr_accessor :main_view
 
-
+  after_initialize :start_threads
+  
   #TODO: remove and implicit generate in dnd functions
   def drag_pool_store
     session[:pool_store]
@@ -24,7 +25,7 @@ class MainController < Indigo::Controller
   end
 
   def prectab_format(prectab)
-    "<u><b><span color='#FEFEAA'>#{prectab}</span></b></u>" 
+    "<u><b><span size='small' color='#FEFEAA'>#{prectab}</span></b></u>" 
   end
   
   def status_format(status)
@@ -147,10 +148,9 @@ class MainController < Indigo::Controller
     else
       Main.active.status = ["#{account_string}", t("account.scanned"), "barcode"] 
     end
-    model = AccountList.new(Account, ["account"]) #,"locked"])
-    y accounts
-    model.apply_to_tree(Main.active.account_table.widget)
-    model.populate(accounts)
+    model = AccountList.new(accounts, ["account","locked","barcode"])
+    Main.active.account_table.model = model 
+    #model.populate(accounts)
     #model = accounts.length > 0 ?  : nil
     #Main.active.account_table.model = model
     Main.active.account_table.select_all if model
@@ -193,19 +193,17 @@ class MainController < Indigo::Controller
 
   # add refresh and scanner threads 
   # TODO: move to somewhere else ( maybe computer and scanner controllers etc. )
-  after_initialize do 
-  
+  def start_threads
     # generate pc model shortcuts
     Main.active.clusters.each do |computers|
       computers.each { |c| Main.active.computers[c.id]=c }
     end
 
     # load user names from yppassed
-    users = []
-    IO.popen("ypcat passwd").each { |line| users << line.split(':')[0] }
-    Main.active.user_list = users
+    #users = []
+    #IO.popen("ypcat passwd").each { |line| users << line.split(':')[0] }
+    #Main.active.user_list = users
     
-
     prectab = Prectab.scan_file(CONFIG["prectab_path"])
     
     # refresh cache
@@ -224,18 +222,18 @@ class MainController < Indigo::Controller
         if hour != old_hour
           Main.active.computers.each_value {|computer| computer.prectab = nil }
           old_hour = hour
-          Debug.log.debug prectab[hour].inspect
+          Debug.log.debug "prectab", prectab[hour].inspect
           if prectab[hour] then
             prectab[hour].each_pair do |kurs, daten|
               count, ort = daten[0].to_i, daten[1]   
               index = 0
               while count > 0
                 c_i = CONFIG["clients"][ort][index]
-                #computer = Main.active.computers[c_i]
-                #if computer and computer.prectab == nil then
-                #  computer.prectab = kurs 
-                #  count -= 1
-                #end
+                computer = Main.active.computers[c_i]
+                if computer and computer.prectab == nil then
+                  computer.prectab = kurs 
+                  count -= 1
+                end
                 count -= 1 unless computer
                 index += 1
               end

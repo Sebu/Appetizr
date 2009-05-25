@@ -7,6 +7,7 @@
 #autoload :ObjectTableModel, 'qtext/object_table_model'
 
 # extensions to Ruby libs
+autoload :YAML, 'yaml'
 autoload :CommandPattern, 'command_pattern'
 autoload :Signaling, 'signaling'
 autoload :ObserveAttr, 'observe_attr'
@@ -47,6 +48,7 @@ module Indigo
   autoload :ActiveNode, 'indigo/models/active_node'
   autoload :TableModel, 'indigo/models/table_model'
   autoload :ActiveTreeStore, 'indigo/models/active_tree_store'
+  autoload :ARTreeStore, 'indigo/models/ar_tree_store'  
   autoload :ARTableModel, 'indigo/models/ar_table_model'  
 
 

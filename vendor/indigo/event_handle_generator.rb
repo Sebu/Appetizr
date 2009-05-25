@@ -3,16 +3,12 @@
 module Indigo
   module EventHandleGenerator
 
-    def link(signal, action, *args)
-      connect(signal, self, action, *args)
-    end
-
     def enter(action, *args)
-      link(:enter, action, *args)
+      connect(:enter, self, action, *args)
     end
  
     def click(action, *args)
-      link(:click, action, *args)
+      connect(:click, self, action, *args)
     end
   
   end

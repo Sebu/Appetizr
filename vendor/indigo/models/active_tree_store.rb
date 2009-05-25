@@ -1,4 +1,4 @@
-require 'indigo/active_column'
+require 'indigo/models/active_column'
 
 =begin
 

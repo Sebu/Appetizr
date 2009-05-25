@@ -22,7 +22,7 @@ module Indigo
       @session = {}
       @flash = {}
       @model_name = self.class.name.sub("Controller","").downcase.freeze
-      #after_initialize if respond_to? :after_initialize
+      run_callbacks :after_initialize
       self
     end
 
