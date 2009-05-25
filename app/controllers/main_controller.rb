@@ -45,7 +45,7 @@ class MainController < Indigo::Controller
   end
 
   def cbutton_click(pc)
-    if Main.active.account_table.model
+    unless Main.active.account_list.empty?
       table_register(pc)
     end
   end
@@ -61,7 +61,7 @@ class MainController < Indigo::Controller
 
  
   def remove_user
-    accounts = Main.active.account_table.selection
+    accounts = @account_table.selection
     if !accounts.empty? and confirm t"account.ask_remove"
       accounts.each { |account| Account.delete_all("barcode='#{account.barcode}' AND account='#{account.account}'") }
       puts "SDSD"
@@ -73,9 +73,9 @@ class MainController < Indigo::Controller
   
   
   def table_register(pc)
-    new_users = Main.active.account_table.selection.collect { |a| a.account } if Main.active.account_table.model
+    new_users = @account_table.selection.collect { |a| a.account } unless Main.active.account_list.empty?
     users_register(new_users, pc)
-    Main.active.account_table.model = nil
+    Main.active.account_list.clear
   end
   
   
@@ -148,12 +148,9 @@ class MainController < Indigo::Controller
     else
       Main.active.status = ["#{account_string}", t("account.scanned"), "barcode"] 
     end
-    model = AccountList.new(accounts, ["account","locked","barcode"])
-    Main.active.account_table.model = model 
-    #model.populate(accounts)
-    #model = accounts.length > 0 ?  : nil
-    #Main.active.account_table.model = model
-    Main.active.account_table.select_all if model
+    Main.active.account_list.clear
+    Main.active.account_list.add_objects(accounts)
+    @account_table.select_all
   end
 
 
@@ -277,7 +274,7 @@ class MainController < Indigo::Controller
             fill_accounts(accounts)
           when :key
             pc = Main.active.computers[Main.active.scan_string]
-            if Main.active.account_table.model
+            unless Main.active.account_list.empty?
               table_register(pc)
             else
               case pc.user

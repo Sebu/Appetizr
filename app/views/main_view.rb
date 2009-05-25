@@ -42,10 +42,12 @@ window t('main.title') do
           button :undo, :click => "/undo"
           button :add, :click => "/adds/1"
         end
-        @main.account_table = table :height => 300 do
-          column "Account", :string
-          column "gelockt?", :boolean, true
-          column "Barcode", :string
+        @account_table = table :height => 300 do
+          self.model= @main.account_list
+          #columns_from_model
+          column 0, "Account", :string
+          column 2, "Barcode", :string
+          column 1, "gelockt?", :boolean, true
           drop :drop_users_on_table
           menu :context do
             action "add users", "/adds/1"
@@ -55,7 +57,12 @@ window t('main.title') do
       end
 
       tabs :opacity=>0.7 do
-        add "Log", text(:width => 250) { text_observe @main, :status, :filter=>:status_format }
+        #add "Log", 
+        table (:width => 250) do
+          column 0, "Time", :string
+          column 1, "Message", :string
+        end
+        #add "Log", text(:width => 250) { text_observe @main, :status, :filter=>:status_format }
       end
 #     stretch
       stack do       

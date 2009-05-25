@@ -213,15 +213,16 @@ module Indigo
 
       class Table 
         include Widget
+        attr_accessor :title
 
-        def initialize(p)
+        def initialize(p, title="table")
+          @title = title
           @scroll = self.widget = Gtk::ScrolledWindow.new
           p.add_element(self)
           @scroll.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
           self.widget = Gtk::TreeView.new
           widget.selection.mode=Gtk::SELECTION_MULTIPLE
           @scroll.add(widget)
-          @col = 0 
           model = nil
         end
         def model=(model)
@@ -235,7 +236,7 @@ module Indigo
         end
         def selection
           selected = []
-          widget.selection.selected_each { |model, path, iter| selected << model.raw_data(path) }
+          widget.selection.selected_each { |model, path, iter| selected << model[path] }
           selected
         end
         
@@ -243,31 +244,28 @@ module Indigo
           widget.selection.select_all
         end
 
-        def column(name, type, edit=true)
+        def column(col, name, type, edit=false)
           column = case type
           when :string;
             renderer = Gtk::CellRendererText.new
-            col = @col
             if edit
               renderer.editable = true 
               renderer.signal_connect(:edited) do |renderer, path, value|
                 model.set_value(path, col, value)
               end
             end
-            Gtk::TreeViewColumn.new(name, renderer, :text => @col)
+            Gtk::TreeViewColumn.new(name, renderer, :text => col)
           when :boolean;    
             renderer = Gtk::CellRendererToggle.new
-            col = @col
             if edit
               renderer.signal_connect(:toggled) do |renderer, path|
                 value = model.get_value(path, col)
                 model.set_value(path, col, !value)
               end
             end
-            Gtk::TreeViewColumn.new(name, renderer, :active => @col)
+            Gtk::TreeViewColumn.new(name, renderer, :active => col)
           end
           widget.append_column(column)
-          @col += 1
         end
 
       end
@@ -305,7 +303,7 @@ module Indigo
           add_tab(element, title)
         end
         def add_element(w)
-         #add_tab(w, (w.class.name || ""))
+          add_tab(w, (w.title || ""))
         end
               
         def initialize(p, *args)

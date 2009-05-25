@@ -1,11 +1,5 @@
 
 
-
-# nice extensions (set in initializer ext_mod = [Qt,Gl,...])
-#autoload :Gl, 'gl'
-#autoload :Qt, 'Qt4'
-#autoload :ObjectTableModel, 'qtext/object_table_model'
-
 # extensions to Ruby libs
 autoload :YAML, 'yaml'
 autoload :CommandPattern, 'command_pattern'
@@ -46,10 +40,11 @@ module Indigo
   # model classes
   autoload :Printer, 'indigo/models/printer'
   autoload :ActiveNode, 'indigo/models/active_node'
-  autoload :TableModel, 'indigo/models/table_model'
-  autoload :ActiveTreeStore, 'indigo/models/active_tree_store'
-  autoload :ARListStore, 'indigo/models/ar_list_store'  
-  autoload :ARTableModel, 'indigo/models/ar_table_model'  
+  autoload :ObjectListStore, 'indigo/models/object_list_store'  
+
+  #autoload :ARTableModel, 'indigo/models/ar_table_model'  
+  #autoload :TableModel, 'indigo/models/table_model'
+  #autoload :ActiveTreeStore, 'indigo/models/active_tree_store'
 
 
 end
