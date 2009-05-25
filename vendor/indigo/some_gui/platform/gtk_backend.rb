@@ -188,7 +188,7 @@ module Indigo
         end
 
         def add_element(w)
-          @layout.add(w.widget) if @layout
+          @layout.pack_start(w.widget, false, false,0) if @layout
         end
 
       end
@@ -215,29 +215,32 @@ module Indigo
         include Widget
 
         def initialize(p)
-          self.widget = Gtk::ScrolledWindow.new
-          widget.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
-          @treeview = Gtk::TreeView.new
-          @treeview.selection.mode=Gtk::SELECTION_MULTIPLE
-          widget.add(@treeview)
+          @scroll = self.widget = Gtk::ScrolledWindow.new
           p.add_element(self)
+          @scroll.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
+          self.widget = Gtk::TreeView.new
+          widget.selection.mode=Gtk::SELECTION_MULTIPLE
+          @scroll.add(widget)
           @col = 0 
           model = nil
         end
         def model=(model)
-          @treeview.model=model
+          widget.model=model
+          #TODO enabled when many_columns/long_rows
+          #@treeview.rules_hint=true
+
         end
         def model
-          @treeview.model
+          widget.model
         end
         def selection
           selected = []
-          @treeview.selection.selected_each { |model, path, iter| selected << model.raw_data(path) }
+          widget.selection.selected_each { |model, path, iter| selected << model.raw_data(path) }
           selected
         end
         
         def select_all
-          @treeview.selection.select_all
+          widget.selection.select_all
         end
 
         def column(name, type, edit=true)
@@ -263,7 +266,7 @@ module Indigo
             end
             Gtk::TreeViewColumn.new(name, renderer, :active => @col)
           end
-          @treeview.append_column(column)
+          widget.append_column(column)
           @col += 1
         end
 
@@ -505,7 +508,7 @@ module Indigo
             sub_menu.submenu=w.widget
             menubar.append(sub_menu)
           else
-            widget.child.add(w.widget)
+            widget.child.pack_start(w.widget, true,false,0)
           end
         end
         def show_all
