@@ -21,7 +21,7 @@ class MainController < Indigo::Controller
   end
 
   def color_please(value)
-    value ? "#00ff00" : "#ff0000"
+    value ? "#00ff00" : "#ffff00"
   end
 
   def prectab_format(prectab)
@@ -107,6 +107,7 @@ class MainController < Indigo::Controller
 
   def drop_user(pc, other_pc)
     #pc = Computer.find(pc_id.id)
+    return unless other_pc
     old_user, old_color = pc.user, pc.color
     commands_begin "dnd user"
     command("drop users") do
@@ -165,7 +166,11 @@ class MainController < Indigo::Controller
     accounts =  users.empty? ? [] : Account.find_accounts_or_initialize(users)
     accounts.collect! { |account| account.all_accounts } if accounts
     accounts.flatten! if accounts
-    fill_accounts(accounts)
+    if !accounts.empty?
+      fill_accounts(accounts)
+    else
+      Main.active.status = ["#{users}", "existiert nicht", "important"]
+    end
   end
 
 
@@ -192,9 +197,12 @@ class MainController < Indigo::Controller
     end
 
     # load user names from yppassed
-    #users = []
-    #IO.popen("ypcat passwd").each { |line| users << line.split(':')[0] }
-    #Main.active.user_list = users
+    IO.popen("ypcat passwd").each { |line|
+      names = line.split(':')
+      logname = names[0]
+      realname = names[4]
+      Main.active.user_list.add_object([logname, realname]) 
+    }
     
     prectab = Prectab.scan_file(CONFIG["prectab_path"])
     

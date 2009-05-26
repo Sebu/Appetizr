@@ -65,7 +65,7 @@ class Indigo::ObjectListStore < Gtk::ListStore
   def set_value(path,col, value)
     item = columns[path.to_s.to_i]
     item.send("#{self.class.keys[col]}=",value)
-    #item.send(Indigo::ObjectListStore.after_edit) if Indigo::ObjectListStore.after_edit
+    #item.send(self.class.after_edit) if self.class.after_edit
     get_iter(path).set_value(col, item.send(self.class.keys[col]) ) 
   end
     

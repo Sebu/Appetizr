@@ -18,7 +18,7 @@ class Computer < ActiveRecord::Base
   named_scope :updated_after, lambda { |time| {:conditions => ["Time > ?", time]} }
 
   def xdm_restart
-    `ssh -f root@s8 -- "ssh {self.Cname} -- /etc/init.d/xdm restart"`
+    `ssh -f root@s8 -- "ssh #{self.id} -- /etc/init.d/xdm restart"`
   end
 
 

@@ -25,8 +25,8 @@ class Main
     @account_list = AccountList.new
     @status_list = StatusList.new
     @printers = Indigo::Printer.printers
-    @user_list = Gtk::ListStore.new(String,String)
-    [["seb","sdsd"]].each { |v| iter = user_list.append; iter[0] = v[0]; iter[1] = v[1] }
+    @user_list = CompletionList.new
+#   user_list.add_object(["seb"])
     @account_text = ""
     @scan_string = "220683"
     self.status = ["indigoAdm", "gestartet", "application-x-ruby"]

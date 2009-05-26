@@ -331,8 +331,15 @@ module Indigo
 
         def completion=(model)
           completion = Gtk::EntryCompletion.new
+          #completion.set_popup_set_width(false)
+          #completion.set_inline_completion(true)
+          #completion.set_inline_selection(true)
           completion.model = model
           completion.text_column = 0
+          renderer = Gtk::CellRendererText.new
+              renderer.set_property('foreground-gdk', Gdk::Color.parse('#999999') )
+          completion.pack_start(renderer, :text=>1)
+         completion.add_attribute(renderer, :text, 1)
           widget.completion = completion
         end
 
@@ -353,6 +360,8 @@ module Indigo
 
         def initialize(p, text=nil)
           @widget = Gtk::Label.new
+          
+#         @widget.ellipsize=Pango::ELLIPSIZE_END
           p.add_element(self)
           self.text=text
         end

@@ -24,7 +24,7 @@ window t('main.title') do
               background_observe printer, :accepts, :filter=>:color_please
               label "#{printer.name}" 
             }
-            box {
+            box (:width=>100) {
               background_observe printer, :enabled, :filter=>:color_please
               label { text_observe printer, :job_count }
             }
@@ -46,7 +46,7 @@ window t('main.title') do
           button :undo, :click => "/undo"
           button :add, :click => "/adds/1"
         end
-        @account_table = table :height => 350 do
+        @account_table = table :height => 350, :width=>300 do
           self.model= @main.account_list
           #columns_from_model
           column 0, "Account", :string
@@ -60,15 +60,15 @@ window t('main.title') do
         end
       end
 
-      tabs :opacity=>0.7 do
+      tabs :opacity=>0.7,:width => 500 do
         tab "Log"
-        table(:width => 350) do
+        table do
           self.model = @main.status_list
           column 0, "Time", :string
           column 1, "Message", :string
         end
         tab"Belegung"
-        table(:width => 350) do
+        table do
           column 0, "LV", :string
           column 1, "Anzal", :string
         end
