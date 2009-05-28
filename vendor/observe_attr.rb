@@ -14,7 +14,7 @@ module ObserveAttr
   end
 
 
-  def method_missing(name, *args)
+  def method_missing(name, *args, &block)
     match = /_observe/.match(name.to_s)
     if match
       setter = match.pre_match.to_sym
@@ -30,41 +30,33 @@ module ObserveAttr
         #   end
         # end
       else
-        observe(self, setter, *args)
+        observe(self, setter, *args, &block)
       end
     else
-      Debug.log.debug "  \e[1;31mObserveAttr is missing\e[0m #{name} in #{self}"
+      #Debug.log.debug "  \e[1;31mObserveAttr is missing\e[0m #{name} in #{self}"
       super
     end
   end
 
   #  TODO: change syntax and uniform the a <==> b
-  def observe(m1, key1, m2, key2, options={})
+  def observe(m1, key1, m2, key2, options={}, &block)
     options.to_options!
 
     # emited signal
     signal = "#{key2}_changed"
     # reader function to call
     func = "#{key1}="
-    controller = @controller #options[:controller] || @controller
-
-    #TODO: prep filter chain
-    #options[:filter].each do | f |
-    #filter_chain_pre = controller.send(f, gen_filter_chain next )
-
-    if options[:fiter].is_a?(Array)
-    elsif options[:filter].is_a?(Symbol) or options[:filter].is_a?(String)
-      additional_args = options[:args] || []
-      m2.connect(signal) do |local_args| 
+    additional_args = options[:args] || []
+    
+    if block_given?
+      m2.connect(signal) { |local_args| 
         args = [local_args]+additional_args
-        m1.send(func, controller.send(options[:filter],*args) ) 
-      end
-      args = [m2.send(key2)]+additional_args
-      m1.send( func, controller.send(options[:filter],*args) ) 
+        m1.send(func, block.call(*args) ) 
+      }
     else
       m2.connect(signal, m1, func)
-      m1.send(func, m2.send(key2)) 
     end
+    m2.emit(signal, m2.send(key2))
   end
 
   module ClassMethods
@@ -78,6 +70,10 @@ module ObserveAttr
         alias_method "o_assign_#{name}", func unless @override
 
         class_eval %{
+          def observe_#{name}(&block)
+            connect("#{signal}", &block)
+          end
+          
           def #{name}_changed
             emit "#{signal}", self.#{name}
           end

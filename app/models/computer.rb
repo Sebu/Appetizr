@@ -1,8 +1,7 @@
 
-require 'ftools'
 
 class Computer < ActiveRecord::Base
-  include Indigo::ActiveNode
+  require 'ftools'
   include ObserveAttr 
   multi_db
 
@@ -69,9 +68,6 @@ class Computer < ActiveRecord::Base
     find(:all, :select=>"Cname,Color,User", :conditions=> ["Cname LIKE 'c?_'",cluster], :order => "Cname ASC") 
   end
 
-  protected  
-  def after_initialize
-  end
 
 end
 

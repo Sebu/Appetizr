@@ -17,11 +17,12 @@ TODO before first usefull release
   end
 * better locale support (allow change of locale and rEval)
 * dbus signaling/observe_attr
-* speed! ( ruby1.9 + thread safty + gobject/qt_signals for signaling )
+* speed! ( ruby1.9 + thread safty + gobject for signaling )
 
 demo app TODO
 
 * belegung
+* prectab with all days data
 * printer menu
 * dnd copy
 * layouts

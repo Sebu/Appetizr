@@ -33,7 +33,6 @@ module Indigo
   # core classes
   autoload :App,'app'
   autoload :Application, 'indigo/application'
-  autoload :View, 'indigo/view'
   autoload :SomeGui, 'indigo/some_gui'
   autoload :EventHandleGenerator, 'indigo/event_handle_generator'
   autoload :Controller, 'indigo/controller'

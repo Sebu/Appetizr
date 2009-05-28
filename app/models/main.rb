@@ -5,8 +5,9 @@ class Main
 
   attr_accessor :account_text, :pool_store, :account_list, :pool_store, :status_list, :scan_string, :user_list, :printers
   observe_attr :account_text, :scan_string, :user_list, :printers
-  attr_accessor :clusters, :computers
+  attr_accessor :clusters, :computers_cache
   
+  #TODO: find better solution
   def status=(value)
     title,body,icon = value
     time = Time.now.strftime("%H:%M:%S")
@@ -18,27 +19,26 @@ class Main
   def status
     @status
   end
-  
   observe_attr :status
     
+
+
   def initialize
     @account_list = AccountList.new
-    @status_list = StatusList.new
+    @status_list = Indigo::ObjectListStore.new(String,String)
+    @user_list = Indigo::ObjectListStore.new([["seb","demo user"]])
     @printers = Indigo::Printer.printers
-    @user_list = CompletionList.new
-#   user_list.add_object(["seb"])
     @account_text = ""
     @scan_string = "220683"
     self.status = ["indigoAdm", "gestartet", "application-x-ruby"]
-    @clusters = []
-    @computers = {}
-  
 
+    @clusters = []
+    @computers_cache = {}
     
     16.downto(1) do |n|
       @clusters << Computer.find_cluster(n)
     end
   end
-  
+ 
   
 end

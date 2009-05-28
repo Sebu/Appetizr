@@ -15,15 +15,18 @@ module Indigo
         end
         def respond
           self
-        end    
-
+        end
+            
+        def block_end
+        end
+        
         def show_all
           #parse_block(&@block)
           #self.children.each { |c| puts c } if self.children
         end
       end
 
-      class Notifier < Gtk::StatusIcon
+      class Notifier #< Gtk::StatusIcon
 
         class Balloon < Gtk::Window
           attr_accessor :title, :body, :icon, :eventbox
@@ -39,7 +42,7 @@ module Indigo
             body.wrap = true
             body.set_markup(b)
             
-            image = Gtk::Image.new(i)
+            image = Gtk::Image.new(i,Gtk::IconSize::DIALOG)
 
             vbox = Gtk::VBox.new(false,0)
             vbox.pack_start(title, false, false, 0)
@@ -67,11 +70,9 @@ module Indigo
         end
 
         def align_balloons
-          a,rect,c = geometry
-          xpos = a.width-330
-          balloons_local = @balloons.dup
-          basey = a.height - 20
-          balloons_local.each do |balloon|
+          xpos = Gdk::Screen.default.width-330
+          basey = Gdk::Screen.default.height - 20
+          @balloons.dup.each do |balloon|
             x, stepy = balloon.size
             basey -= (stepy + 3) 
             balloon.move(xpos, basey)
@@ -109,6 +110,7 @@ module Indigo
           rescue Exception
           end
 
+
           if bus then
             service = bus.service('org.freedesktop.Notifications')
             proxy = service.object('/org/freedesktop/Notifications')
@@ -121,9 +123,6 @@ module Indigo
             Debug.log.debug "creating notification widget using notify-send"
           else
             @notifier = Notifier.new
-            @notifier.set_stock(Gtk::Stock::OK)
-            @notifier.set_visible(true)
-            @notifier.set_tooltip('pyAdm')
             @send_mode = :intern
             Debug.log.debug "creating notification widget using internal popups"        
           end      
@@ -136,7 +135,7 @@ module Indigo
           when :send then
             system("notify-send '#{title} ' '#{body}' -i #{icon}")
           when :intern then
-            @notifier.add_balloon("", "<b>#{title}</b> #{body}", icon)
+            @notifier.add_balloon(title, body, icon)
           end
         end
 

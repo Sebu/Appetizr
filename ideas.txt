@@ -1,5 +1,8 @@
 
 
+  #columns_from_model :exclude => [:barcode], :headers => ["Account","gelockt?"]
+  #column 0, "Account", :string, :text, :map=>1, :to => 1
+  #map 2, :progress :to => [1, :text]
 
 # request types
 
@@ -10,7 +13,14 @@
 
 
 
+# OBSERVE STUFF
+  @c.observe_User { |user| button.tool_tip = ComputerHelper.user_list_format(user) }
+  tool_tip_observe @c, :User, :via=> :user_list_format
+  background_observe "/computer/#{@c.Cname}/Color", :via=> :code_to_color
+  
 #buttons/actions/links
+  click "/computers/cbutton_click/#{@c.id}"
+
   button :ok   # default stock
   button "ok"  # text
 
@@ -23,6 +33,8 @@
   button :ok do
     click {}/:sym/"uri"
   end
+  click "/computers/cbutton_click/#{@c.id}"
+
 
 # dnd
   drag {}                       # block result
@@ -30,7 +42,7 @@
   drag method, args             # filter through  method
   drop {|data| @text = data }   # block
   drop method, args             # 
-
+  drag_clear "/#{@c.id}/key_clear/"
 
 
 image "uri"

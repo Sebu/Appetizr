@@ -1,46 +1,20 @@
 
 
 class MainController < Indigo::Controller
+  helper MainHelper
   
-  attr_accessor :main_view
-
   after_initialize :start_threads
+  
   
   #TODO: remove and implicit generate in dnd functions
   def drag_pool_store
     session[:pool_store]
   end
 
-  def drop_pool_store(*args)
-    session[:pool_store] = *args
+  def drop_pool_store(data)
+    return unless data
+    session[:pool_store] = data
     Main.active.status = ["#{session[:pool_store]['User']}", "von <b>#{session[:pool_store]['Cname']}</b> in store verschoben","trashcan_full"]
-  end
-
-  def user_list_format(a)
-    "<span size='x-small'>#{a.tr(" ","\n")}</span>"
-  end
-
-  def color_please(value)
-    value ? "#00ff00" : "#ffff00"
-  end
-
-  def prectab_format(prectab)
-    "<u><b><span size='small' color='#FEFEAA'>#{prectab}</span></b></u>" 
-  end
-  
-  def code_to_color(code, computer)
-  #def code_to_color(computer)
-    if computer.prectab and computer.user == ""
-      CONFIG['colors'][8]
-    else
-      CONFIG['colors'][computer.color]
-    end
-  end
-
-  def cbutton_click(pc)
-    unless Main.active.account_list.empty?
-      table_register(pc)
-    end
   end
 
   
@@ -54,19 +28,19 @@ class MainController < Indigo::Controller
 
  
   def remove_user
-    accounts = @account_table.selection
+    accounts = view["account_table"].selection
     if !accounts.empty? and confirm t"account.ask_remove"
       accounts.each { |account| Account.delete_all("barcode='#{account.barcode}' AND account='#{account.account}'") }
-      puts "SDSD"
       account_string = accounts.collect { |a| a.account }.join(", ")
       Main.active.status = ["#{account_string}", "von Barcode: #{Main.active.scan_string} enfernt","trashcan_full"]
-      #fill_accounts(@account_table.model.rows.remove(users))    
+      #fill_accounts(view["account_table"].model.rows.remove(users))    
     end
   end
   
   
   def table_register(pc)
-    new_users = @account_table.selection.collect { |a| a.account } unless Main.active.account_list.empty?
+    return if Main.active.account_list.empty?
+    new_users = view["account_table"].selection.collect { |a| a.account } unless Main.active.account_list.empty?
     users_register(new_users, pc)
     Main.active.account_list.clear
   end
@@ -144,7 +118,7 @@ class MainController < Indigo::Controller
     end
     Main.active.account_list.clear
     Main.active.account_list.add_objects(accounts)
-    @account_table.select_all
+    view["account_table"].select_all
   end
 
 
@@ -158,7 +132,7 @@ class MainController < Indigo::Controller
       case n
       when /^.*@[0-9]{2,3}$/ 
         direct_login << n.split("@")
-      when /^.{0,8}$/
+      when /^.{1,8}$/
         users << n
       end
     end
@@ -186,41 +160,40 @@ class MainController < Indigo::Controller
       return :other, "du_affe"
     end
   end
+  
+  
 
 
   # add refresh and scanner threads 
   # TODO: move to somewhere else ( maybe computer and scanner controllers etc. )
   def start_threads
-    # generate pc model shortcuts
+  
+    # generate computers cache model shortcuts
     Main.active.clusters.each do |computers|
-      computers.each { |c| Main.active.computers[c.id]=c }
+      computers.each { |c| Main.active.computers_cache[c.id]=c }
     end
 
     # load user names from yppassed
     IO.popen("ypcat passwd").each { |line|
-      names = line.split(':')
-      logname = names[0]
-      realname = names[4]
-      Main.active.user_list.add_object([logname, realname]) 
+      Main.active.user_list.add_object(line.split(":").values_at(0, 4)) 
     }
     
-    prectab = Prectab.scan_file(CONFIG["prectab_path"])
     
-    # refresh cache
-
-    #@refresh_timer = Qt::Timer.new
-    #@refresh_timer.connect(SIGNAL("timeout()")) {
     refresh = Thread.new {
       old_hour = 0
       session[:old_timestamp] = 0
+      prectab = Prectab.today
 
       while true
         puts "refresh start"
 
+        # update printer
         Main.active.printers.each { |p| p.update_job_count; p.update_accepts; p.update_enabled }
+        
+        # update prectab data
         hour = Time.now.hour
         if hour != old_hour
-          Main.active.computers.each_value {|computer| computer.prectab = nil }
+          Main.active.computers_cache.each_value {|computer| computer.prectab = nil }
           old_hour = hour
           Debug.log.debug "prectab", prectab[hour].inspect
           if prectab[hour] then
@@ -229,7 +202,7 @@ class MainController < Indigo::Controller
               index = 0
               while count > 0
                 c_i = CONFIG["clients"][ort][index]
-                computer = Main.active.computers[c_i]
+                computer = Main.active.computers_cache[c_i]
                 if computer and computer.prectab == nil then
                   computer.prectab = kurs 
                   count -= 1
@@ -240,19 +213,23 @@ class MainController < Indigo::Controller
             end
           end
         end
-        Main.active.clusters.each { |c| Computer.reload(c) }
-        #comps =  Computer.updated_after @old_timestamp
-        #comps.each do |computer| 
-        #  eval "puts @#{computer.id}.background=code_to_color(computer.Color,computer) if  "
-        #end
         
+        # update computers_cache
+        #Main.active.clusters.each { |c| Computer.reload(c) }
+        Mutex.new.synchronize {
+          comps =  Computer.updated_after session[:old_timestamp]
+          comps.each do |computer| 
+            Main.active.computers_cache[computer.id].user = computer.user
+            Main.active.computers_cache[computer.id].color = computer.color
+          end
+        }
         session[:old_timestamp] = Time.now.strftime("%j%H%M%S")
+
+
         puts "refresh end"
         sleep 20
       end  
     }
-    #@refresh_timer.timeout
-    #@refresh_timer.start(10000)
 
     
     # read data from scanner and dispatch
@@ -260,7 +237,7 @@ class MainController < Indigo::Controller
     begin
     socket = TCPSocket.new('localhost', 7887)
     rescue Errno::ECONNREFUSED
-      Debug.log.error t('scanner.no_connection')
+      Main.active.status = ["Scanner", t('scanner.no_connection'), "important"]
     else
       scanner = Thread.new {
         Debug.log.debug "starting scanner thread ..."
@@ -276,7 +253,7 @@ class MainController < Indigo::Controller
             accounts = Account.find_accounts_by_barcode(Main.active.scan_string)
             fill_accounts(accounts)
           when :key
-            pc = Main.active.computers[Main.active.scan_string]
+            pc = Main.active.computers_cache[Main.active.scan_string]
             unless Main.active.account_list.empty?
               table_register(pc)
             else

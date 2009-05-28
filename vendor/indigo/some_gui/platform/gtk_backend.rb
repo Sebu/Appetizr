@@ -48,38 +48,57 @@ module Indigo
         
         def status_tip=(value)
         end
+        
+        def add_context(menu)
+          widget.signal_connect('button_press_event') do |w, event|
+            if event.button == 3   # left mouse button
+              menu.show_all
+              menu.popup(nil, nil, event.button, event.time)
+            end
+          end  
+        end
+        
         def tool_tip=(value)
+          @widget.tooltip_markup=value
         end
 
         def drag_delete(method, *args)
-          widget.signal_connect("drag-data-delete") do |w, widget, drag_context|
-             @controller.send(method, *args)
+          widget.signal_connect("drag-data-delete") do |w, context|
+            @controller.send(method, *args) if context.drag_drop_succeeded?
           end
         end
 
         
         def drop(method, *args)
           Gtk::Drag.dest_set(widget, Gtk::Drag::DEST_DEFAULT_ALL,  [['text/json', 0, 0]], Gdk::DragContext::ACTION_MOVE | Gdk::DragContext::ACTION_COPY )
-
           widget.signal_connect("drag-data-received") do |w, context, x, y, selection_data, info, time|
+            if w == Gtk::Drag.get_source_widget(context)
+              context.drop_finish(false,time)
+            else
               data = ActiveSupport::JSON.decode(selection_data.data)
               @controller.send(method,*(args+[data]))
+            end              
           end
         end
         
         
-        def drag(method, *args)
-          Gtk::Drag.source_set(widget, Gdk::Window::BUTTON1_MASK, [['text/json', 0, 0]],  Gdk::DragContext::ACTION_MOVE)
-          widget.signal_connect("drag-data-get") do |w, drag_context, selection_data, info, time|
-            if method == :direct
-              data = *args
+        def drag(*args)
+          method = (args.first.is_a?(Symbol) and @controller.respond_to?(args.first)) ? args.shift : nil
+          Gtk::Drag.source_set(widget, Gdk::Window::BUTTON1_MASK, [['text/json', 0, 0]],  Gdk::DragContext::ACTION_MOVE | Gdk::DragContext::ACTION_COPY)
+          widget.signal_connect("drag-data-get") do |w, context, selection_data, info, time|
+            if method
+              data = @controller.send(method, *args)
             else
-              data = @controller.send(method,*args)
+              data = *args
             end
             selection_data.set(Gdk::Selection::TYPE_STRING, data.to_json)
           end
+
+          widget.signal_connect("drag-motion") do |w, context, x, y, time|
+            context.drag_status(Gdk::DragContext::ACTION_MOVE, time)
+          end
+          
         end
-        
 
         def gtk_class_name
           widget.class.name
@@ -96,6 +115,27 @@ module Indigo
         end
       end
 
+      class TrayIcon
+        include Widget
+        def initialize(p, title="menu")
+          @widget = Gtk::StatusIcon.new
+          widget.set_stock(Gtk::Stock::OK)
+          widget.set_visible(true)
+          widget.set_tooltip(title)
+        end
+        
+
+        def add_context(menu)
+          widget.signal_connect('popup-menu') do |w, button, time|
+            if button == 3   # left mouse button
+              menu.show_all
+              menu.popup(nil, nil, button, time)
+            end
+          end  
+        end
+                
+      end
+      
 
       class Menu
         include Widget
@@ -106,12 +146,7 @@ module Indigo
           self.text = title.to_s
           case title
           when :context
-            p.widget.signal_connect('button_press_event') do |w, event|
-              if event.button == 3   # left mouse button
-                  menu.show_all
-                  menu.popup(nil, nil, event.button, event.time)
-              end
-            end          
+            p.add_context(menu)
           else
             p.add_element(self) 
           end
@@ -138,9 +173,10 @@ module Indigo
         include Widget
         attr_accessor :action
 
-        def initialize(p, text, method, *args)
+        def initialize(p, text, method=nil)
           self.action = Gtk::ImageMenuItem.new(get_stock(text))
-          action.signal_connect(:activate)  { |w| @controller.redirect_to(method) }
+          method ||= text
+          action.signal_connect(:activate) { |w| @controller.redirect_to(method) }
           p.add_element(self) 
         end
       end
@@ -161,8 +197,7 @@ module Indigo
         #  widget.label
         #end
 
-        def initialize(p, *args)
-          title = args[0]
+        def initialize(p, title=nil)
           self.widget = if title 
             Gtk::Button.new(get_stock(title))
           else 
@@ -194,8 +229,7 @@ module Indigo
       end
       
       class Link < Button
-        def initialize(p, *args)
-          title = args[0]
+        def initialize(p, title="link")
           label = Gtk::Label.new
           label.set_markup("<span color='blue'><u>#{title}</u></span>")
           self.widget = Gtk::EventBox.new
@@ -213,9 +247,10 @@ module Indigo
 
       class Table 
         include Widget
-        attr_accessor :title
+        attr_accessor :title, :headers
 
         def initialize(p, title="table")
+          @headers = nil
           @title = title
           @scroll = self.widget = Gtk::ScrolledWindow.new
           p.add_element(self)
@@ -231,9 +266,22 @@ module Indigo
           widget.rules_hint=true
 
         end
+
         def model
           widget.model
         end
+                
+        def columns_from_model(*args)
+          options = args.extract_options!
+          options.to_options!
+          headers ||= options[:headers] || model.keys
+          model.types.each_with_index do |type, index|
+            column(index, headers[index], type)
+          end
+          
+        end
+        
+
         def selection
           selected = []
           widget.selection.selected_each { |model, path, iter| selected << model[path] }
@@ -245,8 +293,10 @@ module Indigo
         end
 
         def column(col, name, type, edit=false)
-          column = case type
-          when :string;
+          headers ||= []
+          headers << name
+          column = case type.to_s
+          when "String"
             renderer = Gtk::CellRendererText.new
             if edit
               renderer.editable = true 
@@ -255,7 +305,7 @@ module Indigo
               end
             end
             Gtk::TreeViewColumn.new(name, renderer, :markup => col)
-          when :boolean;    
+          when "TrueClass"
             renderer = Gtk::CellRendererToggle.new
             if edit
               renderer.signal_connect(:toggled) do |renderer, path|
@@ -299,18 +349,19 @@ module Indigo
       class Tabs
         include Widget 
 
-        def tab(title)
-          @current_title = title
-        end
-        def add_element(w)
-          add_tab(w, @current_title)
-        end
-              
-        def initialize(p, *args)
+        def initialize(p)
           self.widget = Gtk::Notebook.new
           p.add_element(self) 
         end
         
+        def tab(title)
+          @current_title = title
+        end
+        def add_element(w)
+          add_tab(w, @current_title || w.title)
+        end
+              
+       
         protected 
         def add_tab(w, text)
           widget.append_page(w.widget, Gtk::Label.new(text))
@@ -321,12 +372,12 @@ module Indigo
         include Widget
         include ObserveAttr
 
-        def initialize(p, text=nil)
+        def initialize(p, title=nil)
           self.widget = Gtk::Entry.new
           widget.signal_connect(:changed) { emit("text_changed", self.text) }
           widget.signal_connect(:activate) { emit(:enter) }
           p.add_element(self)
-          self.text=text
+          self.text=title
         end
 
         def completion=(model)
@@ -394,6 +445,7 @@ module Indigo
       
       class Layout
         include Widget
+        attr_accessor :title
         
         def spacing=(value)
           widget.spacing=value
@@ -409,7 +461,12 @@ module Indigo
           margin = params[:margin] || 1
           super
         end
-        
+
+        def initialize(p, title="layout")
+          @title = title
+          p.add_element(self) 
+        end
+                
         def add_element(w)
           widget.pack_start(w.widget, false, false, 1)
         end
@@ -418,9 +475,9 @@ module Indigo
       class Stack < Layout
         include Widget
         
-        def initialize(p)
+        def initialize(p,title="stack")
           self.widget = Gtk::VBox.new
-          p.add_element(self) 
+          super
         end
 
         def stretch
@@ -431,9 +488,9 @@ module Indigo
       class Flow < Layout
         include Widget
         
-        def initialize(p)
+        def initialize(p,title="flow")
           self.widget = Gtk::HBox.new
-          p.add_element(self) 
+          super
         end
 
         def stretch
@@ -446,7 +503,7 @@ module Indigo
         include Widget
         include ObserveAttr
 
-        def initialize(p, title)
+        def initialize(p, title="dialog")
           self.widget = Gtk::Dialog.new(title, p.widget)
           self.text=title
         end
@@ -483,8 +540,9 @@ module Indigo
 
         attr_accessor :menubar, :status_bar
         
-        def initialize(p, name)
+        def initialize(p, name="window")
           self.widget = Gtk::Window.new
+          widget.window_position = Gtk::Window::POS_CENTER
           widget.signal_connect('delete_event') { Gtk.main_quit }
           widget.signal_connect("destroy") { Gtk.main_quit } # required by gtk
           self.text=name

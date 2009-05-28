@@ -35,9 +35,10 @@ module Signaling
   
   # emit :signal name => call associated method with args or default value
   def emit(name,*args, &pr)
-    @dirty ||= false  
+    @dirty ||= false
+    @connections ||= nil
     return if @dirty
-    return if !@connections
+    return unless @connections
     connected_slots = @connections[name]
     return if !connected_slots or connected_slots.empty?
     @dirty = true

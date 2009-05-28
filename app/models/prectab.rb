@@ -1,6 +1,12 @@
 
 
 class Prectab
+
+
+  def self.today
+    scan_file(CONFIG["prectab_path"])
+  end
+  
   def self.scan_file(filename)
     prectab = {}
     

@@ -2,9 +2,16 @@
 
 window t('main.title') do
 
-  menu "demo" do
+  menu "other" do
     action :quit, "/close"
   end
+  
+  trayicon t('main.title') do
+    menu :context do
+      action :present, "/present"
+    end
+  end
+  
   statusbar
   status_observe @main, :scan_string
   
@@ -14,72 +21,67 @@ window t('main.title') do
   drop :drop_pool_store
   drag :drag_pool_store
       
-  stack do
+  stack {
     flow  :spacing => 1 do 
       @main.clusters[0..4].each { |c| render "cluster", :cluster => c }
-      stack do
-        @main.printers.each do | printer| 
-          flow do
+      stack {
+        @main.printers.each do |printer| 
+          flow {
             box {
-              background_observe printer, :accepts, :filter=>:color_please
+              background_observe printer, :accepts do |state| color_please(state) end
               label "#{printer.name}" 
             }
-            box (:width=>100) {
-              background_observe printer, :enabled, :filter=>:color_please
+            box(:width=>100) {
+              background_observe printer, :enabled do |state| color_please(state) end
               label { text_observe printer, :job_count }
             }
-          end
+          }
         end
         stretch
-      end
+      }
       @main.clusters[5..9].each { |c| render "cluster", :cluster => c }
     end
     stretch 
-    flow do
-      stack do
-        field @main.account_text do |f|
+    flow {
+      stack {
+        field @main.account_text do
           completion_observe @main, :user_list
-          @main.account_text_observe f, :text
+          @main.account_text_observe self, :text
           enter :account_return
         end
-        flow do
-          button :undo, :click => "/undo"
+        flow {
+          button :undo, :click => "/undo" #TODO: should be implicit
           button :add, :click => "/adds/1"
-        end
-        @account_table = table :height => 350, :width=>300 do
-          self.model= @main.account_list
-          #columns_from_model
-          column 0, "Account", :string
-          column 2, "Barcode", :string
-          column 1, "gelockt?", :boolean, true
+        }
+        table :id => "account_table", :height => 350, :width=>300 do
+          model @main.account_list
+          columns_from_model :headers => ["Account", "Barcode","gelockt?"]
           drop :drop_users_on_table
           menu :context do
             action "add users", "/adds/1"
             action "remove users", '/remove_user'
           end
         end
-      end
+      }
 
-      tabs :opacity=>0.7,:width => 500 do
-        tab "Log"
-        table do
-          self.model = @main.status_list
-          column 0, "Time", :string
-          column 1, "Message", :string
+      tabs :width => 500 do
+        table "Log" do
+          model @main.status_list
+          columns_from_model :headers => ["Time", "Message"]
         end
-        tab"Belegung"
-        table do
-          column 0, "LV", :string
-          column 1, "Anzal", :string
+        table "Belegung" do
+          column 0, "LV", String
+          column 1, "Anzal", String
         end
-        #add "Log", text(:width => 250) { text_observe @main, :status, :filter=>:status_format }
       end
-#     stretch
-      stack do       
-        @main.clusters[10..15].each { |c| render "cluster_h", :cluster => c }
-      end
-    end
-  end
+      tabs {
+        stack "Westsaal" do       
+          @main.clusters[10..15].each { |c| render "cluster_h", :cluster => c }
+        end
+        stack "Schulungsraum"
+      }
+    }
+  }
   
 end
 

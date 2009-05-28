@@ -8,7 +8,7 @@ class Account < UserAccountDB
   attr_readonly :barcode #, :account
   attr_accessible :account, :locked, :barcode
 
-  validate :valid_account
+  #validate :valid_account
   validates_presence_of :barcode
   validates_length_of :account, :maximum=>30
   

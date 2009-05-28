@@ -1,18 +1,15 @@
 
 
-button :id => @c.id, :height => 60, :width=> 60 do #, :click=> "/computers/cbutton_click/#{@c.id}" do
-  tool_tip_observe @c, :User
+button :id => @c.id, :height => 60, :width=> 60 do |button|
+  tool_tip_observe @c, :User do |user| user_list_format(user) end
+  background_observe @c, :Color, :args=>[@c] do |user,computer| code_to_color(user,computer) end
 
-  #click "/computers/cbutton_click/#{@c.id}"
-  click :cbutton_click, @c
-
-  #background_observe "/computer/#{@c.Cname}/Color", :filter=> :code_to_color
-  background_observe @c, :Color, :filter=> :code_to_color, :args=>[@c]
-
-  drag :direct, @c # drag @c 
-  drag_delete :key_clear, @c # "/#{@c.id}/key_clear/"
+  drag @c
+  drag_delete :key_clear, @c 
   drop :drop_user, @c
-  
+
+  click :table_register, @c
+
   menu :context do
     action :cancel, "/nothing"
     separator
@@ -21,13 +18,15 @@ button :id => @c.id, :height => 60, :width=> 60 do #, :click=> "/computers/cbutt
     end
   end
 
-#  stack :margin => 2 do
-    flow do
-      label "<b>#{@c.id}</b>" , :size => 8
-      stretch
-      label(:size => 8) { text_observe @c, :prectab, :filter=> :prectab_format }
-    end
-    label(:size => 7) { text_observe @c, :User, :filter=> :user_list_format }
-#   stretch
-#  end
+  flow do
+    label "<b>#{@c.id}</b>" , :size => 8
+    stretch
+    label(:size => 8) {
+      text_observe @c, :prectab do |prectab| prectab_format(prectab) end
+    }
+  end
+  label(:size => 7) { 
+    text_observe @c, :User do |user| user_list_format(user) end 
+  }
+  
 end

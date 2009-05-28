@@ -26,16 +26,17 @@ module Indigo
               self.current = widget
               widget.parse_params(params)
               parse_block(&block)
+              widget.block_end
+
               ## pop
               self.current = slots.pop
-
               widget.respond
             end
 
           }
         end 
       end
-      creates_widget :Box, :Link, :Dock, :Action, :Menu, :Notification, :Text, :GlArea, :Dialog, :Svg, :Spin, :Combo
+      creates_widget :TrayIcon, :Box, :Link, :Dock, :Action, :Menu, :Notification, :Text, :GlArea, :Dialog, :Svg, :Spin, :Combo
       creates_widget :Tabs, :VSlider, :HSlider, :Radio, :Check, :Window, :Flow, :Stack, :Field, :Label, :Button, :Group, :Table
 
       def gen_accessor(name, widget)
@@ -49,14 +50,17 @@ module Indigo
         end
       end
           
-     
+      def model(value)
+        current.model=value
+      end
+      
       def add_element(widget)
       end
 
 
-      def method_missing(method,*params)
+      def method_missing(method,*params, &block)
         if current and current != self
-           current.send(method,*params)
+           current.send(method,*params, &block)
         else
           puts "Create is missing #{method} in #{self} trying #{self.current}"
           super
