@@ -13,7 +13,7 @@ module Indigo
               params = args.extract_options!
               params.to_options!
 
-              widget = Widgets::#{name}.new(current,*args)
+              widget = Widgets.const_get("#{name}").new(current,*args)
 
               widget.controller = self
               id_name = params[:id] || widget.object_id.to_s

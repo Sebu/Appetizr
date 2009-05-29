@@ -102,7 +102,7 @@ class Indigo::ObjectListStore < Gtk::ListStore
     @keys ||=  extract_keys(records.first)
     @columns.concat(records)
     columns.each do |record|
-      child = append
+      child = prepend
       keys.each_with_index { |k,i| child[i] = record.send(k) }
     end
   end
@@ -111,7 +111,7 @@ class Indigo::ObjectListStore < Gtk::ListStore
     return unless record
     @keys ||= extract_keys(record)
     @columns << record
-    child = append
+    child = prepend
     keys.each_with_index { |k,i|  child[i] = record.send(k) }
   end
 

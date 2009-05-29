@@ -6,12 +6,12 @@ module MainHelper
   end
 
   def prectab_format(prectab)
-    "<u><b><span size='small' color='#FEFEAA'>#{prectab}</span></b></u>" 
+    "<b><span size='x-small' color='#FEFEAA'>#{prectab}</span></b>" 
   end
   
   
   def color_please(value)
-    value ? "#00ff00" : "#ffff00"
+    value ? "#82c927" : "#FFFFAA"
   end
 
 

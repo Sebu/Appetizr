@@ -3,9 +3,16 @@
 window t('main.title') do
 
   menu "other" do
+    action :refresh, "/refresh_cache"
     action :quit, "/close"
   end
   
+  menu :context do
+    action :undo, "/undo"
+    action "send text", "/send_text"
+
+  end
+
   trayicon t('main.title') do
     menu :context do
       action :present, "/present"

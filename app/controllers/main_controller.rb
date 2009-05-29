@@ -157,7 +157,7 @@ class MainController < Indigo::Controller
     elsif m = /'^UP-([A-Z]{1})-[a-zA-Z0-9]+-[0-9]{4}$/.match(scan)
       return :card, m[1]
     else
-      return :other, "du_affe"
+      return :card, scan.chomp!
     end
   end
   
@@ -195,7 +195,7 @@ class MainController < Indigo::Controller
         if hour != old_hour
           Main.active.computers_cache.each_value {|computer| computer.prectab = nil }
           old_hour = hour
-          Debug.log.debug "prectab", prectab[hour].inspect
+          Debug.log.debug "prectab"
           if prectab[hour] then
             prectab[hour].each_pair do |kurs, daten|
               count, ort = daten[0].to_i, daten[1]   
@@ -213,16 +213,15 @@ class MainController < Indigo::Controller
             end
           end
         end
-        
-        # update computers_cache
-        #Main.active.clusters.each { |c| Computer.reload(c) }
-        Mutex.new.synchronize {
-          comps =  Computer.updated_after session[:old_timestamp]
-          comps.each do |computer| 
-            Main.active.computers_cache[computer.id].user = computer.user
-            Main.active.computers_cache[computer.id].color = computer.color
+
+        comps =  Computer.updated_after session[:old_timestamp]
+        comps.each do |computer| 
+          cache_computer = Main.active.computers_cache[computer.id]
+          if cache_computer
+            cache_computer.user = computer.user 
+            cache_computer.color = computer.color
           end
-        }
+        end
         session[:old_timestamp] = Time.now.strftime("%j%H%M%S")
 
 
