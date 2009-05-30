@@ -1,12 +1,20 @@
 
 
 de:
+  westsaal: "Westsaal"
+  schulungsraum: "Schulungsraum"
+  log: "Log"
+  belegung: "Belegung"
+  
+  menu:
+    other: "andere"
   open_files: 'Dateien öffnen'
   scanner:  
     no_connection: 'keine verbindung zum scanner'
   main:
     title: "indigoAdm 0.1a vom seb geschraubt"
   account:
+    locked: "gelocket?"
     scanned: "eingelesen"
     ask_remove: "wirklick accounts entfernen?"  
     

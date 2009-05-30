@@ -22,25 +22,22 @@ class MainController < Indigo::Controller
     users = other_pc["User"].split(" ")
     accounts = Account.find_accounts_or_initialize(users)
     fill_accounts(accounts)
-    Debug.log.debug accounts
-    Debug.log.debug users
   end
 
  
   def remove_user
-    accounts = view["account_table"].selection
-    if !accounts.empty? and confirm t"account.ask_remove"
-      accounts.each { |account| Account.delete_all("barcode='#{account.barcode}' AND account='#{account.account}'") }
-      account_string = accounts.collect { |a| a.account }.join(", ")
+    selection = view["account_table"].selection.to_a
+    if !selection.empty? and confirm t"account.ask_remove"
+      view["account_table"].selection.remove
+      account_string = selection.collect { |a| a.account }.join(", ")
       Main.active.status = ["#{account_string}", "von Barcode: #{Main.active.scan_string} enfernt","trashcan_full"]
-      #fill_accounts(view["account_table"].model.rows.remove(users))    
     end
   end
   
   
   def table_register(pc)
     return if Main.active.account_list.empty?
-    new_users = view["account_table"].selection.collect { |a| a.account } unless Main.active.account_list.empty?
+    new_users = view["account_table"].selection.to_a.collect { |a| a.account } unless Main.active.account_list.empty?
     users_register(new_users, pc)
     Main.active.account_list.clear
   end

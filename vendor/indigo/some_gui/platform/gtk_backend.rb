@@ -1,6 +1,22 @@
 
 require 'gtk2'
 
+
+
+module Gtk
+  class TreeSelection
+    def to_a
+      selected = []
+      selected_each { |model, path, iter| selected << model[path] }
+      selected    
+    end
+    def remove
+      selected_each { |model, path, iter| model.remove(iter) }
+    end
+  end
+end
+
+
 module Indigo
 
   class Controller
@@ -72,12 +88,8 @@ module Indigo
         def drop(method, *args)
           Gtk::Drag.dest_set(widget, Gtk::Drag::DEST_DEFAULT_ALL,  [['text/json', 0, 0]], Gdk::DragContext::ACTION_MOVE | Gdk::DragContext::ACTION_COPY )
           widget.signal_connect("drag-data-received") do |w, context, x, y, selection_data, info, time|
-            if w == Gtk::Drag.get_source_widget(context)
-              context.drop_finish(false,time)
-            else
-              data = ActiveSupport::JSON.decode(selection_data.data)
-              @controller.send(method,*(args+[data]))
-            end              
+            data = ActiveSupport::JSON.decode(selection_data.data)
+            @controller.send(method,*(args+[data]))
           end
         end
         
@@ -95,7 +107,11 @@ module Indigo
           end
 
           widget.signal_connect("drag-motion") do |w, context, x, y, time|
-            context.drag_status(Gdk::DragContext::ACTION_MOVE, time)
+            if w == Gtk::Drag.get_source_widget(context)
+              context.drag_status(0, time)
+            else
+              context.drag_status(Gdk::DragContext::ACTION_MOVE, time)
+            end
           end
           
         end
@@ -141,7 +157,7 @@ module Indigo
         include Widget
         attr_accessor :text
         
-        def initialize(p, title="menu")
+        def initialize(p, title=:context)
           menu = self.widget = Gtk::Menu.new
           self.text = title.to_s
           case title
@@ -175,7 +191,7 @@ module Indigo
 
         def initialize(p, text, method=nil)
           self.action = Gtk::ImageMenuItem.new(get_stock(text))
-          method ||= text
+          method ||= "/#{text.to_s.tr(' ','_')}"
           action.signal_connect(:activate) { |w| @controller.redirect_to(method) }
           p.add_element(self) 
         end
@@ -188,14 +204,6 @@ module Indigo
         include Widget
         include ObserveAttr
         include EventHandleGenerator
-
-        #def text=(value) 
-        #  widget.label = value
-        #end
-
-        #def text
-        #  widget.label
-        #end
 
         def initialize(p, title=nil)
           self.widget = if title 
@@ -218,7 +226,12 @@ module Indigo
 
         def parse_params(params)
           method_click = params[:click]
-          widget.signal_connect(:clicked) { @controller.redirect_to method_click } if method_click
+          case method_click
+          when String
+            widget.signal_connect("button-press-event") { @controller.redirect_to method_click }
+          when Symbol
+            widget.signal_connect("button-press-event") { @controller.send(method_click) }
+          end
           super
         end
 
@@ -239,7 +252,12 @@ module Indigo
         
         def parse_params(params)
           method_click = params[:click]
-          widget.signal_connect("button-press-event") { @controller.redirect_to method_click } if method_click
+          case method_click
+          when String
+            widget.signal_connect("button-press-event") { @controller.redirect_to method_click }
+          when Symbol
+            widget.signal_connect("button-press-event") { @controller.send(method_click) }
+          end
           #widget.signal_connect("enter-notify-event") { puts "enter"; widget.get_window.set_cursor(Gtk::Gdk::WACTCH)  }
         end
       end
@@ -276,16 +294,14 @@ module Indigo
           options.to_options!
           headers ||= options[:headers] || model.keys
           model.types.each_with_index do |type, index|
-            column(index, headers[index], type)
+            column(index+1, headers[index], type, model.editable[index])
           end
           
         end
-        
+    
 
         def selection
-          selected = []
-          widget.selection.selected_each { |model, path, iter| selected << model[path] }
-          selected
+          widget.selection
         end
         
         def select_all
@@ -349,11 +365,16 @@ module Indigo
       class Tabs
         include Widget 
 
+        TAB_POSITIONS = {:bottom => Gtk::POS_BOTTOM,:top => Gtk::POS_TOP,:left => Gtk::POS_BOTTOM,:right =>Gtk::POS_RIGHT}
         def initialize(p)
           self.widget = Gtk::Notebook.new
           p.add_element(self) 
         end
         
+        def parse_params(params)
+          super
+          widget.tab_pos= TAB_POSITIONS[ params[:position] || :top ]
+        end
         def tab(title)
           @current_title = title
         end
@@ -386,11 +407,11 @@ module Indigo
           #completion.set_inline_completion(true)
           #completion.set_inline_selection(true)
           completion.model = model
-          completion.text_column = 0
+          completion.text_column = 1
           renderer = Gtk::CellRendererText.new
               renderer.set_property('foreground-gdk', Gdk::Color.parse('#999999') )
-          completion.pack_start(renderer, :text=>1)
-         completion.add_attribute(renderer, :text, 1)
+          completion.pack_start(renderer, :text=>2)
+          completion.add_attribute(renderer, :text, 2)
           widget.completion = completion
         end
 

@@ -30,8 +30,6 @@ module Indigo
       extra_paths.each { |path| ActiveSupport::Dependencies.load_paths << APP_DIR + path }
       $:.unshift APP_DIR + '/vendor/indigo'
       $:.unshift APP_DIR + '/resources'
-      #$:.unshift APP_DIR + '/app/views'
-      #extra_paths.each { |path| $:.unshift(APP_DIR + path) }
     end
     
 
@@ -62,6 +60,7 @@ module Indigo
         
     def self.init_locale
       I18n.load_path = Dir[File.join(APP_DIR, 'config', 'locales', '*.{rb,yml}')]
+      I18n.default_locale = :de 
       I18n.locale = CONFIG["locale"]
     end
 

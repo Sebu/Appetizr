@@ -35,7 +35,7 @@ class Main
     @clusters = []
     @computers_cache = {}
     
-    16.downto(1) do |n|
+    1.upto(16) do |n|
       @clusters << Computer.find_cluster(n)
     end
   end

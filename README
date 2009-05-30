@@ -26,5 +26,6 @@ How it should work(but does not right now):
   appetize my_app
   cd my_app
   script/generate window/model/controller .. create models and views
-  script/start
+  script/start ... test
+  rake appetize  (-> create app + installer - removes script/ test/ adds start.sh)
   

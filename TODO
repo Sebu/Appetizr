@@ -1,11 +1,11 @@
 
+
 TODO before first usefull release
-* create a real initializer (with better internel config support for framework and app)
-* improve ...
-   ... Signaling (maybe use GObject?)
-   ... the Rakefile
-   ... migration support (get it to work correctly)
-   ... the widgetery
+* add all possible click event ideas
+* create real dispatcher
+* get locale infos from user locale (allow change of locale and rEval)
+* dnd response from dnd methods
+* cache actions
 * rEvaluate & lazy :) 
   menu do
     show_observe @c, :User   in show   render "user_list", :c => @c 
@@ -15,7 +15,13 @@ TODO before first usefull release
       label
     end
   end
-* better locale support (allow change of locale and rEval)
+* create a real initializer (with better internel config support for framework and app)
+* improve ...
+   ... Signaling (maybe use GObject?)
+   ... the Rakefile
+   ... migration support (get it to work correctly)
+   ... the widgetery
+
 * dbus signaling/observe_attr
 * speed! ( ruby1.9 + thread safty + gobject for signaling )
 

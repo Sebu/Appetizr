@@ -1,5 +1,18 @@
 
 
+Appetizr
+appetizr mailboy
+
+rake appetize (-> create app + installer with removes script/ test/ adds start.sh)
+MainView -> Plate
+Part/Model -> Berry
+Extern parts/dbus -> WildBerry
+
+
+
+
+
+
   #columns_from_model :exclude => [:barcode], :headers => ["Account","gelockt?"]
   #column 0, "Account", :string, :text, :map=>1, :to => 1
   #map 2, :progress :to => [1, :text]

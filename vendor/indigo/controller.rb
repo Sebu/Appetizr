@@ -76,22 +76,24 @@ module Indigo
       Debug.log.debug "  Processing #{controller_name}##{action} #{id}"
       new_controller.perform_action(action)
     end
-    
-    
+  
+    # TODO: add into TranslationHelper  
     def t(*params)
-      I18n.t(*params)
+      I18n.translate(*params)
     end
-
     def l(*params)
-      I18n.l(*params)
+      I18n.localize(*params)
     end
 
+
+
+   
     def present
       session[:root].widget.present
     end
       
-    def close
-      session[:root].close
+    def quit
+      session[:root].quit
     end
     
     def hide

@@ -1,22 +1,20 @@
 
 
-window t('main.title') do
+window t'main.title' do
 
-  menu "other" do
-    action :refresh, "/refresh_cache"
-    action :quit, "/close"
+  menu t"menu.other" do
+    action :refresh
+    action :quit
   end
   
-  menu :context do
-    action :undo, "/undo"
-    action "send text", "/send_text"
-
-  end
+  # menu :context do  # :context is now default 
+  menu { 
+    action :undo
+    action "send text"
+  }
 
   trayicon t('main.title') do
-    menu :context do
-      action :present, "/present"
-    end
+    menu { action :present }
   end
   
   statusbar
@@ -29,8 +27,9 @@ window t('main.title') do
   drag :drag_pool_store
       
   stack {
-    flow  :spacing => 1 do 
-      @main.clusters[0..4].each { |c| render "cluster", :cluster => c }
+    flow  :spacing => 1 do \
+      render "cluster_v", :cluster => @main.clusters[15]
+      @main.clusters[11..14].reverse_each { |c| render "cluster", :cluster => c }
       stack {
         @main.printers.each do |printer| 
           flow {
@@ -46,7 +45,8 @@ window t('main.title') do
         end
         stretch
       }
-      @main.clusters[5..9].each { |c| render "cluster", :cluster => c }
+      @main.clusters[7..10].reverse_each { |c| render "cluster", :cluster => c }
+      render "cluster_v", :cluster => @main.clusters[6]
     end
     stretch 
     flow {
@@ -57,36 +57,36 @@ window t('main.title') do
           enter :account_return
         end
         flow {
-          button :undo, :click => "/undo" #TODO: should be implicit
+          button :undo, :click => :undo #TODO: should be implicit
           button :add, :click => "/adds/1"
         }
         table :id => "account_table", :height => 350, :width=>300 do
           model @main.account_list
-          columns_from_model :headers => ["Account", "Barcode","gelockt?"]
+          columns_from_model :headers => ["Account", t("account.locked")]
           drop :drop_users_on_table
           menu :context do
             action "add users", "/adds/1"
-            action "remove users", '/remove_user'
+            action "remove user"
           end
         end
       }
 
       tabs :width => 500 do
-        table "Log" do
+        table t"log" do
           model @main.status_list
           columns_from_model :headers => ["Time", "Message"]
         end
-        table "Belegung" do
+        table t"belegung" do
           column 0, "LV", String
           column 1, "Anzal", String
         end
       end
-      tabs {
-        stack "Westsaal" do       
-          @main.clusters[10..15].each { |c| render "cluster_h", :cluster => c }
+      tabs :position=>:bottom do
+        stack t"westsaal" do       
+          @main.clusters[0..5].reverse_each { |c| render "cluster_h", :cluster => c }
         end
-        stack "Schulungsraum"
-      }
+        #stack t"schulungsraum"
+      end
     }
   }
   

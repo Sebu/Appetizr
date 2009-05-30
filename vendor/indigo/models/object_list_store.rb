@@ -17,10 +17,13 @@
 
 class Indigo::ObjectListStore < Gtk::ListStore
 
-  attr_accessor :columns, :keys, :types
+  include ActiveSupport::Callbacks
+  define_callbacks :before_remove, :before_edit
+    
+  attr_accessor :keys, :types, :editable, :item
   @keys = nil
   @types = nil
-  @after_edit_method = nil
+  @editable = nil 
     
   def self.keys
     @keys
@@ -30,28 +33,18 @@ class Indigo::ObjectListStore < Gtk::ListStore
     @types
   end  
 
-  def self.keys=(value)
-    @keys = value
-  end  
-
-  def self.types=(value)
-    @types = value
+  def self.editable
+    @editable
   end  
 
 
-  def self.after_edit(method)
-    @after_edit_method = method
-  end
-  
-  def self.after_edit_method
-    @after_edit_method
-  end
-  
-  def self.column(key, type)
+  def self.column(key, type, edit=false)
     @keys ||= []
     @types ||= []
+    @editable ||= []
     keys << key
     types << type
+    editable << edit
   end
   
   def initialize(*args)
@@ -59,14 +52,10 @@ class Indigo::ObjectListStore < Gtk::ListStore
     options.to_options!
     @exclude = options[:exclude] || []
     @include = options[:columns] || []
-    @after_edit = self.class.after_edit_method || options[:after_edit]
-    @types ||= self.class.types
-    @types ||=  extract_constants(args)
     records = extract_data(args)
-    @types ||=  extract_types(records)
-    super(*@types)
-    @columns = []
-    
+    @types = self.class.types || extract_constants(args) || extract_types(records)
+    @editable = self.class.editable || [false]*(@types.size+1)
+    super(*([Object]+@types))
     add_objects(records)
   end
 
@@ -82,7 +71,7 @@ class Indigo::ObjectListStore < Gtk::ListStore
 
   def extract_keys(record)
     keys = if record.is_a?(Array)
-      [:first,:second,:third].to(record.size-1)
+      [:first,:second,:third,:fourth,:fifth].to(record.size-1)
     elsif record.is_a?(Hash)
       record.keys
     else
@@ -100,48 +89,45 @@ class Indigo::ObjectListStore < Gtk::ListStore
   def add_objects(records)
     return if !records or records.empty?
     @keys ||=  extract_keys(records.first)
-    @columns.concat(records)
-    columns.each do |record|
-      child = prepend
-      keys.each_with_index { |k,i| child[i] = record.send(k) }
+    records.each do |record|
+      child = append
+      child[0] = record
+      keys.each_with_index { |k,i| child[i+1] = record.send(k) }
     end
   end
   
   def add_object(record)
     return unless record
     @keys ||= extract_keys(record)
-    @columns << record
-    child = prepend
-    keys.each_with_index { |k,i|  child[i] = record.send(k) }
-  end
-
-  def last
-    @columns.last
+    child = append
+    child[0] = record
+    keys.each_with_index { |k,i|  child[i+1] = record.send(k) }
   end
 
   def empty?
-    @columns.empty?
+    n_columns == 0
   end
   
-  
-  def clear
-    @columns.clear
-    super
-  end
 
+  def remove(iter)
+    @item = iter.get_value(0) 
+    super if run_callbacks(:before_remove)
+  end
+  
   def set_value(path,col, value)
-    item = columns[path.to_s.to_i]
-    item.send("#{keys[col]}=",value)
-    item.send(@after_edit) if @after_edit
-    get_iter(path).set_value(col, item.send(keys[col]) ) 
+    @item = get_iter(path).get_value(0) 
+    item.send("#{keys[col-1]}=",value)
+    get_iter(path).set_value(col, item.send(keys[col-1]) ) if run_callbacks(:before_edit)
+
+    
   end
     
-  def get_value(path,col)
-    columns[path.to_s.to_i].send(keys[col])
+  def get_value(path, col)
+    get_iter(path).get_value(0).send(keys[col-1])
   end
 
   def [](path)
-    columns[path.to_s.to_i]
+    get_iter(path).get_value(0)
   end
 
 
