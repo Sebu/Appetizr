@@ -5,6 +5,10 @@ class MainController < Indigo::Controller
   
   after_initialize :start_threads
   
+  def show
+    @main = Main.active
+    do_render
+  end
   
   #TODO: remove and implicit generate in dnd functions
   def drag_pool_store
@@ -15,6 +19,12 @@ class MainController < Indigo::Controller
     return unless data
     session[:pool_store] = data
     Main.active.status = ["#{session[:pool_store]['User']}", "von <b>#{session[:pool_store]['Cname']}</b> in store verschoben","trashcan_full"]
+
+    render :update => berry["menu"] do
+      action :undo
+      action "send text"
+      action :ok
+    end
   end
 
   
@@ -34,12 +44,13 @@ class MainController < Indigo::Controller
     end
   end
   
-  
+
   def table_register(pc)
     return if Main.active.account_list.empty?
-    new_users = view["account_table"].selection.to_a.collect { |a| a.account } unless Main.active.account_list.empty?
+    new_users = berry["account_table"].selection.to_a.collect { |a| a.account } unless Main.active.account_list.empty?
     users_register(new_users, pc)
     Main.active.account_list.clear
+    
   end
   
   
@@ -78,7 +89,7 @@ class MainController < Indigo::Controller
 
   def drop_user(pc, other_pc)
     #pc = Computer.find(pc_id.id)
-    return unless other_pc
+    return false if !other_pc or other_pc["User"]==""
     old_user, old_color = pc.user, pc.color
     commands_begin "dnd user"
     command("drop users") do
@@ -92,7 +103,7 @@ class MainController < Indigo::Controller
       pc.save!
       Main.active.status = ["#{pc.user}", "von <b>#{pc.id}</b> auf <b>#{other_pc['Cname']}</b> verschoben","undo"]
     end.run
-     #widgets[pc_id.id].background=code_to_color(nil,pc)
+    #widgets[pc_id.id].background=code_to_color(nil,pc)
   end
 
 
@@ -114,8 +125,8 @@ class MainController < Indigo::Controller
       Main.active.status = ["#{account_string}", t("account.scanned"), "barcode"] 
     end
     Main.active.account_list.clear
-    Main.active.account_list.add_objects(accounts)
-    view["account_table"].select_all
+    Main.active.account_list.add_all(accounts)
+    berry["account_table"].select_all
   end
 
 
@@ -172,7 +183,7 @@ class MainController < Indigo::Controller
 
     # load user names from yppassed
     IO.popen("ypcat passwd").each { |line|
-      Main.active.user_list.add_object(line.split(":").values_at(0, 4)) 
+      Main.active.user_list.add(line.split(":").values_at(0, 4)) 
     }
     
     

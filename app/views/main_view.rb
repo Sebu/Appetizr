@@ -1,17 +1,17 @@
 
 
 window t'main.title' do
-
+  
   menu t"menu.other" do
     action :refresh
     action :quit
   end
   
   # menu :context do  # :context is now default 
-  menu { 
+  menu :id=>"menu" do 
     action :undo
     action "send text"
-  }
+  end
 
   trayicon t('main.title') do
     menu { action :present }
@@ -27,7 +27,7 @@ window t'main.title' do
   drag :drag_pool_store
       
   stack {
-    flow  :spacing => 1 do \
+    flow  :spacing => 1 do 
       render "cluster_v", :cluster => @main.clusters[15]
       @main.clusters[11..14].reverse_each { |c| render "cluster", :cluster => c }
       stack {
@@ -51,7 +51,7 @@ window t'main.title' do
     stretch 
     flow {
       stack {
-        field @main.account_text do
+        entry @main.account_text do
           completion_observe @main, :user_list
           @main.account_text_observe self, :text
           enter :account_return
@@ -65,7 +65,7 @@ window t'main.title' do
           columns_from_model :headers => ["Account", t("account.locked")]
           drop :drop_users_on_table
           menu :context do
-            action "add users", "/adds/1"
+            action "add users", "adds/1"
             action "remove user"
           end
         end
@@ -75,6 +75,9 @@ window t'main.title' do
         table t"log" do
           model @main.status_list
           columns_from_model :headers => ["Time", "Message"]
+          search do |data,key|
+            data[1] =~ /.*#{key}/
+          end          
         end
         table t"belegung" do
           column 0, "LV", String

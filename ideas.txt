@@ -34,12 +34,11 @@ Extern parts/dbus -> WildBerry
 #buttons/actions/links
   click "/computers/cbutton_click/#{@c.id}"
 
-  button :ok   # default stock
+  button :ok   # search for default stock and action
   button "ok"  # text
 
-  button.click :symbol                   # fastest (GET?)
-  button.click :symbol, args             # fastest (POST?)
-  button.click "/uri/to/action/" args    # link to other controller 
+  button.click :symbol, args             # fastest (direct)
+  button.click "/uri/to/action/" args    # link to other controller  (via dispatcher)
   button.click { block }                 # direct for simple view actions  
 
   button :ok, :click => :sym/"uri"

@@ -4,7 +4,7 @@ module Indigo
   module SomeGui
     module Create
    
-      attr_accessor :slots, :current, :children
+      attr_accessor :slots, :current, :berry
       
       def self.creates_widget(*names)
         names.each do | name |
@@ -16,10 +16,10 @@ module Indigo
               widget = Widgets.const_get("#{name}").new(current,*args)
 
               widget.controller = self
-              id_name = params[:id] || widget.object_id.to_s
-              View.widgets[id_name] = widget
-              #current.children ||= [] ## @parent.children ||= []
-              #current.children <<  widget ## @parent.children <<  widget
+              id_name = params[:id]
+              View.widgets[id_name] = widget if id_name
+              current.berry ||= {}
+              current.berry[id_name] = widget if id_name
 
               self.slots ||= []
               slots.push current
@@ -37,7 +37,7 @@ module Indigo
         end 
       end
       creates_widget :TrayIcon, :Box, :Link, :Dock, :Action, :Menu, :Notification, :Text, :GlArea, :Dialog, :Svg, :Spin, :Combo
-      creates_widget :Tabs, :VSlider, :HSlider, :Radio, :Check, :Window, :Flow, :Stack, :Field, :Label, :Button, :Group, :Table
+      creates_widget :Tabs, :VSlider, :HSlider, :Radio, :Check, :Window, :Flow, :Stack, :Entry, :Label, :Button, :Group, :Table
 
       def gen_accessor(name, widget)
         instance_variable_set(name, widget)
@@ -46,6 +46,7 @@ module Indigo
       def parse_block(&block)
         if block_given?
           current.block = block
+#         instance_eval(&block)
           block.call self.current
         end
       end
@@ -56,13 +57,13 @@ module Indigo
       
       def add_element(widget)
       end
-
+      
 
       def method_missing(method,*params, &block)
         if current and current != self
            current.send(method,*params, &block)
         else
-          puts "Create is missing #{method} in #{self} trying #{self.current}"
+          #puts "Create is missing #{method} in #{self} trying #{self.current}"
           super
         end
       end

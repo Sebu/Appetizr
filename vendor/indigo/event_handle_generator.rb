@@ -2,20 +2,24 @@
 
 module Indigo
   module EventHandleGenerator
-
-    def enter(action=nil, *args)
-      if block_given?
-        connect(:enter, self, *args, &block)
-      else
-        connect(:enter, self, action, *args)
-      end
+    
+    # TODO: autogenerate
+    def enter(action=nil, *args, &block)
+      gen_connection(:enter, action, *args, &block)
     end
  
     def click(action=nil, *args, &block)
+      gen_connection(:click, action, *args, &block)
+    end
+
+
+    def gen_connection(signal, action, *args, &block)
       if block_given?
-        connect(:click, self, *args, &block)
+        connect(signal, self, *args, &block)
+      elsif action.is_a?(String)
+        connect(signal, self, *args) { self.redirect_to(action, *args) }
       else
-        connect(:click, self, action, *args)
+        connect(signal, self, action, *args)
       end
     end
   

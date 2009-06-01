@@ -29,3 +29,20 @@ How it should work(but does not right now):
   script/start ... test
   rake appetize  (-> create app + installer - removes script/ test/ adds start.sh)
   
+  
+Simple Controller
+
+class SimpleController  < Indigo::Controller
+
+  def show
+    render do
+      window {
+        @text = label "Hallo Wald!"
+        button :ok do
+          click { @text.text= "Hallo Wurst!" }
+        end
+      }
+    end.show_all
+  end
+
+end  

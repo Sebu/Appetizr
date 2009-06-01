@@ -70,11 +70,11 @@ module ObserveAttr
         alias_method "o_assign_#{name}", func unless @override
 
         class_eval %{
-          def observe_#{name}(&block)
-            connect("#{signal}", &block)
+          def on_#{name.to_s.downcase}_changed(*args,&block)
+            connect("#{signal}", *args, &block)
           end
           
-          def #{name}_changed
+          def #{name.to_s.downcase}_changed
             emit "#{signal}", self.#{name}
           end
           if not @override

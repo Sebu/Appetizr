@@ -54,14 +54,21 @@ class Indigo::ObjectListStore < Gtk::ListStore
     @include = options[:columns] || []
     records = extract_data(args)
     @types = self.class.types || extract_constants(args) || extract_types(records)
+    puts @types
     @editable = self.class.editable || [false]*(@types.size+1)
     super(*([Object]+@types))
-    add_objects(records)
+    add_all(records)
   end
 
   def extract_types(records)
     return nil unless records
-    records.first.collect{ |record| record.class }
+    record = records.first
+    case record
+    when Array
+      records.first.collect{ |record| record.class }
+    else
+      [record.class]
+    end
   end
   
   def extract_constants(args)
@@ -75,7 +82,7 @@ class Indigo::ObjectListStore < Gtk::ListStore
     elsif record.is_a?(Hash)
       record.keys
     else
-      []
+      ["to_s"]
     end
     self.class.keys || (keys | @include) - @exclude
   end
@@ -86,7 +93,7 @@ class Indigo::ObjectListStore < Gtk::ListStore
     return nil
   end
     
-  def add_objects(records)
+  def add_all(records)
     return if !records or records.empty?
     @keys ||=  extract_keys(records.first)
     records.each do |record|
@@ -96,12 +103,13 @@ class Indigo::ObjectListStore < Gtk::ListStore
     end
   end
   
-  def add_object(record)
+  def add(record, parent=nil)
     return unless record
     @keys ||= extract_keys(record)
     child = append
     child[0] = record
     keys.each_with_index { |k,i|  child[i+1] = record.send(k) }
+    child
   end
 
   def empty?

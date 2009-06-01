@@ -1,32 +1,31 @@
 
 
-button :id => @c.id, :height => 60, :width=> 60 do |button|
-  tool_tip_observe @c, :User do |user| user_list_format(user) end
-  background_observe @c, :Color, :args=>[@c] do |user,computer| code_to_color(user,computer) end
+button :id => @computer.id, :height => 60, :width=> 60 do 
+  tool_tip_observe @computer, :User do |user| user_list_format(user) end
+  background_observe @computer, :Color, :args=>[@computer] do |user,computer| code_to_color(user,computer) end
 
-  drag @c
-  drag_delete :key_clear, @c 
-  drop :drop_user, @c
+  drag @computer
+  drag_delete :key_clear, @computer 
+  drop :drop_user, @computer
 
-  click :table_register, @c
+  click :table_register, @computer
 
-  menu :context do
-    action :cancel, "/nothing"
-    separator
-    menu "hardcore" do
-      action "xdm restart", "/computers/restart/#{@c.id}" #, @c
-    end
+  menu :context, :id=> "button_menu" do
+    computer = @computer #TODO: remove need for locality
+    @computer.on_user_changed do |user| gen_button_menu(user, computer) end
+    # better
+    # @computer.changed? do |computer| gen_blabla_ end
   end
 
   flow do
-    label "<span size='small'><b>#{@c.id}</b></span>" , :size => 8
+    label "<span size='small'><b>#{@computer.id}</b></span>" , :size => 8
     stretch
     label(:size => 8) {
-      text_observe @c, :prectab do |prectab| prectab_format(prectab) end
+      text_observe @computer, :prectab do |prectab| prectab_format(prectab) end
     }
   end
   label(:size => 7) { 
-    text_observe @c, :User do |user| user_list_format(user) end 
+    text_observe @computer, :User do |user| user_list_format(user) end 
   }
   
 end

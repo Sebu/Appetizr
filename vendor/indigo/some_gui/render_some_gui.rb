@@ -4,35 +4,37 @@ module Indigo
   module SomeGui
     module Render
 
+
       def render(params = {}, locals = {}, &block)
-        if params.is_a?(String)
-          render_file(params, true, locals)
+        @children ||= []
+        name =  if params.is_a?(String)
+                  render_partial(params, locals)
+                else
+                  @filename = "app/views/#{params[:model]}_view.rb"
+                  params[:model]
+                end
+
+        if block_given?
+          befor = @current
+          @current = params[:update] if params[:update]
+          @current.widget.children.each {|child| @current.widget.remove(child) }
+          instance_eval(&block)
+          @current = befor
         else
-          render_file(params[:model], false, locals) 
+          instance_eval(View[@filename], @filename)
         end
       end
 
-      def render_file(name, partial, locals)
-        @children ||= []
-    
-        params = {:path => 'app/views'}
-    
-        if partial
-          @filename = "#{params[:path]}/_#{name}_view.rb"
-          locals.each_pair do | k, v |
-            eval "@#{k} = v"
-          end
-          name = "_#{name}"
-        else
 
-          #TODO: not so pretty
-          #@controller = self
+      def render_partial(name, locals)
+        @filename = "app/views/_#{name}_view.rb"
+        locals.each_pair do |k, v|
+          eval "@#{k} = v"
+        end
+        "_#{name}"      
+      end
+     
 
-          @filename = "#{params[:path]}/#{name}_view.rb"
-        end 
-
-        View.widgets["#{name}_view"] = self.instance_eval(View[@filename], @filename)
-      end  
     end
   end # SomeGui
 end # indigo

@@ -7,6 +7,7 @@ module Indigo
     class View
       include Render
       
+      
   #    attr_accessor :widgets
   #    attr_accessor :wiews
 

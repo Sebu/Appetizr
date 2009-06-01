@@ -23,4 +23,19 @@ module MainHelper
     end
   end
   
+
+  def gen_button_menu(user, computer)
+    render :update => berry[computer.id].berry["button_menu"] do
+      user.split(" ").each do |user|
+        menu user.to_s do
+          action :bla
+        end
+      end
+      separator
+      menu "hardcore" do
+        action "xdm restart", "/computers/restart/#{computer.id}"
+      end
+    end  
+  end   
+  
 end

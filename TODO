@@ -1,10 +1,9 @@
 
 
 TODO before first usefull release
-* add all possible click event ideas
-* create real dispatcher
+* better routing (not like rails! we don't need pretty routes. but more like in shoes)
 * get locale infos from user locale (allow change of locale and rEval)
-* dnd response from dnd methods
+* dnd more response from dnd methods
 * cache actions
 * rEvaluate & lazy :) 
   menu do

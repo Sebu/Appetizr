@@ -49,7 +49,7 @@ module Indigo
       end
           
     module Widgets
-
+  
       STOCK_ITEMS = {:ok=> Gtk::Stock::OK, :cancel => Gtk::Stock::CANCEL, :add => Gtk::Stock::ADD, :undo => Gtk::Stock::UNDO, :quit => Gtk::Stock::QUIT}
       module Widget
         attr_accessor :widget
@@ -86,17 +86,17 @@ module Indigo
 
         
         def drop(method, *args)
-          Gtk::Drag.dest_set(widget, Gtk::Drag::DEST_DEFAULT_ALL,  [['text/json', 0, 0]], Gdk::DragContext::ACTION_MOVE | Gdk::DragContext::ACTION_COPY )
+          Gtk::Drag.dest_set(widget, Gtk::Drag::DEST_DEFAULT_ALL,  [['application/json', 0, 0]], Gdk::DragContext::ACTION_MOVE | Gdk::DragContext::ACTION_COPY )
           widget.signal_connect("drag-data-received") do |w, context, x, y, selection_data, info, time|
             data = ActiveSupport::JSON.decode(selection_data.data)
-            @controller.send(method,*(args+[data]))
+            context.drop_finish(@controller.send(method,*(args+[data])), time) 
           end
         end
         
         
         def drag(*args)
           method = (args.first.is_a?(Symbol) and @controller.respond_to?(args.first)) ? args.shift : nil
-          Gtk::Drag.source_set(widget, Gdk::Window::BUTTON1_MASK, [['text/json', 0, 0]],  Gdk::DragContext::ACTION_MOVE | Gdk::DragContext::ACTION_COPY)
+          Gtk::Drag.source_set(widget, Gdk::Window::BUTTON1_MASK, [['application/json', 0, 0]],  Gdk::DragContext::ACTION_MOVE | Gdk::DragContext::ACTION_COPY)
           widget.signal_connect("drag-data-get") do |w, context, selection_data, info, time|
             if method
               data = @controller.send(method, *args)
@@ -192,7 +192,7 @@ module Indigo
         def initialize(p, text, method=nil)
           self.action = Gtk::ImageMenuItem.new(get_stock(text))
           method ||= "/#{text.to_s.tr(' ','_')}"
-          action.signal_connect(:activate) { |w| @controller.redirect_to(method) }
+          action.signal_connect(:activate) { |w| Dispatcher.dispatch([method,@controller]) } #.redirect_to(method) }
           p.add_element(self) 
         end
       end
@@ -225,10 +225,10 @@ module Indigo
 
 
         def parse_params(params)
-          method_click = params[:click]
+          method_click = params[:click] 
           case method_click
           when String
-            widget.signal_connect("button-press-event") { @controller.redirect_to method_click }
+            widget.signal_connect("button-press-event") { Dispatcher.dispatch([method_click,@controller]) } #@controller.redirect_to method_click }
           when Symbol
             widget.signal_connect("button-press-event") { @controller.send(method_click) }
           end
@@ -254,11 +254,10 @@ module Indigo
           method_click = params[:click]
           case method_click
           when String
-            widget.signal_connect("button-press-event") { @controller.redirect_to method_click }
+            widget.signal_connect("button-press-event") { Dispatcher.dispatch([method_click, @controller])} # @controller.redirect_to method_click }
           when Symbol
             widget.signal_connect("button-press-event") { @controller.send(method_click) }
           end
-          #widget.signal_connect("enter-notify-event") { puts "enter"; widget.get_window.set_cursor(Gtk::Gdk::WACTCH)  }
         end
       end
 
@@ -274,7 +273,7 @@ module Indigo
           p.add_element(self)
           @scroll.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
           self.widget = Gtk::TreeView.new
-          widget.selection.mode=Gtk::SELECTION_MULTIPLE
+          widget.selection.mode = Gtk::SELECTION_MULTIPLE
           @scroll.add(widget)
           model = nil
         end
@@ -288,13 +287,30 @@ module Indigo
         def model
           widget.model
         end
+
+        def search(&block)
+          widget.set_search_equal_func {|model, columnm, key, iter|
+            !block.call(iter.get_value(0), key)
+          }
+        end  
+        
+        def filter(&block)
+          unless @filter
+            @filter ||= Gtk::TreeModelFilter.new(widget.model)
+            widget.model = @filter
+          end
+          widget.model.set_visible_func { |model, iter|
+            block.call(iter.get_value(0))
+          }
+          @filter.refilter
+        end              
                 
         def columns_from_model(*args)
           options = args.extract_options!
           options.to_options!
           headers ||= options[:headers] || model.keys
           model.types.each_with_index do |type, index|
-            column(index+1, headers[index], type, model.editable[index])
+            column(index+1, headers[index].to_s, type, model.editable[index])
           end
           
         end
@@ -375,21 +391,18 @@ module Indigo
           super
           widget.tab_pos= TAB_POSITIONS[ params[:position] || :top ]
         end
-        def tab(title)
-          @current_title = title
-        end
+
         def add_element(w)
-          add_tab(w, @current_title || w.title)
+          add_tab(w, w.title)
         end
               
-       
         protected 
         def add_tab(w, text)
           widget.append_page(w.widget, Gtk::Label.new(text))
         end
       end
       
-      class Field 
+      class Entry 
         include Widget
         include ObserveAttr
 
@@ -398,7 +411,8 @@ module Indigo
           widget.signal_connect(:changed) { emit("text_changed", self.text) }
           widget.signal_connect(:activate) { emit(:enter) }
           p.add_element(self)
-          self.text=title
+          #self.text=title
+          tool_tip=title
         end
 
         def completion=(model)
@@ -607,7 +621,7 @@ module Indigo
             sub_menu.submenu=w.widget
             menubar.append(sub_menu)
           else
-            widget.child.pack_start(w.widget, true,false,0)
+            widget.child.pack_start(w.widget, true, false,0)
           end
         end
         def show_all

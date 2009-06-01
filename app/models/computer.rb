@@ -26,10 +26,10 @@ class Computer < ActiveRecord::Base
     self.Time = Time.now.strftime("%j%H%M%S")
   end
   
-  def after_reload
-    self.Color_changed
-    self.User_changed
-  end
+#  def after_reload
+#    self.color_changed
+#    self.user_changed
+#  end
 
   def prectab=(value)
     @prectab = value

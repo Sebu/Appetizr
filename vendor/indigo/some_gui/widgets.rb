@@ -7,8 +7,7 @@ module Indigo
     
       module Widget
         include ObserveAttr
-        attr_accessor :controller
-        attr_accessor :block
+        attr_accessor :controller, :block, :berry
         
 
         def add_element(widget)
