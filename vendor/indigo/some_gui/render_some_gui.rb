@@ -10,19 +10,24 @@ module Indigo
         name =  if params.is_a?(String)
                   render_partial(params, locals)
                 else
-                  @filename = "app/views/#{params[:model]}_view.rb"
-                  params[:model]
+                  @filename = "app/views/#{model_name}_view.rb"
+                  model_name
                 end
 
         if block_given?
           befor = @current
           @current = params[:update] if params[:update]
           @current.widget.children.each {|child| @current.widget.remove(child) }
-          instance_eval(&block)
+          out = instance_eval(&block)
           @current = befor
         else
-          instance_eval(View[@filename], @filename)
+          out = instance_eval(View[@filename], @filename)
         end
+        if params.empty?
+          @current = session[:root] = out
+          out.show_all
+        end
+        out
       end
 
 

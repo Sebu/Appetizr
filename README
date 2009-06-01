@@ -10,7 +10,10 @@ Differences to Rails
 2. Appetizr uses multiple databases by default so
     schema.rb is db/schemas/db_name.rb
     migrations is db/migration/db_name/[0-9]*_*.rb
-3. more 
+3. explicit rather then implicit render
+4. controller generates gui directly
+5. besides indirect/dispatched action calls, direct action calls are also possible
+6. more 
 
 
 Appetizr uses ...

@@ -4,7 +4,8 @@ class AddController < Indigo::Controller
   
   def show
     @main = Main.active
-    super
+    @add = Add.active
+    render
   end
   
   def scan_string_format(scan_string)

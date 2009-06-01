@@ -432,11 +432,11 @@ module Indigo
         def text=(value)
           widget.set_text(value.to_s)
         end
-        observe_attr :text
-        
+       
         def text
           widget.text
         end
+        observe_attr :text        
       end
       
 

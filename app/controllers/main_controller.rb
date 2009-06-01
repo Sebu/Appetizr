@@ -7,7 +7,7 @@ class MainController < Indigo::Controller
   
   def show
     @main = Main.active
-    do_render
+    render
   end
   
   #TODO: remove and implicit generate in dnd functions

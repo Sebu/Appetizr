@@ -33,12 +33,6 @@ module Indigo
     end
 
 
-
-    def do_render
-      session[:root] = self.current = render(:model => "#{model_name}")
-      session[:root].show_all
-    end
-    
     def berry
       SomeGui::View.widgets
     end
@@ -51,7 +45,6 @@ module Indigo
       else
         Debug.log.debug "  \e[1;91mSorry\e[0m :/ No action responded to \e[1m#{action}\e[0m"
       end
-      #render!!!
     end
   
   

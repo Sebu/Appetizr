@@ -1,6 +1,9 @@
 
 
 TODO before first usefull release
+* rewrite signaling! (more clean syntax please)
+* no proxy widgets (use gtk widgets directly)
+* support glade/builder files (incremental - if render extension is .glade ?)
 * better routing (not like rails! we don't need pretty routes. but more like in shoes)
 * get locale infos from user locale (allow change of locale and rEval)
 * dnd more response from dnd methods
@@ -16,21 +19,19 @@ TODO before first usefull release
   end
 * create a real initializer (with better internel config support for framework and app)
 * improve ...
-   ... Signaling (maybe use GObject?)
    ... the Rakefile
    ... migration support (get it to work correctly)
-   ... the widgetery
 
 * dbus signaling/observe_attr
 * speed! ( ruby1.9 + thread safty + gobject for signaling )
 
 demo app TODO
-
-* belegung
-* prectab with all days data
-* printer menu
-* dnd copy
-* layouts
+* fix account_entry => return bug
+* belegung ( List with String,String hash.to_a etc. )
+* prectab with all days data (prectab.changed? prectab.now[])
+* printer menu ( render :update => printers do end )
+* dnd copy ( key-press key-release )
+* layouts ( via glade )
 * printer view (also show fancy tray infos, load and errors)
 
 
