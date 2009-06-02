@@ -48,6 +48,7 @@ class Indigo::ObjectListStore < Gtk::ListStore
   end
   
   def initialize(*args)
+    @columns = 0
     options = args.extract_options!
     options.to_options!
     @exclude = options[:exclude] || []
@@ -100,6 +101,7 @@ class Indigo::ObjectListStore < Gtk::ListStore
       child = append
       child[0] = record
       keys.each_with_index { |k,i| child[i+1] = record.send(k) }
+      @columns += 1
     end
   end
   
@@ -109,15 +111,22 @@ class Indigo::ObjectListStore < Gtk::ListStore
     child = append
     child[0] = record
     keys.each_with_index { |k,i|  child[i+1] = record.send(k) }
+    @columns += 1
     child
   end
 
   def empty?
-    n_columns == 0
+    puts @columns
+    @columns == 0
   end
   
+  def clear 
+    @columns = 0 
+    super
+  end
 
   def remove(iter)
+    @columns -= 1
     @item = iter.get_value(0) 
     super if run_callbacks(:before_remove)
   end
