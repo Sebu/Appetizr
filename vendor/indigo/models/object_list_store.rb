@@ -54,7 +54,6 @@ class Indigo::ObjectListStore < Gtk::ListStore
     @include = options[:columns] || []
     records = extract_data(args)
     @types = self.class.types || extract_constants(args) || extract_types(records)
-    puts @types
     @editable = self.class.editable || [false]*(@types.size+1)
     super(*([Object]+@types))
     add_all(records)
@@ -113,7 +112,7 @@ class Indigo::ObjectListStore < Gtk::ListStore
   end
 
   def empty?
-    n_columns == 0
+    self.iter_first == nil
   end
   
 

@@ -15,11 +15,13 @@ module Indigo
                 end
 
         if block_given?
-          befor = @current
+          before = @current
           @current = params[:update] if params[:update]
-          @current.widget.children.each {|child| @current.widget.remove(child) }
+          if @current.respond_to?(:children)
+            @current.children.each {|child| @current.remove(child) } 
+          end
           out = instance_eval(&block)
-          @current = befor
+          @current = before
         else
           out = instance_eval(View[@filename], @filename)
         end

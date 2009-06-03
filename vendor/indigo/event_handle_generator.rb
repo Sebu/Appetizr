@@ -15,11 +15,11 @@ module Indigo
 
     def gen_connection(signal, action, *args, &block)
       if block_given?
-        connect(signal, self, *args, &block)
+        on(signal, self, *args, &block)
       elsif action.is_a?(String)
-        connect(signal, self, *args) { self.redirect_to(action, *args) }
+        on(signal, self, *args) { self.redirect_to(action, *args) }
       else
-        connect(signal, self, action, *args)
+        on(signal, self, action, *args)
       end
     end
   

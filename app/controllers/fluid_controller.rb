@@ -6,18 +6,20 @@ class FluidController  < Indigo::Controller
     @list = Indigo::ObjectListStore.new(String)
     render do
       window "SimpleDemo", :width => 300 do
-        @text = entry {
-          enter do
-             @list.add(@text.text)
-          end
-        }
-        @filter_text = entry  {
-          enter do
-             @atable.filter do |data|
-                data  =~ Regexp.new(@filter_text.text)
-             end
-          end
-        }        
+        tabs do
+          @text = entry {
+            enter do
+               @list.add(@text.text)
+            end
+          }
+          @filter_text = entry  {
+            enter do
+               @atable.filter do |data|
+                  data  =~ Regexp.new(@filter_text.text)
+               end
+            end
+          }        
+        end          
         @atable = table(:height => 400) {
           model @list
           columns_from_model :headers => ["Texteingaben"]

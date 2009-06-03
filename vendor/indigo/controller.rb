@@ -22,12 +22,16 @@ module Indigo
     attr_accessor :session      # user session
 
 
-    def initialize
+    def show
+      render
+    end
+    
+    def initialize(name=nil)
       @current = self
       @params = {}
       @session = {}
       @flash = {}
-      @model_name = self.class.name.sub("Controller","").downcase.freeze
+      @model_name = name
       run_callbacks :after_initialize
       self
     end
@@ -49,7 +53,7 @@ module Indigo
   
   
     def present
-      session[:root].widget.present
+      session[:root].present
     end
       
     def quit
@@ -57,11 +61,11 @@ module Indigo
     end
     
     def hide
-      session[:root].widget.hide
+      session[:root].hide
     end
 
-    def self.one
-      @one ||= self.new
+    def self.first(name=nil)
+      @one ||= self.new(name)
     end
 
   end

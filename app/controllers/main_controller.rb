@@ -36,7 +36,7 @@ class MainController < Indigo::Controller
 
  
   def remove_user
-    selection = view["account_table"].selection.to_a
+    selection = berry["account_table"].selection.to_a
     if !selection.empty? and confirm t"account.ask_remove"
       view["account_table"].selection.remove
       account_string = selection.collect { |a| a.account }.join(", ")

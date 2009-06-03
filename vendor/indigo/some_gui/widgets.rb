@@ -18,11 +18,7 @@ module Indigo
             
         def block_end
         end
-        
-        def show_all
-          #parse_block(&@block)
-          #self.children.each { |c| puts c } if self.children
-        end
+       
       end
 
       class Notifier #< Gtk::StatusIcon
@@ -101,6 +97,10 @@ module Indigo
         include Widget
         include ObserveAttr
       
+        def toplevel?
+          true
+        end
+        
         def initialize(p, *args)
           
           begin

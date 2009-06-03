@@ -49,12 +49,12 @@ module ObserveAttr
     additional_args = options[:args] || []
     
     if block_given?
-      m2.connect(signal) { |local_args| 
+      m2.on(signal) { |local_args| 
         args = [local_args]+additional_args
         m1.send(func, block.call(*args) ) 
       }
     else
-      m2.connect(signal, m1, func)
+      m2.on(signal, m1, func)
     end
     m2.emit(signal, m2.send(key2))
   end
@@ -71,7 +71,7 @@ module ObserveAttr
 
         class_eval %{
           def on_#{name.to_s.downcase}_changed(*args,&block)
-            connect("#{signal}", *args, &block)
+            on("#{signal}", *args, &block)
           end
           
           def #{name.to_s.downcase}_changed

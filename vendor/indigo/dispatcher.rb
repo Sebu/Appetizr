@@ -20,10 +20,14 @@ module Indigo
       data = /(([a-z_]+)s)?(\/([a-z_]+))?(\/([a-z]*\d+))?$/.match(uri)
       
       model_name = data[2] ? data[2] : sender.model_name.downcase
-      controller_name = "#{model_name.capitalize}Controller"
       action = data[4] || "show"
       id = data[6] || sender.params[:id]
-      new_controller = Kernel.const_get(controller_name).one
+      begin
+        controller_name = "#{model_name.camelize}Controller".constantize
+      rescue NameError
+        controller_name = Controller
+      end
+      new_controller = controller_name.first(model_name)
       new_controller.current = sender.current  if sender
       new_controller.params[:id] = id 
 

@@ -19,7 +19,6 @@ button :id => @computer.id, :height => 60, :width=> 60 do
 
   flow do
     label "<span size='small'><b>#{@computer.id}</b></span>" , :size => 8
-    stretch
     label(:size => 8) {
       text_observe @computer, :prectab do |prectab| prectab_format(prectab) end
     }

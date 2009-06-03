@@ -12,7 +12,7 @@ module Signaling
   # or
   # connect(signal, receiver, method, args)
   
-  def connect(signal, *args, &block)
+  def on(signal, *args, &block)
     @connections ||= {}
     @connections[signal] = [] unless @connections[signal]
     data =  if block

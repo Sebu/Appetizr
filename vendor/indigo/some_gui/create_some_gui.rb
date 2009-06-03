@@ -21,6 +21,8 @@ module Indigo
               current.berry ||= {}
               current.berry[id_name] = widget if id_name
 
+              current.add_element(widget) unless widget.toplevel? or (widget.respond_to?(:parent) and widget.parent)
+
               self.slots ||= []
               slots.push current
               self.current = widget
@@ -46,13 +48,18 @@ module Indigo
       def parse_block(&block)
         if block_given?
           current.block = block
-#         instance_eval(&block)
           block.call self.current
         end
       end
           
       def model(value)
         current.model=value
+      end
+      
+      def from_builder(filename)
+        builder = Gtk::Builder.new
+        builder.add(filename)
+        self.current = builder.get_object("main").show
       end
       
       def add_element(widget)

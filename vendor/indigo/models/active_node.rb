@@ -3,6 +3,8 @@
 module Indigo
   module ActiveNode
     include Signaling
+    
+    #attr :bla, String, :length bla bla
 
     def self.included(base)
       base.class_eval do

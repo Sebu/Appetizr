@@ -1,5 +1,16 @@
 
 
+# add widgets from gtkbuilder spec files
+#from_builder "app/views/test.glade"
+
+
+# TODO: not the best place :)
+notification { message_observe @main, :status }
+
+trayicon t('main.title') do
+  menu { action :present }
+end
+  
 window t'main.title' do
   
   menu t"menu.other" do
@@ -10,18 +21,15 @@ window t'main.title' do
   # menu :context do  # :context is now default 
   menu :id=>"menu" do 
     action :undo
-    action "send text"
+    action "send text", "messages/1"
   end
 
-  trayicon t('main.title') do
-    menu { action :present }
-  end
+
   
   statusbar
   status_observe @main, :scan_string
   
-  # TODO: not the best place :)
-  notification { message_observe @main, :status }
+
 
   drop :drop_pool_store
   drag :drag_pool_store
@@ -43,17 +51,15 @@ window t'main.title' do
             }
           }
         end
-        stretch
       }
       @main.clusters[7..10].reverse_each { |c| render "cluster", :cluster => c }
       render "cluster_v", :cluster => @main.clusters[6]
     end
-    stretch 
     flow {
       stack {
-        entry @main.account_text do
+        entry do |e|
           completion_observe @main, :user_list
-          @main.account_text_observe self, :text
+          @main.account_text_observe e, :text
           enter :account_return
         end
         flow {
@@ -71,7 +77,7 @@ window t'main.title' do
         end
       }
 
-      tabs :width => 500 do
+      tabs :position=>:bottom, :width => 500 do
         table t"log" do
           model @main.status_list
           columns_from_model :headers => ["Time", "Message"]
@@ -88,7 +94,7 @@ window t'main.title' do
         stack t"westsaal" do       
           @main.clusters[0..5].reverse_each { |c| render "cluster_h", :cluster => c }
         end
-        #stack t"schulungsraum"
+        stack t"schulungsraum"
       end
     }
   }
