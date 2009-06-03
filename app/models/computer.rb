@@ -20,17 +20,19 @@ class Computer < ActiveRecord::Base
     `ssh -f root@s8 -- "ssh #{self.id} -- /etc/init.d/xdm restart"`
   end
 
-
+  def remove_user(u)
+    list = self.user.split(" ")
+    list.delete(u)
+    self.user = list.join(" ")
+    #TODO auto generate color
+    self.color = CONFIG['color_mapping'][ Account.gen_color(list) ]
+    save
+  end
   
   def update_time
     self.Time = Time.now.strftime("%j%H%M%S")
   end
   
-#  def after_reload
-#    self.color_changed
-#    self.user_changed
-#  end
-
   def prectab=(value)
     @prectab = value
   end

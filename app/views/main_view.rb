@@ -8,13 +8,17 @@
 notification { message_observe @main, :status }
 
 trayicon t('main.title') do
-  menu { action :present }
+  menu { 
+    action :present 
+    action "gummibaum"
+  }
 end
   
 window t'main.title' do
   
   menu t"menu.other" do
     action :refresh
+    action :lock_users
     action :quit
   end
   
@@ -25,7 +29,6 @@ window t'main.title' do
   end
 
 
-  
   statusbar
   status_observe @main, :scan_string
   
@@ -41,6 +44,8 @@ window t'main.title' do
       stack {
         @main.printers.each do |printer| 
           flow {
+            click do gen_printer_menu(printer) end #TODO do some auto updating here  
+            menu :id=>"#{printer.name}_menu"
             box {
               background_observe printer, :accepts do |state| color_please(state) end
               label "#{printer.name}" 
@@ -77,7 +82,7 @@ window t'main.title' do
         end
       }
 
-      tabs :position=>:bottom, :width => 500 do
+      tabs :width => 500 do
         table t"log" do
           model @main.status_list
           columns_from_model :headers => ["Time", "Message"]

@@ -59,38 +59,7 @@ class Indigo::ObjectListStore < Gtk::ListStore
     add_all(records)
   end
 
-  def extract_types(records)
-    return nil unless records
-    record = records.first
-    case record
-    when Array
-      records.first.collect{ |record| record.class }
-    else
-      [record.class]
-    end
-  end
-  
-  def extract_constants(args)
-     constants = args.select { |arg| arg.is_a?(Class) }
-     constants.empty? ? nil : constants
-  end
 
-  def extract_keys(record)
-    keys = if record.is_a?(Array)
-      [:first,:second,:third,:fourth,:fifth].to(record.size-1)
-    elsif record.is_a?(Hash)
-      record.keys
-    else
-      ["to_s"]
-    end
-    self.class.keys || (keys | @include) - @exclude
-  end
-
-  
-  def extract_data(args)
-    args.each { |arg| return arg if arg.is_a?(Array) }
-    return nil
-  end
     
   def add_all(records)
     return if !records or records.empty?
@@ -136,8 +105,40 @@ class Indigo::ObjectListStore < Gtk::ListStore
   def [](path)
     get_iter(path).get_value(0)
   end
+  
+  protected
+  def extract_types(records)
+    return nil unless records
+    record = records.first
+    case record
+    when Array
+      records.first.collect{ |record| record.class }
+    else
+      [record.class]
+    end
+  end
+  
+  def extract_constants(args)
+     constants = args.select { |arg| arg.is_a?(Class) }
+     constants.empty? ? nil : constants
+  end
 
+  def extract_keys(record)
+    keys = if record.is_a?(Array)
+      [:first,:second,:third,:fourth,:fifth].to(record.size-1)
+    elsif record.is_a?(Hash)
+      record.keys
+    else
+      ["to_s"]
+    end
+    self.class.keys || (keys | @include) - @exclude
+  end
 
+  
+  def extract_data(args)
+    args.each { |arg| return arg if arg.is_a?(Array) }
+    return nil
+  end
 end
 
 

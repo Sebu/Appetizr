@@ -34,7 +34,6 @@ module Indigo
   autoload :App,'app'
   autoload :Application, 'indigo/application'
   autoload :SomeGui, 'indigo/some_gui'
-  autoload :EventHandleGenerator, 'indigo/event_handle_generator'
   autoload :Dispatcher, 'indigo/dispatcher'
   autoload :Controller, 'indigo/controller'
   autoload :TranslationHelper, 'indigo/helpers/translation_helper'

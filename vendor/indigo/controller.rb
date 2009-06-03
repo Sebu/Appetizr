@@ -1,17 +1,13 @@
-
-
 module Indigo
   class Controller
-    include CommandPattern
-    include EventHandleGenerator
-    include SomeGui::Create
-    include SomeGui::Render
-    include ActiveSupport::Callbacks
-
-
     def self.helper(name)
       include name
     end    
+
+    include CommandPattern
+    include SomeGui::Create
+    include SomeGui::Render
+    include ActiveSupport::Callbacks
 
     helper TranslationHelper
 
@@ -30,7 +26,6 @@ module Indigo
       @current = self
       @params = {}
       @session = {}
-      @flash = {}
       @model_name = name
       run_callbacks :after_initialize
       self
@@ -41,23 +36,18 @@ module Indigo
       SomeGui::View.widgets
     end
     
-
     
-    def perform_action(action, *args)
-      if respond_to?(action)
-        send(action, *args)
-      else
-        Debug.log.debug "  \e[1;91mSorry\e[0m :/ No action responded to \e[1m#{action}\e[0m"
-      end
+    def redirect_to(uri,*args)
+      Dispatcher.dispatch([uri, self, *args]) 
     end
-  
+    
   
     def present
       session[:root].present
     end
       
     def quit
-      session[:root].quit
+      session[:root].destroy
     end
     
     def hide
@@ -70,5 +60,3 @@ module Indigo
 
   end
 end
-
-

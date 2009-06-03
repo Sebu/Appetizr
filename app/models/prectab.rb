@@ -1,22 +1,45 @@
 
+# prectab with all days data (prectab.changed? prectab.now[])
 
 class Prectab
+  @old_hour=0
+  @old_day=0
+  @prectab = nil
+  
+  def self.changed?
+    if self.hour != @old_hour or self.day != @old_day
+      @old_hour = self.hour; @old_day=self.day
+      true
+    else
+      false
+    end
+  end
 
+  def self.hour
+    17 #Time.now.hour
+  end
+  
+  def self.day
+    Time.now.wday
+  end
+  
+  
+  def self.now
+    self.today[self.hour]
+  end
 
+  def self.prectab
+    @prectab ||= scan_file(CONFIG["prectab_path"])
+  end
+     
   def self.today
-    scan_file(CONFIG["prectab_path"])
+    self.prectab[self.day]
   end
   
   def self.scan_file(filename)
-    prectab = {}
-    
-    # get current day
-    day = Time.now.wday
-    
-    Debug.log.debug "day: #{day}"
     
     prectab = if File.exist?(filename)
-                parsePrectab(filename, day)      
+                parsePrectab(filename)      
               else
                 Debug.log.debug "can't find prectab file: #{filename} creating empty list"
                 {}
@@ -27,31 +50,28 @@ class Prectab
   end  
 
 
-  def self.parsePrectab(file, today)
+  def self.parsePrectab(file)
     prectab = {}
     prev = nil
-    day = today-1
-    return prectab unless 0.upto(4).include?(day)
-    0.upto(23) { |h| prectab[h] = {} }
+    0.upto(6) { |h| prectab[h] = Hash.new { |hash, key| hash[key] = {} } }
     File.open(file, 'r').each do |line|
-      ln = line.split('\n')
-      tokens = ln[0].split(' ')
-      next if tokens[0] == "Schul"
-      0.upto(9) do |i|
-        infos = tokens[i*5+day+1].split(',')
-        hour = i+8
-        elements = infos.size
-        if elements == 2                                    # free
-           prev = nil
-        elsif elements == 1                                 # prev
-          if prev
-            data = understand_infos(prev, tokens)
-            data.each_pair { |name, fields| prectab[hour][name] = fields }
+      tokens = line.split('\n')[0].split(' ')
+      0.upto(4) do |day|
+        0.upto(9) do |i|
+          infos = tokens[i*5+day].split(',')
+          hour = i+8
+          case infos.size
+          when 2: prev = nil  # free
+          when 1:             # prev
+            if prev
+              data = understand_infos(prev, tokens)
+              data.each_pair { |name, fields| prectab[day][hour][name] = fields }
+            end
+          else                # entry
+            prev = infos
+            data = understand_infos(infos, tokens)
+            data.each_pair { |name, fields| prectab[day][hour][name] = fields }
           end
-        else                                                # entry
-          prev = infos
-          data = understand_infos(infos, tokens)
-          data.each_pair { |name, fields| prectab[hour][name] = fields }
         end
       end
     end

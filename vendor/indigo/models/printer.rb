@@ -14,7 +14,7 @@ module Indigo
       Printer.cancel(self)
     end
     def move_to(printer)
-      Printer.move_job_to(self, printer)
+      #Printer.move_job_to(self, printer)
     end
   end
 

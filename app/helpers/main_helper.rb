@@ -23,12 +23,26 @@ module MainHelper
     end
   end
   
+  def gen_printer_menu(printer)
+    render :update => berry["#{printer.name}_menu"] do
+      jobs = printer.jobs
+      action "leer" if jobs.empty?
+      jobs.each { |job|
+        menu "#{job.id}| #{job.user}| #{job.size}" do
+          action "cancel" do job.cancel end
+          Indigo::Printer.printers.each { |other|
+            action "move to #{other.name}" do job.move_to(other.name) end
+          }
+        end
+      }
+    end  
+  end
 
   def gen_button_menu(user, computer)
     render :update => berry[computer.id].berry["button_menu"] do
       user.split(" ").each do |user|
         menu user.to_s do
-          action :bla
+          action :remove  , :remove_from_pc, computer, user
         end
       end
       separator

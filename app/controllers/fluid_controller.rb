@@ -12,7 +12,7 @@ class FluidController  < Indigo::Controller
                @list.add(@text.text)
             end
           }
-          @filter_text = entry  {
+          @filter_text = entry.enter {
             enter do
                @atable.filter do |data|
                   data  =~ Regexp.new(@filter_text.text)

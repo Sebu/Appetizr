@@ -1,8 +1,6 @@
 
 require 'gtk2'
 
-
-
 module Gtk
   class TreeSelection
     def to_a
@@ -22,7 +20,7 @@ module Indigo
   class Controller
 
       def confirm(text, params={})
-        box = Gtk::MessageDialog.new(current.widget,
+        box = Gtk::MessageDialog.new(current,
                                      Gtk::Dialog::DESTROY_WITH_PARENT, 
                                      Gtk::MessageDialog::QUESTION,
                                      Gtk::MessageDialog::BUTTONS_YES_NO,
@@ -52,7 +50,8 @@ module Indigo
   
       STOCK_ITEMS = {:ok=> Gtk::Stock::OK, :cancel => Gtk::Stock::CANCEL, :add => Gtk::Stock::ADD, :undo => Gtk::Stock::UNDO, :quit => Gtk::Stock::QUIT}
       module Widget
-
+        include EventHandleGenerator
+        
         def get_stock(name)
           STOCK_ITEMS[name.to_sym] || name
         end
@@ -151,8 +150,13 @@ module Indigo
                 
       end
       
-
-      class Gtk::Menu
+      class Gtk::ImageMenuItem
+        include Signaling
+        include EventHandleGenerator
+        attr_accessor :controller
+      end
+      
+      class Menu < Gtk::Menu
         include Widget
         attr_accessor :text
         
@@ -168,37 +172,28 @@ module Indigo
         end
         
         def add_element(w)
-          case w.class.name
-          when "Indigo::SomeGui::Widgets::Menu"
-            sub_menu = Gtk::ImageMenuItem.new(get_stock(w.text))
-            sub_menu.submenu=w
-            append(sub_menu)
-          when "Indigo::SomeGui::Widgets::Action"
-            append(w.action)  
-          end
+          sub_menu = Gtk::ImageMenuItem.new(get_stock(w.text))
+          sub_menu.submenu=w
+          append(sub_menu)
         end
         
         def separator
           append(Gtk::SeparatorMenuItem.new)
         end
-      end
-      Menu = Gtk::Menu
-
-      class Action
-        include Widget
-        attr_accessor :action
-
-        def toplevel?
-          false
+        
+        def action(text, method=nil, *args, &block)
+          new_action = Gtk::ImageMenuItem.new(get_stock(text))
+          method ||= "/#{text.to_s.tr(' ','_')}"
+          new_action.controller=@controller
+          new_action.signal_connect(:activate) { |w| w.emit(:click) }
+          new_action.instance_eval do
+            click(method, *args, &block)
+          end                    
+          append(new_action) 
         end
         
-        def initialize(p, text, method=nil)
-          self.action = Gtk::ImageMenuItem.new(get_stock(text))
-          method ||= "/#{text.to_s.tr(' ','_')}"
-          action.signal_connect(:activate) { |w| Dispatcher.dispatch([method,@controller]) } #.redirect_to(method) }
-        end
       end
-      
+
 
       # qbutton with extra decoration via layout
       class Button < Gtk::Button
@@ -218,7 +213,6 @@ module Indigo
           unless title       # CONTAINER layout
             @layout = Gtk::VBox.new 
             @layout.spacing = 0
-            #@layout.margin = 0
             add(@layout)
           end
         end
@@ -343,6 +337,8 @@ module Indigo
         include Widget
         include ObserveAttr
 
+        observe_attr :text    
+        
         def initialize(p, title=nil)
           super()
           signal_connect(:changed) { emit("text_changed", self.text) }
@@ -361,11 +357,6 @@ module Indigo
           completion= new_completion
         end
 
-        def text=(value)
-          set_text(value.to_s)
-        end
-       
-        observe_attr :text        
       end
       
 
@@ -429,6 +420,7 @@ module Indigo
         def initialize(p, title="flow")
           super()
           self.name = title
+          signal_connect("button-press-event") { emit(:click) }
         end
       end
       
@@ -437,9 +429,11 @@ module Indigo
         include Widget
         include ObserveAttr
 
+        observe_attr :title
+
         def initialize(p, title="dialog")
           super(title,p)
-          self.text=title
+          self.title=title
         end
 
         def parse_params(params)
@@ -448,40 +442,30 @@ module Indigo
           super
         end
 
-        def text=(value) 
-          set_title(value)
-        end
-        def text
-          title
-        end
-        observe_attr :text
-        
-
         def add_element(w)
           child.add(w)
         end
 
-        def close
-          hide
-        end
       end
+
           
       class Window < Gtk::Window
         include Widget
         include ObserveAttr
 
         attr_accessor :menubar, :status_bar
+        observe_attr :title
         
         def initialize(p, name="window")
           super()
           self.window_position = Gtk::Window::POS_CENTER
           signal_connect('delete_event') { Gtk.main_quit }
           signal_connect("destroy") { Gtk.main_quit } # required by gtk
-          self.text=name
+          self.title=name
           self.menubar ||= Gtk::MenuBar.new
           @layout = Gtk::VBox.new
           self.add(@layout)
-          @layout.pack_start(menubar,false,false)
+          @layout.pack_start(menubar, false, false)
         end
 
         def status=(value)
@@ -492,7 +476,7 @@ module Indigo
         # generate a statusbar
         def statusbar
           @status_bar ||= Gtk::Statusbar.new
-          @layout.pack_end(@status_bar,false,false)
+          @layout.pack_end(@status_bar, false, false)
         end
 
         def parse_params(params)
@@ -505,13 +489,7 @@ module Indigo
           super
         end
 
-        def text=(value) 
-          set_title(value)
-        end
-        def text
-          title
-        end
-        observe_attr :text
+
         
         def add_element(w)
           case w.class.name
@@ -524,14 +502,6 @@ module Indigo
           end
         end
         
-       
-        def close
-          destroy
-        end
-        
-        def hide
-          hide
-        end
       end
       
     end # widgets

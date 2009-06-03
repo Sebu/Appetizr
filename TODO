@@ -32,12 +32,8 @@ TODO before first usefull release
 * speed! ( ruby1.9 + thread safty + gobject for signaling )
 
 demo app TODO
-* fix account_entry => return bug
 * belegung ( List with String,String hash.to_a etc. )
-* prectab with all days data (prectab.changed? prectab.now[])
-* printer menu ( render :update => printers do end )
 * dnd copy ( key-press key-release )
-* layouts ( via glade )
 * printer view (also show fancy tray infos, load and errors)
 
 

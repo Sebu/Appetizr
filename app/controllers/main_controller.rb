@@ -8,10 +8,10 @@ class MainController < Indigo::Controller
   def show
     @main = Main.active
     render
-    start_threads
+    start_threads #TODO :/
   end
   
-  #TODO: remove and implicit generate in dnd functions
+  #TODO remove and implicit generate in dnd functions
   def drag_pool_store
     session[:pool_store]
   end
@@ -20,12 +20,6 @@ class MainController < Indigo::Controller
     return unless data
     session[:pool_store] = data
     Main.active.status = ["#{session[:pool_store]['User']}", "von <b>#{session[:pool_store]['Cname']}</b> in store verschoben","trashcan_full"]
-
-    render :update => berry["menu"] do
-      action :undo
-      action "send text"
-      action :ok
-    end
   end
 
   
@@ -35,7 +29,14 @@ class MainController < Indigo::Controller
     fill_accounts(accounts)
   end
 
- 
+  def lock_users
+    `#{CONFIG['user_lock_file']}`
+  end
+
+  def remove_from_pc(pc, user)
+    pc.remove_user(user)
+  end
+   
   def remove_user
     selection = berry["account_table"].selection.to_a
     if !selection.empty? and confirm t"account.ask_remove"
@@ -189,9 +190,7 @@ class MainController < Indigo::Controller
     
     
     refresh = Thread.new {
-      old_hour = 0
       session[:old_timestamp] = 0
-      prectab = Prectab.today
 
       while true
         puts "refresh start"
@@ -200,25 +199,21 @@ class MainController < Indigo::Controller
         Main.active.printers.each { |p| p.update_job_count; p.update_accepts; p.update_enabled }
         
         # update prectab data
-        hour = Time.now.hour
-        if hour != old_hour
+        if Prectab.changed?
           Main.active.computers_cache.each_value {|computer| computer.prectab = nil }
-          old_hour = hour
-          Debug.log.debug "prectab"
-          if prectab[hour] then
-            prectab[hour].each_pair do |kurs, daten|
-              count, ort = daten[0].to_i, daten[1]   
-              index = 0
-              while count > 0
-                c_i = CONFIG["clients"][ort][index]
-                computer = Main.active.computers_cache[c_i]
-                if computer and computer.prectab == nil then
-                  computer.prectab = kurs 
-                  count -= 1
-                end
-                count -= 1 unless computer
-                index += 1
+          Debug.log.debug "working prectab"
+          Prectab.now.each_pair do |kurs, daten|
+            count, ort = daten[0].to_i, daten[1]   
+            index = 0
+            while count > 0
+              c_i = CONFIG["clients"][ort][index]
+              computer = Main.active.computers_cache[c_i]
+              if computer and computer.prectab == nil then
+                computer.prectab = kurs 
+                count -= 1
               end
+              count -= 1 unless computer
+              index += 1
             end
           end
         end
@@ -232,7 +227,6 @@ class MainController < Indigo::Controller
           end
         end
         session[:old_timestamp] = Time.now.strftime("%j%H%M%S")
-
 
         puts "refresh end"
         sleep 20

@@ -38,7 +38,7 @@ module Indigo
           }
         end 
       end
-      creates_widget :TrayIcon, :Box, :Link, :Dock, :Action, :Menu, :Notification, :Text, :GlArea, :Dialog, :Svg, :Spin, :Combo
+      creates_widget :TrayIcon, :Box, :Link, :Dock, :Menu, :Notification, :Text, :GlArea, :Dialog, :Svg, :Spin, :Combo
       creates_widget :Tabs, :VSlider, :HSlider, :Radio, :Check, :Window, :Flow, :Stack, :Entry, :Label, :Button, :Group, :Table
 
       def gen_accessor(name, widget)

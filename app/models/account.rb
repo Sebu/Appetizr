@@ -106,7 +106,8 @@ class Account < UserAccountDB
           end
         end                  
       end
-    end                    
+    end
+    return :frei            
   end 
   
   def get_lock_state(user)
