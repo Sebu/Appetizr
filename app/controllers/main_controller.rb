@@ -3,11 +3,12 @@
 class MainController < Indigo::Controller
   helper MainHelper
   
-  after_initialize :start_threads
+  #after_initialize :start_threads
   
   def show
     @main = Main.active
     render
+    start_threads
   end
   
   #TODO: remove and implicit generate in dnd functions
@@ -250,8 +251,8 @@ class MainController < Indigo::Controller
         Debug.log.debug "starting scanner thread ..."
         while true
           scan = socket.recvfrom(25)
-          Debug.log.debug "Scanner says #{scan}"
           type, Main.active.scan_string = check_scanner_string(scan[0])
+          Debug.log.debug "Scanner says #{scan} #{type}, #{Main.active.scan_string}"
           case type
           when :card
             accounts = User.find_accounts_by_barcode(Main.active.scan_string)
@@ -261,6 +262,7 @@ class MainController < Indigo::Controller
             fill_accounts(accounts)
           when :key
             pc = Main.active.computers_cache[Main.active.scan_string]
+            puts pc
             unless Main.active.account_list.empty?
               table_register(pc)
             else
