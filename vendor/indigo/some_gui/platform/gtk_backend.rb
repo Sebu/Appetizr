@@ -194,6 +194,21 @@ module Indigo
         
       end
 
+      class Check < Gtk::CheckButton
+        include Widget
+        include ObserveAttr
+        include EventHandleGenerator
+
+        def initialize(p, state, title=nil)
+          if title 
+            super(get_stock(title))
+          else 
+            super()
+          end
+          self.active=state
+          signal_connect(:toggled) { emit(:click) }
+        end      
+      end
 
       # qbutton with extra decoration via layout
       class Button < Gtk::Button
@@ -223,9 +238,9 @@ module Indigo
           method_click = params[:click] 
           case method_click
           when String
-            signal_connect("button-press-event") { Dispatcher.dispatch([method_click,@controller]) } #@controller.redirect_to method_click }
+            signal_connect(:clicked) { Dispatcher.dispatch([method_click,@controller]) } #@controller.redirect_to method_click }
           when Symbol
-            signal_connect("button-press-event") { @controller.send(method_click) }
+            signal_connect(:clicked) { @controller.send(method_click) }
           end
           super
         end
@@ -344,6 +359,7 @@ module Indigo
           signal_connect(:changed) { emit("text_changed", self.text) }
           signal_connect(:activate) { emit(:enter) }
           tool_tip=title
+          self.text=title
         end
 
         def completion=(model)

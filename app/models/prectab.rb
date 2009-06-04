@@ -16,7 +16,7 @@ class Prectab
   end
 
   def self.hour
-    17 #Time.now.hour
+    Time.now.hour
   end
   
   def self.day

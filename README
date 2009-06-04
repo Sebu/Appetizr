@@ -3,7 +3,7 @@ Appetizr (aka indigo) - (rapid) application framework inspired by RoR and Shoes
 
 USAGE OF DEMO APP/FRAMEWORK
 * 'rake db:migrate'
-* 'script/start'
+* 'bin/start'
 
 Differences to Rails
 1. Appetizr is not RAILS
@@ -29,8 +29,8 @@ How it should work(but does not right now):
   appetize my_app
   cd my_app
   script/generate window/model/controller .. create models and views
-  script/start ... test
-  rake appetize  (-> create app + installer - removes script/ test/ adds start.sh)
+  bin/start ... test
+  rake appetize  (-> create app + installer)
   
   
 Simple Controller
@@ -41,8 +41,7 @@ class SimpleController  < Indigo::Controller
     render do
       window {
         @text = label "Hallo Wald!"
-        button :ok do
-          click { @text.text= "Hallo Wurst!" }
+        button(:ok).click { @text.text= "Hallo Wurst!" }
         end
       }
     end.show_all

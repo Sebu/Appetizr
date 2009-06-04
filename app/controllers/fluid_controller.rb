@@ -3,23 +3,26 @@
 class FluidController  < Indigo::Controller
 
   def show
+    @fluid = Fluid.active
     @list = Indigo::ObjectListStore.new(String)
     render do
       window "SimpleDemo", :width => 300 do
-        tabs do
-          @text = entry {
-            enter do
-               @list.add(@text.text)
-            end
-          }
-          @filter_text = entry.enter {
-            enter do
-               @atable.filter do |data|
-                  data  =~ Regexp.new(@filter_text.text)
-               end
-            end
-          }        
-        end          
+        @text = entry {
+          enter do
+              @list.add(@text.text)
+          end
+        }
+        @filter_text = entry {
+          enter do
+              @atable.filter do |data|
+                data  =~ Regexp.new(@filter_text.text)
+              end
+          end
+        }        
+        
+        field @fluid, :name
+        check false, "test"
+        
         @atable = table(:height => 400) {
           model @list
           columns_from_model :headers => ["Texteingaben"]
