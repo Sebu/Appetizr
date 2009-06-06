@@ -367,10 +367,10 @@ module Indigo
           new_completion.model = model
           new_completion.text_column = 1
           renderer = Gtk::CellRendererText.new
-              renderer.set_property('foreground-gdk', Gdk::Color.parse('#999999') )
+          renderer.set_property('foreground-gdk', Gdk::Color.parse('#999999') )
           new_completion.pack_start(renderer, :text=>2)
           new_completion.add_attribute(renderer, :text, 2)
-          completion= new_completion
+          self.set_completion(new_completion)
         end
 
       end

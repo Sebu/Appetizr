@@ -23,6 +23,9 @@ class Prectab
     Time.now.wday
   end
   
+  def self.soon
+    self.today[self.hour+1]
+  end
   
   def self.now
     self.today[self.hour]
@@ -56,7 +59,7 @@ class Prectab
     0.upto(6) { |h| prectab[h] = Hash.new { |hash, key| hash[key] = {} } }
     File.open(file, 'r').each do |line|
       tokens = line.split('\n')[0].split(' ')
-      0.upto(4) do |day|
+      1.upto(5) do |day|
         0.upto(9) do |i|
           infos = tokens[i*5+day].split(',')
           hour = i+8

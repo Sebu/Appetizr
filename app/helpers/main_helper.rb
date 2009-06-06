@@ -1,12 +1,14 @@
 
 module MainHelper
-  def user_list_format(a)
-    return if a.empty?
-    "<span size='x-small'>#{a.tr(" ","\n")}</span>"
+  def user_list_format(computer)
+    return if computer.user.empty? and !computer.prectab
+    return "<span color='#7A7A70'>#{computer.prectab[1]}</span>" if computer.user.empty?
+    "<span size='x-small'>#{computer.user.tr(" ","\n")}</span>"
   end
 
   def prectab_format(prectab)
-    "<b><span size='x-small' color='#FEFEAA'>#{prectab}</span></b>" 
+    return unless prectab
+    "<b><span size='x-small' color='#FEFEAA'>#{prectab[0]}</span></b>" 
   end
   
   
@@ -16,7 +18,7 @@ module MainHelper
 
 
   def code_to_color(code, computer)
-    if computer.prectab and computer.user == ""
+    if computer.prectab and (computer.prectab[0] or computer.prectab[1]) and computer.user == ""
       CONFIG['colors'][8]
     else
       CONFIG['colors'][computer.color]

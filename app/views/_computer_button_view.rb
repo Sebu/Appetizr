@@ -1,7 +1,7 @@
 
 
 button :id => @computer.id, :height => 60, :width=> 60 do 
-  tool_tip_observe @computer, :User do |user| user_list_format(user) end
+# tool_tip_observe @computer, :User do |user| user_list_format(user) end
   background_observe @computer, :Color, :args=>[@computer] do |user,computer| code_to_color(user,computer) end
 
   drag @computer
@@ -24,7 +24,7 @@ button :id => @computer.id, :height => 60, :width=> 60 do
     }
   end
   label(:size => 7) { 
-    text_observe @computer, :User do |user| user_list_format(user) end 
+    text_observe @computer, :User, :args=>[@computer] do |user,computer| user_list_format(computer) end 
   }
   
 end

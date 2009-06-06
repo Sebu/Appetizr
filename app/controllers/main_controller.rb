@@ -171,8 +171,33 @@ class MainController < Indigo::Controller
     end
   end
   
-  
 
+  def scatter_prectab(prectab, timeslot)
+    prectab.each_pair do |kurs, daten|
+      count, ort = daten[0].to_i, daten[1]   
+      index = 0
+      liste = CONFIG["clients"][ort]
+      liste = case kurs
+      when "itf","itc" then CONFIG["clients"][ort].reverse
+      else CONFIG["clients"][ort]
+      end
+      while count > 0
+        c_i = liste[index]
+        computer = Main.active.computers_cache[c_i]
+        if computer and computer.prectab[timeslot] == nil and !computer.user.include?("nobody") then
+          computer.prectab[timeslot] = kurs 
+          count -= 1
+          computer.prectab_changed
+        end
+        count -= 1 unless computer
+        index += 1
+      end
+    end
+  end  
+  
+  def refresh
+    session[:old_timestamp] = 0
+  end
 
   # add refresh and scanner threads 
   # TODO: move to somewhere else ( maybe computer and scanner controllers etc. )
@@ -200,22 +225,10 @@ class MainController < Indigo::Controller
         
         # update prectab data
         if Prectab.changed?
-          Main.active.computers_cache.each_value {|computer| computer.prectab = nil }
+          Main.active.computers_cache.each_value {|computer| computer.prectab = [nil,nil] }
           Debug.log.debug "working prectab"
-          Prectab.now.each_pair do |kurs, daten|
-            count, ort = daten[0].to_i, daten[1]   
-            index = 0
-            while count > 0
-              c_i = CONFIG["clients"][ort][index]
-              computer = Main.active.computers_cache[c_i]
-              if computer and computer.prectab == nil then
-                computer.prectab = kurs 
-                count -= 1
-              end
-              count -= 1 unless computer
-              index += 1
-            end
-          end
+          scatter_prectab(Prectab.now,0)
+          scatter_prectab(Prectab.soon,1)
         end
 
         comps =  Computer.updated_after session[:old_timestamp]

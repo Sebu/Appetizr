@@ -16,9 +16,10 @@ end
   
 window t'main.title' do
   
-  menu t"menu.other" do
+  menu t"menu.other" do 
     action :refresh
-    action :lock_users
+    separator
+#   action :lock_users
     action :quit
   end
   
