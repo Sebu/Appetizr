@@ -1,7 +1,9 @@
 
 
 de:
+  send: "Senden"
   westsaal: "Westsaal"
+  hauptsaal: "Hauptsaal"
   schulungsraum: "Schulungsraum"
   log: "Log"
   belegung: "Belegung"
@@ -10,13 +12,17 @@ de:
     other: "andere"
   open_files: 'Dateien öffnen'
   scanner:  
-    no_connection: 'keine verbindung zum scanner'
+    no_connection: 'keine Verbindung zum Scanner'
   main:
-    title: "indigoAdm 0.1a vom seb geschraubt"
+    title: "indigoAdm 0.1a"
   account:
     locked: "gelocket?"
     scanned: "eingelesen"
-    ask_remove: "wirklick accounts entfernen?"  
+    ask_remove: "Accounts von Karte entfernen?"  
+  sendtext:
+    title: Text senden
+    default:  mein Arsch
+              
     
 en:
   open_files: 'open files'
@@ -26,5 +32,7 @@ en:
     title: 'indigoAdm 0.1a by seb'
   account:
     scanned: "scanned"
-    ask_remove: "removek accounts from card?"  
-
+    ask_remove: "Remove accounts from card?"  
+  sendtext:
+    title: send text
+    default:  my ass

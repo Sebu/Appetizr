@@ -17,9 +17,6 @@ module Indigo
         if block_given?
           before = @current
           @current = params[:update] if params[:update]
-          if @current.respond_to?(:children)
-            @current.children.each {|child| @current.remove(child) } 
-          end
           out = instance_eval(&block)
           @current = before
         else
@@ -27,7 +24,7 @@ module Indigo
         end
         if params.empty?
           @current = session[:root] = out
-          out.show_all
+          #out.show_all
         end
         out
       end

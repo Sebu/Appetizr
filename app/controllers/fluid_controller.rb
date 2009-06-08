@@ -1,12 +1,19 @@
 
 
 class FluidController  < Indigo::Controller
-
   def show
+
     @fluid = Fluid.active
     @list = Indigo::ObjectListStore.new(String)
-    render do
-      window "SimpleDemo", :width => 300 do
+    
+    render {
+      from_file "test.glade"
+      
+      update "testbutton" do
+        click { puts "hallo" }
+      end
+      
+      update "hull" do
         @text = entry {
           enter do
               @list.add(@text.text)
@@ -14,14 +21,15 @@ class FluidController  < Indigo::Controller
         }
         @filter_text = entry {
           enter do
-              @atable.filter do |data|
-                data  =~ Regexp.new(@filter_text.text)
-              end
+            @atable.filter do |data|
+              data  =~ Regexp.new(@filter_text.text)
+            end
           end
         }        
         
-        field @fluid, :name
         check false, "test"
+        @r1 = radio false, "test"
+        radio true, "test2", @r1
         
         @atable = table(:height => 400) {
           model @list
@@ -30,10 +38,11 @@ class FluidController  < Indigo::Controller
             data == key
           end
         }
-      end
-    end.show_all
+      end 
+      show_all     
+    }
+    
+
   end
-
-
 end
 

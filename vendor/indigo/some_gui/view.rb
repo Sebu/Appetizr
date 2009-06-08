@@ -3,13 +3,9 @@
 
 module Indigo
   module SomeGui
-  
+
     class View
       include Render
-      
-      
-  #    attr_accessor :widgets
-  #    attr_accessor :wiews
 
       def self.load_file(filename)
         content = ''
@@ -24,9 +20,8 @@ module Indigo
       
       def self.[](name)
         @views ||= {}
-        @views[name] ||= load_file(name)
+        @views[name.to_s] ||= load_file(name.to_s)
       end
-      
     end 
     
     

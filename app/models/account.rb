@@ -1,10 +1,10 @@
 
 class Account < UserAccountDB
   include ObserveAttr
-  
+
+  # non rails conform table :/  
   set_table_name "map"
   belongs_to :user
-
   attr_readonly :barcode #, :account
   attr_accessible :account, :locked, :barcode
 
@@ -40,10 +40,8 @@ class Account < UserAccountDB
   end
 
   def is_private?
-    not /.{3}-[0-9a-f]{3}$/ === account 
+    not /.{3}-[0-9a-f]{3}$/ =~ account 
   end
-  
-  
   
   
   
@@ -89,7 +87,7 @@ class Account < UserAccountDB
 
   
   def self.gen_color(users)
-    users.each do |user|
+    users.each { |user|
       case user
       when "jeder": return :jeder
       when "nobody": return :nobody
@@ -106,14 +104,13 @@ class Account < UserAccountDB
           end
         end                  
       end
-    end
+    }
     return :frei            
   end 
   
   def get_lock_state(user)
     case Account.get_passwd(user)
     when :ok:         return false
-#   when :is_no_user: return :no_user
     else              return true
     end
   end

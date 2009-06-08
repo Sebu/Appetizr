@@ -12,7 +12,7 @@ class Main
     title,body,icon = value
     time = Time.now.strftime("%H:%M:%S")
     new_body = body.tr("\n"," ")
-    @status_list.add(["#{time}","<b>#{title}</b> #{new_body}"])
+    @status_list << ["#{time}","<b>#{title}</b> #{new_body}"]
     @status = value
   end
   

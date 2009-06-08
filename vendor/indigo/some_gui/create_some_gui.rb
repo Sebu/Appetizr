@@ -38,7 +38,7 @@ module Indigo
           }
         end 
       end
-      creates_widget :TrayIcon, :Box, :Link, :Dock, :Menu, :Notification, :Text, :GlArea, :Dialog, :Svg, :Spin, :Combo
+      creates_widget :TrayIcon, :Box, :Link, :Dock, :Menu, :Notification, :TextView, :GlArea, :Dialog, :Svg, :Spin, :Combo
       creates_widget :Tabs, :VSlider, :HSlider, :Radio, :Check, :Window, :Flow, :Stack, :Entry, :Label, :Button, :Group, :Table
 
 
@@ -46,8 +46,7 @@ module Indigo
       def field(*args)
         options = args.extract_options!
         options.to_options!
-        model = args[0]
-        name = args[1]
+        model, name = args
         data = model.send(name)
         case data
         when String
@@ -73,10 +72,20 @@ module Indigo
       def model(value)
         current.model=value
       end
-      
-      def from_builder(filename)
+
+      def update(name, &block)
+        render(:update=>berry[name], &block)
+      end
+            
+      def from_file(filename)
         builder = Gtk::Builder.new
-        builder.add(filename)
+        builder.add("app/views/#{filename}")
+        builder.connect_signals do |handler| Proc.new{ Dispatcher.dispatch([handler,self,nil]) } end
+        builder.objects.each do |object| 
+          object.controller=self
+          object.connect_common_signals
+          View.widgets[object.name] = object
+        end
         self.current = builder.get_object("main").show
       end
       

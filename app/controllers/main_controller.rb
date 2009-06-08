@@ -7,7 +7,7 @@ class MainController < Indigo::Controller
   
   def show
     @main = Main.active
-    render
+    render.show_all
     start_threads #TODO :/
   end
   
@@ -60,14 +60,12 @@ class MainController < Indigo::Controller
     
   # TODO: merge with users_register methods
   def key_clear(pc)
-    old_user, old_color = pc.user, pc.color
+    old_user = pc.user
     command("key clear") do
       pc.user = ""
-      pc.color = 0
       pc.save!
     end.un do
       pc.user = old_user
-      pc.color  = old_color
       pc.save!
     end.run
     commands_end
@@ -76,15 +74,13 @@ class MainController < Indigo::Controller
   def users_register(users, pc)
     return if users.empty?
     
-    old_user, old_color = pc.user, pc.color
+    old_user = pc.user
     command("register users") do
       pc.user = users.join(" ") #(pc.User.split(" ") | (users)).join(" ")
-      pc.color = CONFIG['color_mapping'][ Account.gen_color(users) ]
       pc.save!
       Main.active.status = ["#{pc.user}", "auf <b>#{pc.id}</b> angemeldet", "chair"]
     end.un do
       pc.user = old_user
-      pc.color = old_color
       pc.save!
     end.run
     end
@@ -92,20 +88,17 @@ class MainController < Indigo::Controller
   def drop_user(pc, other_pc)
     #pc = Computer.find(pc_id.id)
     return false if !other_pc or other_pc["User"]==""
-    old_user, old_color = pc.user, pc.color
+    old_user = pc.user
     commands_begin "dnd user"
     command("drop users") do
       pc.user=other_pc["User"]
-      pc.color=other_pc["Color"]
       pc.save!
       Main.active.status = ["#{pc.user}", "von <b>#{other_pc['Cname']}</b> auf <b>#{pc.id}</b> verschoben","redo"]
     end.un do
       pc.user = old_user
-      pc.color = old_color
       pc.save!
       Main.active.status = ["#{pc.user}", "von <b>#{pc.id}</b> auf <b>#{other_pc['Cname']}</b> verschoben","undo"]
     end.run
-    #widgets[pc_id.id].background=code_to_color(nil,pc)
   end
 
 
@@ -127,7 +120,7 @@ class MainController < Indigo::Controller
       Main.active.status = ["#{account_string}", t("account.scanned"), "barcode"] 
     end
     Main.active.account_list.clear
-    Main.active.account_list.add_all(accounts)
+    Main.active.account_list += accounts
     berry["account_table"].select_all
   end
 

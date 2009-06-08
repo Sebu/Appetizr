@@ -1,3 +1,3 @@
 
-Indigo::Application.run
 
+require 'app/application'

@@ -2,8 +2,8 @@
 
 class Fluid
   include Indigo::ActiveNode
-  attr_accessor :name
+  attr_accessor :checktest
   def initialize
-    @name=true
+    @checktest=true
   end
 end

@@ -1,14 +1,6 @@
 
-
-
-Dir.chdir "#{File.dirname(__FILE__)}/.."
-APP_DIR = Dir.pwd
-$:.unshift APP_DIR + '/vendor'
-
-ENV['INDIGO_ENV'] ||= "development"
-INDIGO_ENV = ENV['INDIGO_ENV']
-require 'indigo/boot'
-
+#TODO change to require 'indigo'
+require 'vendor/indigo'
 
 #Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence over those specified here.

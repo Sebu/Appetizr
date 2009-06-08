@@ -5,34 +5,41 @@ class Computer < ActiveRecord::Base
   include ObserveAttr 
   multi_db
 
+  # non rails conform table :/
   set_table_name "Cache"
   set_primary_key "Cname"
   alias_attribute :user, :User
   alias_attribute :color, :Color
+  alias_attribute :time, :Time
+
   observe_attr :User, :Color
-  
   validates_numericality_of :Color, :greater_than_or_equal_to => 0, :less_than => 8
   after_update :change_vtab
-  before_save :update_time
   named_scope :updated_after, lambda { |time| {:conditions => ["Time > ?", time]} }
+
+  before_update do |record|
+    record.color = CONFIG['color_mapping'][ Account.gen_color(record.user.split(" ")) ]
+  end
+  
+  before_update do |record|
+    record.time = Time.now.strftime("%j%H%M%S")
+  end
+
 
   def xdm_restart
     `ssh -f root@s8 -- "ssh #{self.id} -- /etc/init.d/xdm restart"`
   end
 
+  
   def remove_user(u)
     list = self.user.split(" ")
     list.delete(u)
     self.user = list.join(" ")
     #TODO auto generate color
-    self.color = CONFIG['color_mapping'][ Account.gen_color(list) ]
     save
   end
   
-  def update_time
-    self.Time = Time.now.strftime("%j%H%M%S")
-  end
-  
+ 
   def prectab=(value)
     @prectab = value
   end

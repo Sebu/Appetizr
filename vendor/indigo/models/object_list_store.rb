@@ -59,8 +59,15 @@ class Indigo::ObjectListStore < Gtk::ListStore
     add_all(records)
   end
 
+  def <<(record,parent=nil)
+    add(record,parent)
+  end
 
-    
+  def +(records)
+    add_all(records)
+    self
+  end   
+   
   def add_all(records)
     return if !records or records.empty?
     @keys ||=  extract_keys(records.first)

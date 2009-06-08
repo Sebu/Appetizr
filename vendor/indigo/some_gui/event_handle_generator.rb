@@ -18,7 +18,7 @@ module Indigo
         if block_given?
           on(signal, @controller, *args, &block)
         elsif action.is_a?(String)
-          on(signal, @controller, *args) { @controller.redirect_to(action, *args) }
+          on(signal, @controller, *args) { @controller.visit(action, *args) }
         else
           on(signal, @controller, action, *args)
         end

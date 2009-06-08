@@ -19,7 +19,7 @@ module Indigo
 
 
     def show
-      render
+      render.show_all
     end
     
     def initialize(name=nil)
@@ -36,8 +36,7 @@ module Indigo
       SomeGui::View.widgets
     end
     
-    
-    def redirect_to(uri,*args)
+    def visit(uri,*args)
       Dispatcher.dispatch([uri, self, *args]) 
     end
     

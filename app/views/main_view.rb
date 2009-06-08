@@ -53,7 +53,7 @@ window t'main.title' do
             }
             box(:width=>100) {
               background_observe printer, :enabled do |state| color_please(state) end
-              label { text_observe printer, :job_count }
+              label { markup_observe printer, :job_count }
             }
           }
         end

@@ -1,5 +1,6 @@
 
 require 'gtk2'
+require 'optparse'
 
 module Gtk
   class TreeSelection
@@ -34,20 +35,34 @@ module Indigo
       end
       
   end # Controller
+  class ApplicationController < Indigo::Controller
+
+    def initialize(args)
+      super
+      @args = args
+      @opts = OptionParser.new
+    end
+    
+    def option(*args,&block)
+      args = args.collect do |arg| arg.is_a?(Symbol) ? "--#{arg.to_s}" : arg end
+      @opts.on(*args, &block)
+    end
+
+    def parse_options
+      @opts.parse(@args)
+    end
+    
+          
+    def main_loop
+      Gtk.main
+    end
+  end
 
   module SomeGui
-
-      class Application
-
-        def initialize(args)
-        end
-        def main_loop
-          Gtk.main
-        end
-      end
-          
     module Widgets
-  
+
+
+
       STOCK_ITEMS = {:ok=> Gtk::Stock::OK, :cancel => Gtk::Stock::CANCEL, :add => Gtk::Stock::ADD, :undo => Gtk::Stock::UNDO, :quit => Gtk::Stock::QUIT}
       module Widget
         include EventHandleGenerator
@@ -76,6 +91,10 @@ module Indigo
           self.tooltip_markup=value
         end
 
+        def cleanup
+          children.each {|child| remove(child) } 
+        end
+        
         def drag_delete(method, *args)
           signal_connect("drag-data-delete") do |w, context|
             @controller.send(method, *args) if context.drag_drop_succeeded?
@@ -119,21 +138,19 @@ module Indigo
         end
 
       
+        def connect_common_signals
+        end      
+
         def parse_params(params)
+          connect_common_signals
           self.height_request = params[:height] if params[:height]
           self.width_request = params[:width] if params[:width]
           #windowOpacity =  params[:opacity] || 1.0
         end
       end
 
-      class TrayIcon < Gtk::StatusIcon
+      class Gtk::StatusIcon
         include Widget
-        def initialize(p, title="menu")
-          super()
-          set_stock(Gtk::Stock::OK)
-          set_visible(true)
-          set_tooltip(title)
-        end
 
         def toplevel?
           true
@@ -147,8 +164,19 @@ module Indigo
             end
           end  
         end
-                
       end
+      
+      class TrayIcon < Gtk::StatusIcon
+        def initialize(p, title="menu")
+          super()
+          set_stock(Gtk::Stock::OK)
+          set_visible(true)
+          set_tooltip(title)
+        end
+      end
+      
+
+      
       
       class Gtk::ImageMenuItem
         include Signaling
@@ -156,20 +184,9 @@ module Indigo
         attr_accessor :controller
       end
       
-      class Menu < Gtk::Menu
+      class Gtk::Menu
         include Widget
         attr_accessor :text
-        
-        def initialize(p, title=:context)
-          super()
-          self.text = title.to_s
-          case title
-          when :context
-            p.add_context(self)
-          else
-            p.add_element(self)
-          end
-        end
         
         def add_element(w)
           sub_menu = Gtk::ImageMenuItem.new(get_stock(w.text))
@@ -194,11 +211,50 @@ module Indigo
         
       end
 
-      class Check < Gtk::CheckButton
+      class Menu < Gtk::Menu
+        def initialize(p, title=:context)
+          super()
+          self.text = title.to_s
+          case title
+          when :context
+            p.add_context(self)
+          else
+            p.add_element(self)
+          end
+        end
+      end
+      
+
+      class Gtk::RadioButton
         include Widget
         include ObserveAttr
         include EventHandleGenerator
+        def connect_common_signals
+          signal_connect(:toggled) { emit(:click) }        
+        end
+      end
+      class Radio < Gtk::RadioButton
+        def initialize(p, state, title=nil, group=nil)
+          if title 
+            super(get_stock(title))
+          else 
+            super()
+          end
+          self.active=state
+          self.set_group(group) if group
+        end      
+      end      
+      
 
+      class Gtk::CheckButton
+        include Widget
+        include ObserveAttr
+        include EventHandleGenerator
+        def connect_common_signals
+          signal_connect(:toggled) { emit(:click) }        
+        end
+      end
+      class Check < Gtk::CheckButton
         def initialize(p, state, title=nil)
           if title 
             super(get_stock(title))
@@ -206,39 +262,23 @@ module Indigo
             super()
           end
           self.active=state
-          signal_connect(:toggled) { emit(:click) }
         end      
       end
 
       # qbutton with extra decoration via layout
-      class Button < Gtk::Button
+      class Gtk::Button
         include Widget
         include ObserveAttr
         include EventHandleGenerator
 
-        def initialize(p, title=nil)
-          if title 
-            super(get_stock(title))
-          else 
-            super()
-          end
-
+        def connect_common_signals
           signal_connect(:clicked) { emit(:click) }
-          
-          unless title       # CONTAINER layout
-            @layout = Gtk::VBox.new 
-            @layout.spacing = 0
-            add(@layout)
-          end
         end
-
-
         def parse_params(params)
-
           method_click = params[:click] 
           case method_click
           when String
-            signal_connect(:clicked) { Dispatcher.dispatch([method_click,@controller]) } #@controller.redirect_to method_click }
+            signal_connect(:clicked) { Dispatcher.dispatch([method_click,@controller]) } #@controller.visit method_click }
           when Symbol
             signal_connect(:clicked) { @controller.send(method_click) }
           end
@@ -249,27 +289,53 @@ module Indigo
           child.pack_start(w, false, false,0) if @layout
         end
       end      
+      class Button < Gtk::Button
+        def initialize(p, title=nil)
+          if title 
+            super(get_stock(title))
+          else 
+            super()
+          end
 
-  
+          unless title       # CONTAINER layout
+            @layout = Gtk::VBox.new 
+            @layout.spacing = 0
+            add(@layout)
+          end
+        end      
+      end  
+
+      class Gtk::TextView
+        include Widget
+        include ObserveAttr
+          
+        def parse_params(params)
+          self.editable = params[:value] || true
+          self.wrap_mode = Gtk::TextTag::WRAP_WORD
+          super
+        end
+        def text(value)
+          self.buffer.insert_at_cursor("#{value.to_s}\n")
+        end
+      end
       
+      class TextView < Gtk::TextView
+        def initialize(p, text=nil)
+          super()
+          outer_widget = Gtk::ScrolledWindow.new
+          outer_widget.name = text
+          outer_widget.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
+          outer_widget.add(self)          
+          p.add_element(outer_widget)
+        end
+      end
       
-      class Table < Gtk::TreeView 
+            
+      
+      class Gtk::TreeView 
         include Widget
         attr_accessor :title, :headers
 
-        def initialize(p, title="table")
-          super()
-          @headers = nil
-          outer_widget = Gtk::ScrolledWindow.new
-          outer_widget.name = title
-
-          outer_widget.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
-          outer_widget.add(self)
-          p.add_element(outer_widget)
-          selection.mode = Gtk::SELECTION_MULTIPLE
-          model = nil
-        end
-        
         def search(&block)
           set_search_equal_func {|model, columnm, key, iter|
             !block.call(iter.get_value(0), key)
@@ -329,15 +395,30 @@ module Indigo
 
       end
       
+      class Table < Gtk::TreeView
+        def initialize(p, title="table")
+          super()
+          @headers = nil
+          outer_widget = Gtk::ScrolledWindow.new
+          outer_widget.name = title
+
+          outer_widget.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
+          outer_widget.add(self)
+          p.add_element(outer_widget)
+          selection.mode = Gtk::SELECTION_MULTIPLE
+          model = nil
+        end      
+      end
+      
+      
+      
+      
      
-      class Tabs < Gtk::Notebook
+      class Gtk::Notebook
         include Widget 
 
         TAB_POSITIONS = {:bottom => Gtk::POS_BOTTOM,:top => Gtk::POS_TOP,:left => Gtk::POS_BOTTOM,:right =>Gtk::POS_RIGHT}
-        def initialize(p)
-          super()
-        end
-        
+
         def parse_params(params)
           super
           self.tab_pos= TAB_POSITIONS[ params[:position] || :top ]
@@ -348,20 +429,24 @@ module Indigo
         end
       end
       
-      class Entry < Gtk::Entry
+      class Tabs < Gtk::Notebook
+        def initialize(p)
+          super()
+        end      
+      end
+      
+      
+      class Gtk::Entry
         include Widget
         include ObserveAttr
 
         observe_attr :text    
-        
-        def initialize(p, title=nil)
-          super()
-          signal_connect(:changed) { emit("text_changed", self.text) }
-          signal_connect(:activate) { emit(:enter) }
-          tool_tip=title
-          self.text=title
-        end
 
+        def connect_common_signals
+          signal_connect(:changed) { emit("text_changed", self.text) }
+          signal_connect(:activate) { emit(:enter) }        
+        end
+                
         def completion=(model)
           new_completion = Gtk::EntryCompletion.new
           new_completion.model = model
@@ -370,30 +455,40 @@ module Indigo
           renderer.set_property('foreground-gdk', Gdk::Color.parse('#999999') )
           new_completion.pack_start(renderer, :text=>2)
           new_completion.add_attribute(renderer, :text, 2)
-          self.set_completion(new_completion)
+          set_completion(new_completion)
         end
-
+      end
+      
+      class Entry < Gtk::Entry
+        def initialize(p, title=nil)
+          super()
+          self.tool_tip=title if title
+          self.text=title if title
+        end
       end
       
 
-      class Label < Gtk::Label
+      class Gtk::Label
         include Widget
         include ObserveAttr
 
-        def initialize(p, text=nil)
-          super()
-          self.text=text
-        end
-        
         def parse_params(params)
           @font_size =  params[:size] || 10 
           super
         end
 
-        def text=(value)
+        def markup=(value)
           set_markup(value.to_s)
         end
       end
+      
+      class Label < Gtk::Label
+        def initialize(p, text=nil)
+          super()
+          self.markup=text
+        end
+      end
+
 
 
       class Box <  Gtk::EventBox
@@ -412,6 +507,10 @@ module Indigo
         include Widget
         attr_accessor :title
         
+
+        def connect_common_signals
+          signal_connect("button-press-event") { emit(:click) }        
+        end        
         # TODO: extract
         def parse_params(params)
           spacing = params[:spacing] || 0
@@ -436,54 +535,52 @@ module Indigo
         def initialize(p, title="flow")
           super()
           self.name = title
-          signal_connect("button-press-event") { emit(:click) }
         end
       end
       
 
-      class Dialog < Gtk::Dialog
+      class Gtk::Dialog
         include Widget
         include ObserveAttr
 
         observe_attr :title
-
-        def initialize(p, title="dialog")
-          super(title,p)
-          self.title=title
-        end
 
         def parse_params(params)
           width = params[:width]
           height = params[:height] 
           super
         end
-
+        def connect_common_signals
+#          signal_connect('delete_event') { Gtk.main_quit }
+#          signal_connect("destroy") { Gtk.main_quit } # required by gtk        
+        end
         def add_element(w)
           child.add(w)
         end
-
       end
 
+      class Dialog < Gtk::Dialog
+        def initialize(p, title="dialog")
+          case p
+          when Gtk::Window
+            super(title,p)
+          else
+            super(title)
+          end
+
+          self.title=title
+        end
+      end
           
-      class Window < Gtk::Window
+
+
+      class Gtk::Window
         include Widget
         include ObserveAttr
 
         attr_accessor :menubar, :status_bar
         observe_attr :title
         
-        def initialize(p, name="window")
-          super()
-          self.window_position = Gtk::Window::POS_CENTER
-          signal_connect('delete_event') { Gtk.main_quit }
-          signal_connect("destroy") { Gtk.main_quit } # required by gtk
-          self.title=name
-          self.menubar ||= Gtk::MenuBar.new
-          @layout = Gtk::VBox.new
-          self.add(@layout)
-          @layout.pack_start(menubar, false, false)
-        end
-
         def status=(value)
           context_id = status_bar.get_context_id("bla")
           status_bar.push(context_id, value)
@@ -501,11 +598,13 @@ module Indigo
           width = params[:width]
           height = params[:height] 
           setGeometry(posx, posy, width, height) if width and height
-
           super
         end
 
-
+        def connect_common_signals
+          signal_connect('delete_event') { Gtk.main_quit }
+          signal_connect("destroy") { Gtk.main_quit } # required by gtk        
+        end
         
         def add_element(w)
           case w.class.name
@@ -517,8 +616,20 @@ module Indigo
             child.pack_start(w, true, false,0)
           end
         end
-        
       end
+      
+      class Window < Gtk::Window
+        def initialize(p, name="window")
+          super()
+          self.window_position = Gtk::Window::POS_CENTER
+          self.title=name
+          self.menubar ||= Gtk::MenuBar.new
+          @layout = Gtk::VBox.new
+          self.add(@layout)
+          @layout.pack_start(menubar, false, false)
+        end      
+      end
+      
       
     end # widgets
   end # some_gui

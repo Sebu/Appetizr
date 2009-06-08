@@ -1,13 +1,16 @@
 
-dialog "send message" do
-  flow do
-#    field @message.hauptsaal
-#    field @message.schulungsraum
-#    field @message.westsaal
-  end
-  flow do
+dialog t"sendtext.title" do
+  flow {
+     check true, t("westsaal")
+     check true, t("hauptsaal")
+     check false, t("schulungsraum")
+  }
+  textview {
+    text t("sendtext.default")
+  }
+  flow {
     button :cancel, :click => '/hide'
-    button :add, :click => '/register_user'
-  end
+    button t"send", :click => '/send'
+  }
 end
 

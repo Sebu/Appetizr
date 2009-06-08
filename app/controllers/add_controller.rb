@@ -1,20 +1,16 @@
 
 
 class AddController < Indigo::Controller
-  
+  helper MainHelper
+    
   def show
     @main = Main.active
     @add = Add.active
-    render
-  end
-  
-  def scan_string_format(scan_string)
-    "Nr.: #{scan_string}"
+    render.show_all
   end
   
   def register_user
     users = Add.active.account_field.text.split(',').each { |n| n.strip! }
-    # TODO: check existance of users
     users.each { |user| Account.create!(:barcode=>Main.active.scan_string, :account=>user) }
     close
   end

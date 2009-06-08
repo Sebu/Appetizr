@@ -1,38 +1,20 @@
 
 
+
 # extensions to Ruby libs
-autoload :YAML, 'yaml'
 autoload :CommandPattern, 'command_pattern'
 autoload :Signaling, 'signaling'
 autoload :ObserveAttr, 'observe_attr'
+autoload :YAML, 'yaml'
 
-class Debug
-  class << self
-    attr_accessor :log
-  end
-  @log = ActiveSupport::BufferedLogger.new STDOUT #INDIGO_ENV =='development' ? STDOUT : "log/main.log"
-end
-
-
-# TODO: move into own module/file
-#  "important" "undo" "redo" "info/hint" "error" "unlocked" "locked"
-class Res
-  def self.[](res)
-    app_internal_res = "#{APP_DIR}/resources/images/#{res}.svg"
-    res = app_internal_res if File.exist? app_internal_res
-    app_internal_res = "#{APP_DIR}/resources/images/#{res}.png"
-    res = app_internal_res if File.exist? app_internal_res
-    res
-  end
-end
-  
 module Indigo
-  
-  # extend core  
-  require 'indigo/core_ext'
-  # core classes
-  autoload :App,'app'
-  autoload :Application, 'indigo/application'
+  def application(&block)
+    app = ApplicationController.new(ARGV)
+    app.instance_eval(&block)
+    app.main_loop
+  end
+
+  # core
   autoload :SomeGui, 'indigo/some_gui'
   autoload :Dispatcher, 'indigo/dispatcher'
   autoload :Controller, 'indigo/controller'
@@ -41,7 +23,9 @@ module Indigo
   autoload :Printer, 'indigo/models/printer'
   autoload :ActiveNode, 'indigo/models/active_node'
   autoload :ObjectListStore, 'indigo/models/object_list_store'  
-
-
 end
+
+
+#bootup
+require 'vendor/indigo/boot'
 

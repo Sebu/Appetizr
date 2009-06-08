@@ -1,5 +1,10 @@
 
 module MainHelper
+
+  def scan_string_format(scan_string)
+    "Nr.: #{scan_string}"
+  end
+  
   def user_list_format(computer)
     return if computer.user.empty? and !computer.prectab
     return "<span color='#7A7A70'>#{computer.prectab[1]}</span>" if computer.user.empty?
@@ -26,7 +31,8 @@ module MainHelper
   end
   
   def gen_printer_menu(printer)
-    render :update => berry["#{printer.name}_menu"] do
+    update "#{printer.name}_menu" do
+      cleanup
       jobs = printer.jobs
       action "leer" if jobs.empty?
       jobs.each { |job|
@@ -42,6 +48,7 @@ module MainHelper
 
   def gen_button_menu(user, computer)
     render :update => berry[computer.id].berry["button_menu"] do
+      cleanup
       user.split(" ").each do |user|
         menu user.to_s do
           action :remove  , :remove_from_pc, computer, user
