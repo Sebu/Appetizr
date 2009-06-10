@@ -74,7 +74,9 @@ window t'main.title' do
         }
         table :id => "account_table", :height => 350, :width=>300 do
           model @main.account_list
-          columns_from_model :headers => ["Account", t("account.locked")]
+#          columns_from_model :headers => ["Account", t("account.locked")]
+          column 1, "Account", String, false
+          column 2, "locked?", TrueClass, true
           drop :drop_users_on_table
           menu :context do
             action "add users", "adds/1"

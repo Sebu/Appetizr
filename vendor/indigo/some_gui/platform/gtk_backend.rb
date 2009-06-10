@@ -367,6 +367,11 @@ module Indigo
           self.selection.select_all
         end
 
+        def set_color_column
+          col = self.get_column(0)
+          
+        end
+
         def column(col, name, type, edit=false)
           headers ||= []
           headers << name
@@ -379,7 +384,7 @@ module Indigo
                 model.set_value(path, col, value)
               end
             end
-            Gtk::TreeViewColumn.new(name, renderer, :markup => col)
+            Gtk::TreeViewColumn.new(name, renderer, :markup => col ) #, :foreground=> 3)
           when "TrueClass"
             renderer = Gtk::CellRendererToggle.new
             if edit
