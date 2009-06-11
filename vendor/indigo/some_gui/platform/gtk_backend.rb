@@ -367,10 +367,11 @@ module Indigo
           self.selection.select_all
         end
 
-        def column(col, name, type, edit=false)
+        def column(col, name, type, edit=false, attributes=nil)
           headers ||= []
           headers << name
-          column = case type.to_s
+          renderer=nil
+          case type.to_s
           when "String"
             renderer = Gtk::CellRendererText.new
             if edit
@@ -379,7 +380,7 @@ module Indigo
                 model.set_value(path, col, value)
               end
             end
-            Gtk::TreeViewColumn.new(name, renderer, :markup => col)
+            attributes ||= {:markup => col}
           when "TrueClass"
             renderer = Gtk::CellRendererToggle.new
             if edit
@@ -388,8 +389,9 @@ module Indigo
                 model.set_value(path, col, !value)
               end
             end
-            Gtk::TreeViewColumn.new(name, renderer, :active => col)
+            attributes ||= {:active => col}
           end
+          column=Gtk::TreeViewColumn.new(name, renderer, attributes)
           append_column(column)
         end
 

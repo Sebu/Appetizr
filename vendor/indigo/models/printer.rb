@@ -1,4 +1,5 @@
-
+# cups commandline lpstat,lpoptions
+# and snmp based printer classes
 
 module Indigo
   class PrinterJob
@@ -75,6 +76,12 @@ module Indigo
     def update_job_count
       self.job_count = Printer.jobs_command(self.name).split("\n").size
     end    
+    
+    def update_tray_status
+      if @snmp
+        IO.popen("scli -xqnc 'show printer inputs' #{@name}-pool").readlines
+      end
+    end
 
     def jobs
       status = Printer.jobs_command(self.name)
