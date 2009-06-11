@@ -1,5 +1,4 @@
 
-
 class MainController < Indigo::Controller
   helper MainHelper
   
@@ -121,7 +120,7 @@ class MainController < Indigo::Controller
     end
     Main.active.account_list.clear
     Main.active.account_list += accounts
-    berry["account_table"].select_all
+    #berry["account_table"].select_all
   end
 
 

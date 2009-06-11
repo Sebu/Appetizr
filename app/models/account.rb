@@ -67,8 +67,7 @@ class Account < UserAccountDB
   end
 
   def color
-      "#345677"   
-#    self[:color]
+     self[:color] ||= CONFIG['colors'][CONFIG['color_mapping'][ Account.gen_color([self.account])]]
   end
 
   def color=(value)
