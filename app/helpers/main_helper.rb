@@ -8,7 +8,8 @@ module MainHelper
   def user_list_format(computer)
     return if computer.user.empty? and !computer.prectab
     return "<span color='#7A7A70'>#{computer.prectab[1]}</span>" if computer.user.empty?
-    "<span size='x-small'>#{computer.user.tr(" ","\n")}</span>"
+    names = computer.user_list[0,3].join("\n")
+    "<span size='x-small'>#{names}</span>"
   end
 
   def prectab_format(prectab)

@@ -25,6 +25,10 @@ class Computer < ActiveRecord::Base
     record.time = Time.now.strftime("%j%H%M%S")
   end
 
+  def user_list
+    @user_list = self.user.split(" ")
+  end
+
 
   def xdm_restart
     `ssh -f root@s8 -- "ssh #{self.id} -- /etc/init.d/xdm restart"`

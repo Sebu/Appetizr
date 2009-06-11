@@ -6,7 +6,7 @@ class Account < UserAccountDB
   set_table_name "map"
   belongs_to :user
   attr_readonly :barcode #, :account
-  attr_accessible :account, :locked, :barcode
+  attr_accessible :account, :locked, :color, :barcode
 
   #validate :valid_account
   validates_presence_of :barcode
@@ -64,6 +64,15 @@ class Account < UserAccountDB
 
   def locked
     self[:locked] 
+  end
+
+  def color
+      "#345677"   
+#    self[:color]
+  end
+
+  def color=(value)
+    self[:color]=value
   end
 
   def after_initialize
