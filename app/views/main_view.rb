@@ -38,13 +38,14 @@ window t'main.title' do
   drop :drop_pool_store
   drag :drag_pool_store
       
-  stack {
-    flow  :spacing => 1 do 
+  stack(:padding=>5){
+    flow  :spacing => 5 do 
       render "cluster_v", :cluster => @main.clusters[15]
       @main.clusters[11..14].reverse_each { |c| render "cluster", :cluster => c }
-      stack {
+      stack(:spacing=>2) {
         @main.printers.each do |printer| 
           flow {
+            tool_tip_observe printer, :display
             click do gen_printer_menu(printer) end #TODO do some auto updating here  
             menu :id=>"#{printer.name}_menu"
             box {
@@ -61,7 +62,7 @@ window t'main.title' do
       @main.clusters[7..10].reverse_each { |c| render "cluster", :cluster => c }
       render "cluster_v", :cluster => @main.clusters[6]
     end
-    flow {
+    flow(:spacing=>3) {
       stack {
         entry do |e|
           completion_observe @main, :user_list
@@ -74,8 +75,8 @@ window t'main.title' do
         }
         table :id => "account_table", :height => 350, :width=>300 do
           model @main.account_list
-#          columns_from_model :headers => ["Account", t("account.locked")]
-          column 1, "Account", String, false, :markup=>1, :background=>3
+#         columns_from_model :headers => ["Account", t("account.locked")]
+          column 1, "Account", String, false, :markup=>1, :foreground=>3
           column 2, "locked?", TrueClass, true, :active=>2
           drop :drop_users_on_table
           menu :context do
@@ -99,7 +100,7 @@ window t'main.title' do
         end
       end
       tabs :position=>:bottom do
-        stack t"westsaal" do       
+        stack(t"westsaal", :spacing=>5) do       
           @main.clusters[0..5].reverse_each { |c| render "cluster_h", :cluster => c }
         end
         stack t"schulungsraum"

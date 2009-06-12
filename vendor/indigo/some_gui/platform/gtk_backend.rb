@@ -515,13 +515,13 @@ module Indigo
         end        
         # TODO: extract
         def parse_params(params)
-          spacing = params[:spacing] || 0
-          margin = params[:margin] || 1
+          self.spacing = params[:spacing] || 0
+          @padding = params[:padding] || 0
           super
         end
 
         def add_element(w)
-          pack_start(w, false, false, 1)
+          pack_start(w, false, false, @padding)
         end
       end
       

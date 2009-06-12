@@ -212,9 +212,7 @@ class MainController < Indigo::Controller
       while true
         puts "refresh start"
 
-        # update printer
-        Main.active.printers.each { |p| p.update_job_count; p.update_accepts; p.update_enabled }
-        
+       
         # update prectab data
         if Prectab.changed?
           Main.active.computers_cache.each_value {|computer| computer.prectab = [nil,nil] }
@@ -223,6 +221,7 @@ class MainController < Indigo::Controller
           scatter_prectab(Prectab.soon,1)
         end
 
+        # update computers_cache
         comps =  Computer.updated_after session[:old_timestamp]
         comps.each do |computer| 
           cache_computer = Main.active.computers_cache[computer.id]
@@ -232,6 +231,10 @@ class MainController < Indigo::Controller
           end
         end
         session[:old_timestamp] = Time.now.strftime("%j%H%M%S")
+
+
+        # update printers
+        Main.active.printers.each { |p| p.update_job_count; p.update_accepts; p.update_snmp }
 
         puts "refresh end"
         sleep 20

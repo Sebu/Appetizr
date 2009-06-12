@@ -19,7 +19,7 @@ module MainHelper
   
   
   def color_please(value)
-    value ? "#82c927" : "#FFFFAA"
+    value ? "#82c927" : "#fe2f2f"
   end
 
 

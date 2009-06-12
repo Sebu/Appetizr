@@ -1,6 +1,8 @@
 # cups commandline lpstat,lpoptions
 # and snmp based printer classes
 
+require 'rexml/document'
+
 module Indigo
   class PrinterJob
     attr_reader :id, :size, :user, :printer
@@ -14,15 +16,15 @@ module Indigo
     def cancel
       Printer.cancel(self)
     end
-    def move_to(printer)
-      #Printer.move_job_to(self, printer)
+    def move_to(printer_name)
+      Printer.move_job_to(self, printer_name)
     end
   end
 
   class Printer
     include ObserveAttr
-    attr_accessor :name, :job_count, :accepts, :enabled
-    observe_attr :job_count, :accepts, :enabled
+    attr_accessor :name, :job_count, :accepts, :enabled, :display
+    observe_attr :job_count, :accepts, :enabled, :display
     
     def self.default
       @default ||= Printer.new(Printer.default_name)
@@ -38,6 +40,8 @@ module Indigo
     
     def initialize(name)
       @name = name
+      self.enabled = true
+      self.accepts = true
     end
     
     def default?
@@ -49,8 +53,12 @@ module Indigo
     end
     
     def self.cancel(job)
-      `cancel #{job.id}`
+      #`cancel #{job.id}`
     end
+
+    def self.move_job_to(job,printer_name)
+      puts "implement Printer.move_job_to"
+    end 
     
     def enabled?
       self.enabled ||= update_enabled
@@ -64,6 +72,22 @@ module Indigo
       Printer.jobs_command.split("\n").size
     end
 
+    def update_snmp
+      @snmp = IO.popen("scli -xqc 'show printer display' #{self.name}-pool").readlines
+      doc = REXML::Document.new(@snmp.to_s)
+      lcd = []
+      doc.elements.each('scli/devices/printer/display/line') do |ele|
+        lcd << ele.text
+      end 
+      lcd = lcd.compact.join(" ")
+      case lcd
+      when /EMPTY/
+        self.enabled = false
+      else
+        self.enabled = true
+      end
+      self.display=lcd
+    end
 
     def update_enabled
       self.enabled = `LANG=EN; lpstat -p #{@name}`.split(" ")[4] == "enabled"
