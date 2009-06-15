@@ -67,7 +67,7 @@ class Account < UserAccountDB
   end
 
   def color
-     self[:color] ||= CONFIG['colors'][CONFIG['color_mapping'][ Account.gen_color([self.account])]]
+     self[:color] ||= "info" # CONFIG['colors'][CONFIG['color_mapping'][ Account.gen_color([self.account])]]
   end
 
   def color=(value)

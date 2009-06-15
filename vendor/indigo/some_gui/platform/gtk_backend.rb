@@ -391,7 +391,12 @@ module Indigo
               end
             end
             attributes ||= {:active => col}
+          when "icon"
+            
+            renderer = Gtk::CellRendererPixbuf.new
+            attributes ||= {:icon_name => col}
           end
+
           column=Gtk::TreeViewColumn.new(name, renderer, attributes)
           append_column(column)
         end

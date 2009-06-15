@@ -4,7 +4,9 @@ box {
 
   expander { |exp|
     background_observe @printer, :enabled do |state| color_please(state) end
-    on :click do  update_printer_menu(@printer); false end
+
+    printer = @printer #TODO fix
+    on :click do  update_printer_menu(printer); false end
     menu :id=>"#{@printer.name}_menu"
 
     
