@@ -4,7 +4,7 @@ module Indigo
   module SomeGui
     module Create
    
-      attr_accessor :slots, :current, :berry
+      attr_accessor :slots, :current, :berry, :autolayout
       
       def self.creates_widget(*names)
         names.each do | name |
@@ -21,7 +21,10 @@ module Indigo
               current.berry ||= {}
               current.berry[id_name] = widget if id_name
 
-              current.add_element(widget) unless widget.toplevel? or (widget.respond_to?(:parent) and widget.parent)
+              unless !self.autolayout or widget.toplevel? or (widget.respond_to?(:parent) and widget.parent)
+                current.add_element(widget) 
+              end                
+              self.autolayout=true
 
               self.slots ||= []
               slots.push current
@@ -38,11 +41,16 @@ module Indigo
           }
         end 
       end
-      creates_widget :TrayIcon, :Box, :Link, :Dock, :Menu, :Notification, :TextView, :GlArea, :Dialog, :Svg, :Spin, :Combo
+      creates_widget :Expander, :TrayIcon, :Box, :Link, :Dock, :Menu, :Notification, :TextView, :GlArea, :Dialog, :Svg, :Spin, :Combo
       creates_widget :Tabs, :VSlider, :HSlider, :Radio, :Check, :Window, :Flow, :Stack, :Entry, :Label, :Button, :Group, :Table
 
-
-
+      def ignore_next
+        self.autolayout = false
+      end
+      #def <<(widget)
+      #  @current.add_element(widget)
+      #end
+      
       def field(*args)
         options = args.extract_options!
         options.to_options!
@@ -84,6 +92,8 @@ module Indigo
         builder.objects.each do |object| 
           object.controller=self
           object.connect_common_signals
+          object.parse_params({})
+          object.block_end
           View.widgets[object.name] = object
         end
         self.current = builder.get_object("main").show

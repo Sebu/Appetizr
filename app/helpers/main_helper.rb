@@ -31,7 +31,7 @@ module MainHelper
     end
   end
   
-  def gen_printer_menu(printer)
+  def update_printer_menu(printer)
     update "#{printer.name}_menu" do
       cleanup
       jobs = printer.jobs

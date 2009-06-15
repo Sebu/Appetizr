@@ -20,7 +20,10 @@ TODO before first usefull release
 * dbus signaling/observe_attr
 * speed! ( ruby1.9 + thread safty + gobject for signaling )
 
-demo app TODO
+demo app TODO (before release)
+* lockuser
+* fix vtab error
+* westsaal view :D
 * belegung ( List with String,String hash.to_a etc. )
-* farben in der tabelle (tutor,normal locked etc.)
+* support other barcode cards
 * dnd copy ( key-press key-release )

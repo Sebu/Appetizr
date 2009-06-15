@@ -21,7 +21,10 @@ de:
     ask_remove: "Accounts von Karte entfernen?"  
   sendtext:
     title: Text senden
-    default:  mein Arsch
+    default: |
+          mein Arsch
+          
+          ist offen
               
     
 en:

@@ -65,14 +65,16 @@ module Indigo
 
       STOCK_ITEMS = {:ok=> Gtk::Stock::OK, :cancel => Gtk::Stock::CANCEL, :add => Gtk::Stock::ADD, :undo => Gtk::Stock::UNDO, :quit => Gtk::Stock::QUIT}
       module Widget
-        include EventHandleGenerator
         
         def get_stock(name)
           STOCK_ITEMS[name.to_sym] || name
         end
 
         def background=(value)
-          self.modify_bg(Gtk::StateType::NORMAL, Gdk::Color.parse(value))
+          [Gtk::StateType::NORMAL, Gtk::StateType::PRELIGHT, Gtk::StateType::PRELIGHT].each do |state|
+            color = Gdk::Color.parse(value)
+            self.modify_bg(state, color)
+          end
         end
         
         def status_tip=(value)
@@ -157,7 +159,7 @@ module Indigo
         end        
 
         def add_context(menu)
-          signal_connect('popup-menu') do |w, button, time|
+          signal_connect_after('popup-menu') do |w, button, time|
             if button == 3   # left mouse button
               menu.show_all
               menu.popup(nil, nil, button, time)
@@ -180,10 +182,11 @@ module Indigo
       
       class Gtk::ImageMenuItem
         include Signaling
-        include EventHandleGenerator
+#       include EventHandleGenerator
         attr_accessor :controller
       end
       
+     
       class Gtk::Menu
         include Widget
         attr_accessor :text
@@ -202,10 +205,8 @@ module Indigo
           new_action = Gtk::ImageMenuItem.new(get_stock(text))
           method ||= "/#{text.to_s.tr(' ','_')}"
           new_action.controller=@controller
-          new_action.signal_connect(:activate) { |w| w.emit(:click) }
-          new_action.instance_eval do
-            click(method, *args, &block)
-          end                    
+          new_action.signal_mappings[:click]=:activate
+          new_action.on :click, method, *args, &block
           append(new_action) 
         end
         
@@ -228,9 +229,9 @@ module Indigo
       class Gtk::RadioButton
         include Widget
         include ObserveAttr
-        include EventHandleGenerator
+#       include EventHandleGenerator
         def connect_common_signals
-          signal_connect(:toggled) { emit(:click) }        
+          self.signal_mappings[:click] = :toggled
         end
       end
       class Radio < Gtk::RadioButton
@@ -249,9 +250,9 @@ module Indigo
       class Gtk::CheckButton
         include Widget
         include ObserveAttr
-        include EventHandleGenerator
+#       include EventHandleGenerator
         def connect_common_signals
-          signal_connect(:toggled) { emit(:click) }        
+          self.signal_mappings[:click] = :toggled      
         end
       end
       class Check < Gtk::CheckButton
@@ -269,10 +270,10 @@ module Indigo
       class Gtk::Button
         include Widget
         include ObserveAttr
-        include EventHandleGenerator
+#       include EventHandleGenerator
 
         def connect_common_signals
-          signal_connect(:clicked) { emit(:click) }
+          self.signal_mappings[:click] = :clicked
         end
         def parse_params(params)
           method_click = params[:click] 
@@ -400,6 +401,7 @@ module Indigo
       class Table < Gtk::TreeView
         def initialize(p, title="table")
           super()
+          self.modify_text( Gtk::StateType::SELECTED, Gdk::Color.parse("#0000FF") ) 
           @headers = nil
           outer_widget = Gtk::ScrolledWindow.new
           outer_widget.name = title
@@ -413,9 +415,6 @@ module Indigo
       end
       
       
-      
-      
-     
       class Gtk::Notebook
         include Widget 
 
@@ -441,12 +440,12 @@ module Indigo
       class Gtk::Entry
         include Widget
         include ObserveAttr
-
         observe_attr :text    
 
         def connect_common_signals
           signal_connect(:changed) { emit("text_changed", self.text) }
-          signal_connect(:activate) { emit(:enter) }        
+#          signal_connect(:activate) { emit(:enter) }        
+          self.signal_mappings[:enter] = :activate
         end
                 
         def completion=(model)
@@ -492,7 +491,13 @@ module Indigo
       end
 
 
-
+      class Gtk::EventBox
+        include Widget
+        def connect_common_signals
+          self.signal_mappings[:click] = "button-press-event"  
+        end       
+      end
+      
       class Box <  Gtk::EventBox
         include Widget
         
@@ -505,18 +510,44 @@ module Indigo
         end
       end      
       
+      class Gtk::Expander
+        include Widget      
+        # TODO: extract
+        def connect_common_signals
+          self.signal_mappings[:click] = "button-press-event"    
+        end   
+                
+        def parse_params(params)
+          self.spacing = params[:spacing] || 0
+          @padding = params[:padding] || 0
+          super
+        end
+
+        def add_element(w)
+          add(w)
+        end      
+      end
+      
+      class Expander < Gtk::Expander
+        def initialize(p, title="")
+          super(title)
+          self.name = title
+        end      
+      end
+      
       class Gtk::Box
         include Widget
-        attr_accessor :title
+        attr_accessor :title, :padding
         
-
+        
+        
         def connect_common_signals
-          signal_connect("button-press-event") { emit(:click) }        
+          self.signal_mappings[:click] = "button-press-event"
         end        
         # TODO: extract
         def parse_params(params)
           self.spacing = params[:spacing] || 0
-          @padding = params[:padding] || 0
+          self.padding = params[:padding] || 0
           super
         end
 

@@ -75,11 +75,12 @@ module Indigo
     def update_snmp
       @snmp = IO.popen("scli -xqc 'show printer display' #{self.name}-pool").readlines
       doc = REXML::Document.new(@snmp.to_s)
-      lcd = []
-      doc.elements.each('scli/devices/printer/display/line') do |ele|
-        lcd << ele.text
-      end 
-      lcd = lcd.compact.join(" ")
+      lcd = doc.elements.collect('scli/devices/printer/display/line') { |ele| ele.text }
+      lcd = unless lcd.empty?
+              lcd.compact.join("\n")
+            else
+              "no snmp support"
+            end
       case lcd
       when /EMPTY/
         self.enabled = false

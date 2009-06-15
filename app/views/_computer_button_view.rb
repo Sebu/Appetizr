@@ -8,7 +8,7 @@ button :id => @computer.id, :height => 60, :width=> 60 do
   drag_delete :key_clear, @computer 
   drop :drop_user, @computer
 
-  click :table_register, @computer
+  on :click, :table_register, @computer
 
   menu :context, :id=> "button_menu" do
     computer = @computer #TODO: remove need for locality

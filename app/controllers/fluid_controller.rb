@@ -10,17 +10,17 @@ class FluidController  < Indigo::Controller
       from_file "test.glade"
       
       update "testbutton" do
-        click { puts "hallo" }
+        on(:click) { puts "hallo" }
       end
       
       update "hull" do
         @text = entry {
-          enter do
+          on :enter do
               @list.add(@text.text)
           end
         }
         @filter_text = entry {
-          enter do
+          on :enter do
             @atable.filter do |data|
               data  =~ Regexp.new(@filter_text.text)
             end

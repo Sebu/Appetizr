@@ -27,6 +27,7 @@ module Indigo
       @params = {}
       @session = {}
       @model_name = name
+      self.autolayout = true
       run_callbacks :after_initialize
       self
     end
