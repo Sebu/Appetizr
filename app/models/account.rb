@@ -67,7 +67,9 @@ class Account < UserAccountDB
   end
 
   def color
-     self[:color] ||= "info" # CONFIG['colors'][CONFIG['color_mapping'][ Account.gen_color([self.account])]]
+     @icons ||= {}
+     color = CONFIG['color_mapping'][ Account.gen_color([self.account])]
+     self[:color] ||= @icons[color] ||= Gdk::Pixbuf.new("resources/images/#{color}.png") #"info" # CONFIG['colors'][CONFIG['color_mapping'][ Account.gen_color([self.account])]]
   end
 
   def color=(value)

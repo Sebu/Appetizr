@@ -18,7 +18,7 @@ class MainController < Indigo::Controller
   def drop_pool_store(data)
     return unless data
     session[:pool_store] = data
-    Main.active.status = ["#{session[:pool_store]['User']}", "von <b>#{session[:pool_store]['Cname']}</b> in store verschoben","trashcan_full"]
+    Main.active.status = ["#{session[:pool_store]['User']}", "von <b>#{session[:pool_store]['Cname']}</b> in store verschoben","trashcan_full",1]
   end
 
   
@@ -41,7 +41,7 @@ class MainController < Indigo::Controller
     if !selection.empty? and confirm t"account.ask_remove"
       berry["account_table"].selection.remove
       account_string = selection.collect { |a| a.account }.join(", ")
-      Main.active.status = ["#{account_string}", "von Barcode: #{Main.active.scan_string} enfernt","trashcan_full"]
+      Main.active.status = ["#{account_string}", "von Barcode: #{Main.active.scan_string} enfernt","trashcan_full",1]
     end
   end
   
@@ -77,7 +77,7 @@ class MainController < Indigo::Controller
     command("register users") do
       pc.user = users.join(" ") #(pc.User.split(" ") | (users)).join(" ")
       pc.save!
-      Main.active.status = ["#{pc.user}", "auf <b>#{pc.id}</b> angemeldet", "chair"]
+      Main.active.status = ["#{pc.user}", "auf <b>#{pc.id}</b> angemeldet", "chair",1]
     end.un do
       pc.user = old_user
       pc.save!
@@ -92,11 +92,11 @@ class MainController < Indigo::Controller
     command("drop users") do
       pc.user=other_pc["User"]
       pc.save!
-      Main.active.status = ["#{pc.user}", "von <b>#{other_pc['Cname']}</b> auf <b>#{pc.id}</b> verschoben","redo"]
+      Main.active.status = ["#{pc.user}", "von <b>#{other_pc['Cname']}</b> auf <b>#{pc.id}</b> verschoben","redo",0]
     end.un do
       pc.user = old_user
       pc.save!
-      Main.active.status = ["#{pc.user}", "von <b>#{pc.id}</b> auf <b>#{other_pc['Cname']}</b> verschoben","undo"]
+      Main.active.status = ["#{pc.user}", "von <b>#{pc.id}</b> auf <b>#{other_pc['Cname']}</b> verschoben","undo",0]
     end.run
   end
 
@@ -112,11 +112,11 @@ class MainController < Indigo::Controller
     end
     account_string = accounts.collect { |a| a.account }.join(", ")
     if not accounts or accounts.empty?
-      Main.active.status = ["#{Main.active.scan_string}", "hat keinen Account", "barcode"]
+      Main.active.status = ["#{Main.active.scan_string}", "hat keinen Account", "barcode",-1]
     elsif not message == ""
-      Main.active.status = ["#{account_string}", "#{t("account.scanned")}\n\n#{message}", "important"]
+      Main.active.status = ["#{account_string}", "#{t("account.scanned")}\n\n#{message}", "important",-1]
     else
-      Main.active.status = ["#{account_string}", t("account.scanned"), "barcode"] 
+      Main.active.status = ["#{account_string}", t("account.scanned"), "barcode", 1] 
     end
     Main.active.account_list.clear
     Main.active.account_list += accounts
@@ -145,7 +145,7 @@ class MainController < Indigo::Controller
     if !accounts.empty?
       fill_accounts(accounts)
     else
-      Main.active.status = ["#{users}", "existiert nicht", "important"]
+      Main.active.status = ["#{users}", "existiert nicht", "important", -1]
     end
   end
 
@@ -247,7 +247,7 @@ class MainController < Indigo::Controller
     begin
     socket = TCPSocket.new('localhost', 7887)
     rescue Errno::ECONNREFUSED
-      Main.active.status = ["Scanner", t('scanner.no_connection'), "important"]
+      Main.active.status = ["Scanner", t('scanner.no_connection'), "important",-1]
     else
       scanner = Thread.new {
         Debug.log.debug "starting scanner thread ..."
@@ -270,9 +270,9 @@ class MainController < Indigo::Controller
             else
               case pc.user
               when ""
-                Main.active.status = ["#{pc.id}", "ist schon frei", "key"] 
+                Main.active.status = ["#{pc.id}", "ist schon frei", "key",0] 
               else
-                Main.active.status = ["#{pc.user}", "von <b>#{pc.id}</b> abgemeldet", "trashcan_full"]
+                Main.active.status = ["#{pc.user}", "von <b>#{pc.id}</b> abgemeldet", "trashcan_full",1]
               end
               key_clear(pc)
             end

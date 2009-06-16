@@ -26,5 +26,4 @@ button :id => @computer.id, :height => 60, :width=> 60 do
   label(:size => 7) { 
     markup_observe @computer, :User, :args=>[@computer] do |user,computer| user_list_format(computer) end 
   }
-  
 end

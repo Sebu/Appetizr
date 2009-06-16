@@ -22,14 +22,14 @@ module Indigo
       end
 
       class Notifier #< Gtk::StatusIcon
-
+        COLORS = {-1=>"#FF0000",0=>"#FFFFFF",1=>"#00FF00"}
         class Balloon < Gtk::Window
           attr_accessor :title, :body, :icon, :eventbox
           
-          def initialize(t,b,i)
+          def initialize(t,b,i, color="#FFFFFF")
             super(Gtk::Window::POPUP)
             @eventbox = Gtk::EventBox.new
-
+            @eventbox.modify_bg(Gtk::StateType::NORMAL, Gdk::Color.parse(color))
             @title = Gtk::Label.new
             title.set_markup("<span size='15000'>#{t}</span>")  
 
@@ -82,8 +82,8 @@ module Indigo
         end
        
 
-        def add_balloon(title, body, icon = nil, time = 15000)
-          balloon = Balloon.new(title,body,icon)
+        def add_balloon(title, body, icon, color, time = 15000)
+          balloon = Balloon.new(title, body, icon, color)
           balloon.eventbox.signal_connect("button-press-event") { close_balloon(balloon) }
           GLib::Timeout.add(time) { close_balloon(balloon) }
           @balloons << balloon
@@ -109,7 +109,7 @@ module Indigo
           rescue Exception
           end
 
-
+=begin
           if bus then
             service = bus.service('org.freedesktop.Notifications')
             proxy = service.object('/org/freedesktop/Notifications')
@@ -121,27 +121,29 @@ module Indigo
             @send_mode = :send
             Debug.log.debug "creating notification widget using notify-send"
           else
+=end
             @notifier = Notifier.new
             @send_mode = :intern
             Debug.log.debug "creating notification widget using internal popups"        
-          end      
+#         end      
         end
 
-        def notify(title,body,icon)
+        def notify(title,body,icon,color)
           case @send_mode
           when :dbus then
             @notifier.Notify(INDIGO_APP_NAME, 0, icon, title, body, [], {"x-canonical-append"=>['s',"true"]},-1)
           when :send then
             system("notify-send '#{title} ' '#{body}' -i #{icon}")
           when :intern then
-            @notifier.add_balloon(title, body, icon)
+            
+            @notifier.add_balloon(title, body, icon, Notifier::COLORS[color])
           end
         end
 
 
         def message=(args)
-          title,body,icon = args
-          notify(title, body, Res[icon])
+          title,body,icon,color = args
+          notify(title, body, Res[icon],color)
         end
         observe_attr :message      
        

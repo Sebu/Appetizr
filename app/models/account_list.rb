@@ -1,11 +1,11 @@
-
+require 'gtk2'
 
 class AccountList < Indigo::ObjectListStore
 
   #lists/presents/has_many :accounts
   column :account, String
   column :locked, TrueClass, true
-  column :color, String
+  column :color, Gdk::Pixbuf
 
   # TODO create own callbacks with list item rather then list
   before_remove do |list|

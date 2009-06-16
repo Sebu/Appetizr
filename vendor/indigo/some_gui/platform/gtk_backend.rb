@@ -392,9 +392,8 @@ module Indigo
             end
             attributes ||= {:active => col}
           when "icon"
-            
             renderer = Gtk::CellRendererPixbuf.new
-            attributes ||= {:icon_name => col}
+            attributes ||= {:pixbuf => col}
           end
 
           column=Gtk::TreeViewColumn.new(name, renderer, attributes)
@@ -406,7 +405,6 @@ module Indigo
       class Table < Gtk::TreeView
         def initialize(p, title="table")
           super()
-          self.modify_text( Gtk::StateType::SELECTED, Gdk::Color.parse("#0000FF") ) 
           @headers = nil
           outer_widget = Gtk::ScrolledWindow.new
           outer_widget.name = title
@@ -508,10 +506,15 @@ module Indigo
         
         def initialize(p)
           super()
+          @layout = Gtk::VBox.new 
+          @layout.spacing = 0
+          add(@layout)
+
         end
         
         def add_element(w)
-          add(w)
+          child.pack_start(w, false, false,0)
+#         add(w)
         end
       end      
       

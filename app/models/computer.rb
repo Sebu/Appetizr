@@ -57,21 +57,18 @@ class Computer < ActiveRecord::Base
   def change_vtab
     filename = "#{CONFIG['VALIDTAB_PATH']}validtab.#{self.Cname}"
     return unless File.exists?(filename)
-    vtab = File.new(filename,"r+")
-    begin
-      vtab.flock(File::LOCK_EX)
-      line = vtab.readline
-      one, last = line.split("#")
-      allow, first = one.split("=")
-      vtab.pos = 0
-      new_line = "#{allow}= #{self.User} ##{last}" 
-      vtab.print new_line
-    rescue EOFError
-      vtab.flock(File::LOCK_UN)
-      vtab.close
-    else
-      vtab.flock(File::LOCK_UN)
-      vtab.close
+    File.open(filename,"r+") do |vtab|
+      begin
+        vtab.flock(File::LOCK_EX)
+        line = vtab.readline
+        one, last = line.split("#")
+        allow, first = one.split("=")
+        vtab.pos = 0
+        new_line = "#{allow}= #{self.User} ##{last}" 
+        vtab.print new_line
+      ensure
+        vtab.flock(File::LOCK_UN)
+      end
     end
   end
 

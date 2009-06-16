@@ -22,7 +22,7 @@ TODO before first usefull release
 
 demo app TODO (before release)
 * lockuser
-* fix vtab error
+* fix vtab error ??
 * westsaal view :D
 * belegung ( List with String,String hash.to_a etc. )
 * support other barcode cards
