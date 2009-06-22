@@ -30,7 +30,7 @@ class Main
     @printers = Indigo::Printer.printers
     @account_text = ""
     @scan_string = "220683"
-    self.status = ["indigoAdm", "gestartet", "application-x-ruby", 0]
+    self.status = ["indigoAdm", "gestartet", "pyadm_icon", 0]
 
     @clusters = []
     @computers_cache = {}

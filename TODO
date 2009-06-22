@@ -21,6 +21,7 @@ TODO before first usefull release
 * speed! ( ruby1.9 + thread safty + gobject for signaling )
 
 demo app TODO (before release)
+* user notifies
 * lockuser
 * fix vtab error ??
 * westsaal view :D

@@ -58,10 +58,12 @@ window t'main.title' do
         }
         table :id => "account_table", :height => 350, :width=>300 do |tbl|
           tbl.background="#FFFFFF"
+          tbl.tooltip_column=5
           model @main.account_list
 #         columns_from_model :headers => ["Account", t("account.locked")]
           column 3, "", :icon, false #, :markup=>3
           column 1, "Account", String, false, :markup=>1
+          column 4, "Notifies", :icon, false, :icon_name=>4
           column 2, "locked?", TrueClass, true, :active=>2
           drop :drop_users_on_table
           menu :context do

@@ -4,8 +4,11 @@ class AccountList < Indigo::ObjectListStore
 
   #lists/presents/has_many :accounts
   column :account, String
-  column :locked, TrueClass, true
+  column :locked, TrueClass, true # ACCESSOR
   column :color, Gdk::Pixbuf
+  column :notifies_count, String
+  column :notifies_text, String
+
 
   # TODO create own callbacks with list item rather then list
   before_remove do |list|

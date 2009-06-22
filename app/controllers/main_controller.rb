@@ -106,8 +106,10 @@ class MainController < Indigo::Controller
   def fill_accounts(accounts)
     message = ""
     accounts.each do |account|
+      p account.notifies
       exists = Computer.find(:all, :select=>"Cname", :conditions=> ["User LIKE ?", "%#{account.account}%"])
       exists_string = exists.collect { |pc| pc.id }.join(", ")
+
       message +="<b>#{account.account}</b> auf <b>#{exists_string}</b>\n" unless exists.empty?
     end
     account_string = accounts.collect { |a| a.account }.join(", ")

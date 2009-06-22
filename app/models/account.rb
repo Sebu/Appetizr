@@ -72,6 +72,26 @@ class Account < UserAccountDB
      self[:color] ||= @icons[color] ||= Gdk::Pixbuf.new("resources/images/#{color}.png") #"info" # CONFIG['colors'][CONFIG['color_mapping'][ Account.gen_color([self.account])]]
   end
 
+
+  def notifies_count
+    self.notifies.size > 0 ? "important" : "fluggengrubenheimchen"
+  end
+
+  def notifies_text
+    self.notifies.to_s
+  end
+
+  def notifies
+    @notifies ||= get_notifies
+  end
+
+  def get_notifies
+    Dir["/net/adm/access/notify/#{self.account}.*"].collect do |notify|
+      IO.readlines(notify) #.collect {|ele| ele.chomp }
+    end
+  end
+
+
   def color=(value)
     self[:color]=value
   end

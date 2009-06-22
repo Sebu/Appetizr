@@ -452,14 +452,15 @@ module Indigo
         end
                 
         def completion=(model)
-          new_completion = Gtk::EntryCompletion.new
-          new_completion.model = model
-          new_completion.text_column = 1
+          @new_completion = Gtk::EntryCompletion.new
+          @new_completion.model = model
+          @new_completion.text_column = 1
           renderer = Gtk::CellRendererText.new
           renderer.set_property('foreground-gdk', Gdk::Color.parse('#999999') )
-          new_completion.pack_start(renderer, :text=>2)
-          new_completion.add_attribute(renderer, :text, 2)
-          set_completion(new_completion)
+          @new_completion.pack_start(renderer, :text=>2)
+          @new_completion.add_attribute(renderer, :text, 2)
+          @new_completion.signal_connect("match-selected") do puts self.text; emit("text_changed", self.text); emit(:enter) end
+          set_completion(@new_completion)
         end
       end
       

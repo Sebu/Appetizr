@@ -37,7 +37,7 @@ module Indigo
             body.wrap = true
             body.set_markup(b)
             
-            image = Gtk::Image.new(i,Gtk::IconSize::DIALOG)
+            image = Gtk::Image.new(i) #,Gtk::IconSize::DIALOG)
 
             vbox = Gtk::VBox.new(false,0)
             vbox.pack_start(title, false, false, 0)
@@ -135,7 +135,7 @@ module Indigo
           when :send then
             system("notify-send '#{title} ' '#{body}' -i #{icon}")
           when :intern then
-            
+            puts icon
             @notifier.add_balloon(title, body, icon, Notifier::COLORS[color])
           end
         end
@@ -143,7 +143,7 @@ module Indigo
 
         def message=(args)
           title,body,icon,color = args
-          notify(title, body, Res[icon],color)
+          notify(title, body, Res[icon], color)
         end
         observe_attr :message      
        
