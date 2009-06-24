@@ -75,9 +75,10 @@ module Indigo
         end  
         
         def close_balloon(balloon)
-          @balloons.delete(balloon)
-          balloon.destroy
-          align_balloons
+          if @balloons.delete(balloon)
+            balloon.destroy
+            align_balloons
+          end
           false
         end
        
@@ -88,7 +89,6 @@ module Indigo
           GLib::Timeout.add(time) { close_balloon(balloon) }
           @balloons << balloon
           align_balloons
-          
         end
       end
 
