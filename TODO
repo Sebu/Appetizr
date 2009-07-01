@@ -21,10 +21,8 @@ TODO before first usefull release
 * speed! ( ruby1.9 + thread safty + gobject for signaling )
 
 demo app TODO (before release)
-* user notifies
-* lockuser
-* fix vtab error ??
-* westsaal view :D
+* create NEW notifies ( popup window )
+* lockuser ( only with modifier key and/or confirmation )
 * belegung ( List with String,String hash.to_a etc. )
-* support other barcode cards
 * dnd copy ( key-press key-release )
+* fix vtab error ??

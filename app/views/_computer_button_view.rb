@@ -1,6 +1,7 @@
 
 
 button :id => @computer.id, :height => 60, :width=> 60 do 
+  computer = @computer
 # tool_tip_observe @computer, :User do |user| user_list_format(user) end
   background_observe @computer, :Color, :args=>[@computer] do |color, computer| code_to_color(color,computer) end
 
@@ -8,7 +9,7 @@ button :id => @computer.id, :height => 60, :width=> 60 do
   drag_delete :key_clear, @computer 
   drop :drop_user, @computer
 
-  on :click, :table_register, @computer
+  on :click, :table_register, computer
 
   menu :context, :id=> "button_menu" do
     computer = @computer #TODO: remove need for locality

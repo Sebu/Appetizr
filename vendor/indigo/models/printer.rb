@@ -2,6 +2,7 @@
 # and snmp based printer classes
 
 require 'rexml/document'
+require 'open3'
 
 module Indigo
   class PrinterJob
@@ -73,7 +74,9 @@ module Indigo
     end
 
     def update_snmp
-      @snmp = IO.popen("scli -xqc 'show printer display' #{self.name}-pool").readlines
+      Open3.popen3("scli -xqc 'show printer display' #{self.name}-pool") { |stdin,stdout,stderr|
+        @snmp = stdout.readlines
+      }
       doc = REXML::Document.new(@snmp.to_s)
       lcd = doc.elements.collect('scli/devices/printer/display/line') { |ele| ele.text }
       lcd = unless lcd.empty?

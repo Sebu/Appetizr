@@ -412,8 +412,9 @@ module Indigo
           outer_widget.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
           outer_widget.add(self)
           p.add_element(outer_widget)
-          selection.mode = Gtk::SELECTION_MULTIPLE
-          model = nil
+          self.selection.mode = Gtk::SELECTION_MULTIPLE
+          self.model = nil
+          self.rules_hint = true
         end      
       end
       
@@ -540,6 +541,7 @@ module Indigo
       class Expander < Gtk::Expander
         def initialize(p, title="")
           super(title)
+          self.expanded= true
           self.name = title
         end      
       end

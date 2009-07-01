@@ -61,7 +61,7 @@ window t'main.title' do
           tbl.tooltip_column=5
           model @main.account_list
 #         columns_from_model :headers => ["Account", t("account.locked")]
-          column 3, "", :icon, false #, :markup=>3
+          column 3, "S", :icon, false #, :markup=>3
           column 1, "Account", String, false, :markup=>1
           column 4, "Notifies", :icon, false, :icon_name=>4
           column 2, "locked?", TrueClass, true, :active=>2
@@ -69,6 +69,8 @@ window t'main.title' do
           menu :context do
             action "add users", "adds/1"
             action "remove user"
+            separator
+            action "add notify"
           end
         end
       }
@@ -90,8 +92,8 @@ window t'main.title' do
         stack t("westsaal"), :padding=>5 do       
           @main.clusters[0..5].reverse_each { |c| render "cluster_h", :cluster => c }
         end
-        stack t("schulungsraum"), :padding=>5  do       
-          @main.clusters[16..17].reverse_each { |c| render "cluster_h", :cluster => c }
+        flow t("schulungsraum"), :padding=>5  do       
+          @main.clusters[16..17].reverse_each { |c| render "cluster", :cluster => c }
         end
       end
     }

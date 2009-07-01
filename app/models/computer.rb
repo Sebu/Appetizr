@@ -61,10 +61,13 @@ class Computer < ActiveRecord::Base
       begin
         vtab.flock(File::LOCK_EX)
         line = vtab.readline
+         Debug.log.debug "befor: #{line}"
+        
         one, last = line.split("#")
         allow, first = one.split("=")
         vtab.pos = 0
         new_line = "#{allow}= #{self.User} ##{last}" 
+        Debug.log.debug "after: #{new_line}"
         vtab.print new_line
       ensure
         vtab.flock(File::LOCK_UN)
