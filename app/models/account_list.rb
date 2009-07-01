@@ -16,7 +16,7 @@ class AccountList < Indigo::ObjectListStore
   end
   
 #  before_edit do |list|
-#    list.item.save
+#    list.item.save 
 #  end
   
 end

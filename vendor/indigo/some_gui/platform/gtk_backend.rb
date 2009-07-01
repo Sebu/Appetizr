@@ -20,18 +20,33 @@ module Indigo
 
   class Controller
 
-      def confirm(text, params={})
+      def confirm(text="are you sure? (default message)", params={})
         box = Gtk::MessageDialog.new(current,
                                      Gtk::Dialog::DESTROY_WITH_PARENT, 
                                      Gtk::MessageDialog::QUESTION,
                                      Gtk::MessageDialog::BUTTONS_YES_NO,
                                      text)
         box.title= "Are you sure?"
+        box.markup=text
         box.secondary_text = params[:info] || nil
         value = nil
         box.run { |r| value = r }
         box.destroy
         value == Gtk::Dialog::RESPONSE_YES
+      end
+      def input(text="")
+        dialog = Gtk::Dialog.new("Input Dialog",
+                                 current,
+                                 Gtk::Dialog::DESTROY_WITH_PARENT,
+                                 [ Gtk::Stock::OK, Gtk::Dialog::RESPONSE_NONE ])
+        input_text = Gtk::Entry.new
+        input_text.text=text
+        dialog.vbox.add(input_text)
+        dialog.show_all
+        dialog.run
+        new_text = input_text.text
+        dialog.destroy
+        new_text
       end
       
   end # Controller
@@ -367,7 +382,17 @@ module Indigo
         def select_all
           self.selection.select_all
         end
+        
+        def add_context(menu)
+          signal_connect('button_press_event') do |w, event|
+            if event.button == 3   # left mouse button
+              menu.show_all
+              menu.popup(nil, nil, event.button, event.time)
+            end
+          end  
+        end
 
+        # TODO: move/extract edit into controller
         def column(col, name, type, edit=false, attributes=nil)
           headers ||= []
           headers << name
@@ -387,7 +412,7 @@ module Indigo
             if edit
               renderer.signal_connect(:toggled) do |renderer, path|
                 value = model.get_value(path, col)
-                model.set_value(path, col, !value)
+                model.set_value(path, col, !value) if @controller.confirm
               end
             end
             attributes ||= {:active => col}
@@ -403,6 +428,7 @@ module Indigo
       end
       
       class Table < Gtk::TreeView
+        
         def initialize(p, title="table")
           super()
           @headers = nil
@@ -415,6 +441,12 @@ module Indigo
           self.selection.mode = Gtk::SELECTION_MULTIPLE
           self.model = nil
           self.rules_hint = true
+          signal_connect('button_press_event') do |w, event|
+            if event.button == 3   # left mouse button
+              path, col = get_path_at_pos(event.x, event.y)
+              emit :cell_clicked, self.model[path] if path
+            end
+          end            
         end      
       end
       

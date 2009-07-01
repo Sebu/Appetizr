@@ -2,6 +2,7 @@
 all:
   locale: de
   controller: main
+  cups_server: s8
   color_mapping: {:frei: 0, :normal: 1, :no_passwd: 2, :locked: 3, :tutor: 4, :nobody: 5, :wheel: 6, :jeder: 7}  
   colors: {0: '#d7d7c5', 1: '#4cadc5', 2: '#f0e81b', 3: '#fe5b00', 4: '#fe00a9', 5: '#fe2f2f', 6: '#44d804', 7: '#9d57f4', 8: '#bAbA9A'}
   colors_new: {0: '#82bc68', 1: '#7d9197', 2: '#aca86d', 3: '#cb7240', 4: '#ab3a84', 5: '#ae5050', 6: '#659d4d', 7: '#9367c9', 8: '#dcd121'}
@@ -32,13 +33,17 @@ all:
        "c180" , "c181" , "c182" , "c183" , "c184" , "c185", "c170"]
 
 development:
-  VALIDTAB_PATH: "vtabs/"
+  validtab_path: "vtabs/"
   prectab_path: "resources/pyadm.prectab"
+  notify_path: "notify/"
 
 test:
-  VALIDTAB_PATH: "vtabs/"
+  validtab_path: "vtabs/"
   prectab_path: "resources/pyadm.prectab"
+  notify_path: "notify/"  
 
 production:
-  VALIDTAB_PATH: "/net/adm/access/"
+  validtab_path: "/net/adm/access/"
   prectab_path: "/net/adm/pyadm-new/pyadm.prectab"
+  notify_path: "/net/adm/access/notify/"
+

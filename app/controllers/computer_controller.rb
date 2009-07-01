@@ -4,7 +4,7 @@ class ComputerController < Indigo::Controller
   
   def restart
     @pc = Computer.find(params[:id])
-    @pc.xdm_restart if confirm "Wirklich xdm auf #{params[:id]} mit user: #{@pc.user} neu starten?"
+    @pc.xdm_restart if confirm "Wirklich xdm auf <b>#{params[:id]}</b> mit Account <b>#{@pc.user}</b> neu starten?"
   end
 
 =begin  

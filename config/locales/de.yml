@@ -18,7 +18,7 @@ de:
   account:
     locked: "gelocket?"
     scanned: "eingelesen"
-    ask_remove: "Accounts von Karte entfernen?"  
+    ask_remove: "Accounts <b>{{accounts}}</b> von Karte entfernen?"  
   sendtext:
     title: Text senden
     default: |

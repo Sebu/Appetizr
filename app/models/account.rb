@@ -5,6 +5,7 @@ class Account < UserAccountDB
   # non rails conform table :/  
   set_table_name "map"
   belongs_to :user
+  
   attr_readonly :barcode #, :account
   attr_accessible :account, :locked, :color, :barcode
 
@@ -21,7 +22,6 @@ class Account < UserAccountDB
     end
   end
 
-  
   def self.find_accounts_or_initialize(users)
     accounts = self.find(:all, :conditions => ["barcode IN (?) OR account IN (?)", users, users], :group => "account" )
     accounts.each do |account| 
@@ -57,9 +57,11 @@ class Account < UserAccountDB
         )
   end
   
+  # TODO: (re)think
   def locked=(value)
     system("#{CONFIG['admin_sh_file']} -unlock #{self.account}") if self[:locked] == true and value == false
-    self[:locked] = false
+    system("#{CONFIG['admin_sh_file']} -lock #{self.account}") if self[:locked] == false and value == true
+    self[:locked] = value
   end
 
   def locked
@@ -77,18 +79,16 @@ class Account < UserAccountDB
     self.notifies.size > 0 ? "important" : "fluggengrubenheimchen"
   end
 
+  
   def notifies_text
-    self.notifies.to_s
+    self.notifies.collect { |item| "#{item.body} @ #{item.time}" }.join("\n")
   end
-
   def notifies
-    @notifies ||= get_notifies
+    @notifies = Notify.find_all_by_name(self.account)
   end
-
-  def get_notifies
-    Dir["/net/adm/access/notify/#{self.account}.*"].collect do |notify|
-      IO.readlines(notify) #.collect {|ele| ele.chomp }
-    end
+  def create_notify(text)
+    Notify.create(self.account, text)
+    @notifies = nil
   end
 
 

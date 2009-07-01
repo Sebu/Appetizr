@@ -4,7 +4,6 @@
 require 'rexml/document'
 require 'open3'
 
-module Indigo
   class PrinterJob
     attr_reader :id, :size, :user, :printer
 
@@ -17,8 +16,8 @@ module Indigo
     def cancel
       Printer.cancel(self)
     end
-    def move_to(printer_name)
-      Printer.move_job_to(self, printer_name)
+    def move_to(target_name)
+      Printer.move_job_to(self, target_name)
     end
   end
 
@@ -53,12 +52,13 @@ module Indigo
       Printer.cancel(job)
     end
     
+   
     def self.cancel(job)
-      #`cancel #{job.id}`
+      `ssh root@#{CONFIG['cups_server']} -- 'cancel #{job.id}'`
     end
 
-    def self.move_job_to(job,printer_name)
-      puts "implement Printer.move_job_to"
+    def self.move_job_to(job, target_name)
+      `ssh root@#{CONFIG['cups_server']} -- 'lpmove #{job.id} #{target_name}'`
     end 
     
     def enabled?
@@ -135,7 +135,6 @@ module Indigo
       text.collect { |printer| printer.split(" ")[0] }
     end
   end
-end
 
 #p Indigo::Printer.job_count
 #p Indigo::Printer.default.job_count

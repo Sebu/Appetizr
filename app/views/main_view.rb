@@ -61,17 +61,21 @@ window t'main.title' do
           tbl.tooltip_column=5
           model @main.account_list
 #         columns_from_model :headers => ["Account", t("account.locked")]
-          column 3, "S", :icon, false #, :markup=>3
+          column 3, "State", :icon, false #, :markup=>3
           column 1, "Account", String, false, :markup=>1
           column 4, "Notifies", :icon, false, :icon_name=>4
           column 2, "locked?", TrueClass, true, :active=>2
           drop :drop_users_on_table
-          menu :context do
-            action "add users", "adds/1"
-            action "remove user"
+          on(:cell_clicked) { |data, controller| update_notifies_menu(data) }
+          menu do
+            menu "notifies", :id=>"notifies_menu" 
             separator
-            action "add notify"
+            menu "card data" do
+              action "add users ...", "adds/1"
+              action "remove selected"
+            end
           end
+
         end
       }
 

@@ -27,7 +27,7 @@ class Main
     @account_list = AccountList.new
     @status_list = Indigo::ObjectListStore.new(String,String)
     @user_list = Indigo::ObjectListStore.new([["seb","demo user"]])
-    @printers = Indigo::Printer.printers
+    @printers = Printer.printers
     @account_text = ""
     @scan_string = "220683"
     self.status = ["indigoAdm", "gestartet", "pyadm_icon", 0]

@@ -31,7 +31,7 @@ class Computer < ActiveRecord::Base
 
 
   def xdm_restart
-    `ssh -f root@s8 -- "ssh #{self.id} -- /etc/init.d/xdm restart"`
+    `ssh root@s8 -- "ssh #{self.id} -- /etc/init.d/xdm restart"`
   end
 
   
@@ -55,13 +55,13 @@ class Computer < ActiveRecord::Base
   
   
   def change_vtab
-    filename = "#{CONFIG['VALIDTAB_PATH']}validtab.#{self.Cname}"
+    filename = "#{CONFIG['validtab_path']}validtab.#{self.Cname}"
     return unless File.exists?(filename)
     File.open(filename,"r+") do |vtab|
       begin
         vtab.flock(File::LOCK_EX)
         line = vtab.readline
-         Debug.log.debug "befor: #{line}"
+         Debug.log.debug "before: #{line}"
         
         one, last = line.split("#")
         allow, first = one.split("=")

@@ -91,6 +91,12 @@ class Indigo::ObjectListStore < Gtk::ListStore
     self.iter_first == nil
   end
   
+  def update
+    each do |model, path, iter|
+      record = iter[0]
+      keys.each_with_index { |k,i| iter[i+1] = record.send(k) }
+    end
+  end
 
   def remove(iter)
     @item = iter.get_value(0) 
@@ -101,8 +107,6 @@ class Indigo::ObjectListStore < Gtk::ListStore
     @item = get_iter(path).get_value(0) 
     item.send("#{keys[col-1]}=",value)
     get_iter(path).set_value(col, item.send(keys[col-1]) ) if run_callbacks(:before_edit)
-
-    
   end
     
   def get_value(path, col)

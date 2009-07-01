@@ -21,6 +21,14 @@ class MainController < Indigo::Controller
     Main.active.status = ["#{session[:pool_store]['User']}", "von <b>#{session[:pool_store]['Cname']}</b> in store verschoben","trashcan_full",1]
   end
 
+  def add_notify
+    text = input
+    selection = berry["account_table"].selection.to_a
+    selection.each do |item|
+      item.create_notify(text)
+    end
+    @main.account_list.update
+  end
   
   def drop_users_on_table(other_pc)
     users = other_pc["User"].split(" ")
@@ -36,9 +44,9 @@ class MainController < Indigo::Controller
     pc.remove_user(user)
   end
    
-  def remove_user
+  def remove_selected
     selection = berry["account_table"].selection.to_a
-    if !selection.empty? and confirm t"account.ask_remove"
+    if !selection.empty? and confirm(t"account.ask_remove",:accounts=>selection.collect{|a|a.account}.join(", "))
       berry["account_table"].selection.remove
       account_string = selection.collect { |a| a.account }.join(", ")
       Main.active.status = ["#{account_string}", "von Barcode: #{Main.active.scan_string} enfernt","trashcan_full",1]
@@ -106,7 +114,6 @@ class MainController < Indigo::Controller
   def fill_accounts(accounts)
     message = ""
     accounts.each do |account|
-      p account.notifies
       exists = Computer.find(:all, :select=>"Cname", :conditions=> ["User LIKE ?", "%#{account.account}%"])
       exists_string = exists.collect { |pc| pc.id }.join(", ")
 

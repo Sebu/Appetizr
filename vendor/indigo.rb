@@ -20,7 +20,7 @@ module Indigo
   autoload :Controller, 'indigo/controller'
   autoload :TranslationHelper, 'indigo/helpers/translation_helper'
   # model classes
-  autoload :Printer, 'indigo/models/printer'
+# autoload :Printer, 'indigo/models/printer'
   autoload :ActiveNode, 'indigo/models/active_node'
   autoload :ObjectListStore, 'indigo/models/object_list_store'  
 end

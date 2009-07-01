@@ -30,7 +30,21 @@ module MainHelper
       CONFIG['colors'][computer.color]
     end
   end
-  
+
+
+  def update_notifies_menu(data)
+    update "notifies_menu" do
+      cleanup
+      data.notifies.each do |notify|
+        menu "#{notify.body}" do
+          action "modify" do notify.body=input(notify.body); notify.save; @main.account_list.update end
+          action "remove" do notify.delete if confirm; @main.account_list.update end
+        end
+      end
+      action "add notify"
+    end  
+  end
+    
   def update_printer_menu(printer)
     update "#{printer.name}_menu" do
       cleanup
@@ -38,9 +52,9 @@ module MainHelper
       action "leer" if jobs.empty?
       jobs.each { |job|
         menu "#{job.id}| #{job.user}| #{job.size}" do
-          action "cancel" do job.cancel end
-          Indigo::Printer.printers.each { |other|
-            action "move to #{other.name}" do job.move_to(other.name) end
+          action "cancel" do job.cancel if confirm("Wirklich job: #{job.id} von #{job.user} abbrechen?") end
+          Printer.printers.each { |other|
+            action "move to #{other.name}" do job.move_to(other.name) if confirm("Wirklich job: #{job.id} von #{job.user} auf #{other.name} verschieben?") end
           }
         end
       }
