@@ -24,9 +24,10 @@ module Indigo
       class Notifier #< Gtk::StatusIcon
         COLORS = {-1=>"#FF0000",0=>"#FFFFFF",1=>"#00FF00"}
         class Balloon < Gtk::Window
+          include Widget
           attr_accessor :title, :body, :icon, :eventbox
           
-          def initialize(t,b,i, color="#FFFFFF")
+          def initialize(t,b,icon, color="#FFFFFF")
             super(Gtk::Window::POPUP)
             @eventbox = Gtk::EventBox.new
             @eventbox.modify_bg(Gtk::StateType::NORMAL, Gdk::Color.parse(color))
@@ -37,7 +38,11 @@ module Indigo
             body.wrap = true
             body.set_markup(b)
             
-            image = Gtk::Image.new(i) #,Gtk::IconSize::DIALOG)
+            # check if icon is a stock_id or filename
+            image = if File.exists?(icon.to_s) then Gtk::Image.new(icon)
+                    else Gtk::Image.new(icon, Gtk::IconSize::DIALOG)
+                    end
+                    
 
             vbox = Gtk::VBox.new(false,0)
             vbox.pack_start(title, false, false, 0)
@@ -65,8 +70,8 @@ module Indigo
         end
 
         def align_balloons
-          xpos = Gdk::Screen.default.width-330
-          basey = Gdk::Screen.default.height - 20
+          xpos = Gdk::Screen.default.monitor_geometry(0).width - 330 
+          basey = Gdk::Screen.default.monitor_geometry(0).height - 20
           @balloons.dup.each do |balloon|
             x, stepy = balloon.size
             basey -= (stepy + 3) 
@@ -102,14 +107,15 @@ module Indigo
         end
         
         def initialize(p, *args)
-          
+
+=begin          
           begin
             require 'dbus'
             bus  = DBus::SessionBus.instance  
           rescue Exception
           end
 
-=begin
+
           if bus then
             service = bus.service('org.freedesktop.Notifications')
             proxy = service.object('/org/freedesktop/Notifications')
@@ -143,7 +149,7 @@ module Indigo
 
         def message=(args)
           title,body,icon,color = args
-          notify(title, body, Res[icon], color)
+          notify(title, body, get_stock(icon), color)
         end
         observe_attr :message      
        

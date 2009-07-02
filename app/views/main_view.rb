@@ -87,10 +87,10 @@ window t'main.title' do
             data[1] =~ /.*#{key}/
           end          
         end
-        table t("belegung") do
-          column 0, "LV", String
-          column 1, "Anzal", String
-        end
+        #table t("belegung") do
+        #  column 0, "LV", String
+        #  column 1, "Anzal", String
+        #end
       end
       tabs :position=>:bottom do
         stack t("westsaal"), :padding=>5 do       

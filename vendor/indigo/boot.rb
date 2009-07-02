@@ -5,8 +5,6 @@
 # setup path and some environment variables
 #Dir.chdir "#{File.dirname(__FILE__)}/../.."
 APP_DIR = Dir.pwd
-
-ENV['INDIGO_ENV'] ||= "development"
 INDIGO_ENV = ENV['INDIGO_ENV']
 INDIGO_APP_NAME = APP_DIR.split("/")[-1]
 CONFIG = {}
@@ -91,20 +89,4 @@ module Indigo
 end
 
 Indigo::Boot.run!
-
-
-
-# TODO: move into own module/file
-#  "important" "undo" "redo" "info/hint" "error" "unlocked" "locked"
-class Res
-  def self.[](res)
-    app_internal_res = "#{APP_DIR}/resources/images/#{res}.svg"
-    res = app_internal_res if File.exist? app_internal_res
-    app_internal_res = "#{APP_DIR}/resources/images/#{res}.png"
-    res = app_internal_res if File.exist? app_internal_res
-    res
-  end
-end
-
-
 

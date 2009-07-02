@@ -77,14 +77,19 @@ module Indigo
     module Widgets
 
 
-
+      # TODO: move into own module/file
+      #  "important" "undo" "redo" "info/hint" "error" "unlocked" "locked"
       STOCK_ITEMS = {:ok=> Gtk::Stock::OK, :cancel => Gtk::Stock::CANCEL, :add => Gtk::Stock::ADD, :undo => Gtk::Stock::UNDO, :quit => Gtk::Stock::QUIT}
       module Widget
         
         def get_stock(name)
+          app_internal_res = "#{APP_DIR}/resources/images/#{name}.svg"
+          name = app_internal_res if File.exist? app_internal_res
+          app_internal_res = "#{APP_DIR}/resources/images/#{name}.png"
+          name = app_internal_res if File.exist? app_internal_res
           STOCK_ITEMS[name.to_sym] || name
         end
-
+        
         def background=(value)
           [Gtk::StateType::NORMAL, Gtk::StateType::PRELIGHT, Gtk::StateType::PRELIGHT].each do |state|
             color = Gdk::Color.parse(value)
