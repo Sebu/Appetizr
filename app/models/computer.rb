@@ -57,18 +57,19 @@ class Computer < ActiveRecord::Base
   def change_vtab
     filename = "#{CONFIG['validtab_path']}validtab.#{self.Cname}"
     return unless File.exists?(filename)
-    File.open(filename,"r+") do |vtab|
+    File.open(filename,"w") do |vtab|
       begin
         vtab.flock(File::LOCK_EX)
-        line = vtab.readline
-         Debug.log.debug "before: #{line}"
+#        line = vtab.readline
+#        Debug.log.debug "before: #{line}"
         
-        one, last = line.split("#")
-        allow, first = one.split("=")
-        vtab.pos = 0
-        new_line = "#{allow}= #{self.User} ##{last}" 
-        Debug.log.debug "after: #{new_line}"
-        vtab.print new_line
+#        one, last = line.split("#")
+#        allow, first = one.split("=")
+#        vtab.rewind
+         new_line = "ALLOWED= #{self.User} #" 
+#        new_line = "#{allow}= #{self.User} ##{last}" 
+        Debug.log.debug "new: #{new_line}"
+        vtab.puts new_line
       ensure
         vtab.flock(File::LOCK_UN)
       end
