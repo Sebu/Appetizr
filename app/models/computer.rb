@@ -18,7 +18,7 @@ class Computer < ActiveRecord::Base
   named_scope :updated_after, lambda { |time| {:conditions => ["Time > ?", time]} }
 
   before_update do |record|
-    record.color = CONFIG['color_mapping'][ Account.gen_color(record.user.split(" ")) ]
+    record.Color = CONFIG['color_mapping'][ Account.gen_color(record.user.split(" ")) ]
   end
   
   before_update do |record|

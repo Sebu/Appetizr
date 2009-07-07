@@ -190,6 +190,7 @@ class MainController < Indigo::Controller
           count -= 1
           computer.prectab_changed
           computer.color_changed
+          computer.user_changed
         end
         count -= 1 unless computer
         index += 1
@@ -225,7 +226,7 @@ class MainController < Indigo::Controller
        
         # update prectab data
         if Prectab.changed?
-          Main.active.computers_cache.each_value {|computer| computer.prectab = [nil,nil]; computer.color_changed }
+          Main.active.computers_cache.each_value {|computer| computer.prectab = [nil,nil]; computer.color_changed; computer.user_changed }
           Debug.log.debug "working prectab"
           scatter_prectab(Prectab.now,0)
           scatter_prectab(Prectab.soon,1)
