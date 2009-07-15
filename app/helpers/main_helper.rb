@@ -51,7 +51,7 @@ module MainHelper
       jobs = printer.jobs
       action "leer" if jobs.empty?
       jobs.each { |job|
-        menu "#{job.id}| #{job.user}| #{job.size}" do
+        menu "#{job.time} | #{job.id} | #{job.user} | #{job.size}" do
           action "cancel" do job.cancel if confirm("Wirklich job: #{job.id} von #{job.user} abbrechen?") end
           Printer.printers.each { |other|
             action "move to #{other.name}" do job.move_to(other.name) if confirm("Wirklich job: #{job.id} von #{job.user} auf #{other.name} verschieben?") end

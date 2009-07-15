@@ -38,11 +38,15 @@ window t'main.title' do
   stack(:padding=>5){
     flow  :spacing => 5 do 
       render "cluster_v", :cluster => @main.clusters[15]
-      @main.clusters[11..14].reverse_each { |c| render "cluster", :cluster => c }
+      @main.clusters[13..14].reverse_each { |c| render "cluster", :cluster => c }
+      render "cluster", :cluster => @main.clusters[12] #TODO: own view file
+      render "cluster", :cluster => @main.clusters[11] 
       stack(:height=>100, :spacing=>2) {
         @main.printers.each {|printer|render "printer", :printer => printer }
-      }          
-      @main.clusters[7..10].reverse_each { |c| render "cluster", :cluster => c }
+      }    
+      render "cluster", :cluster => @main.clusters[10]      
+      render "cluster", :cluster => @main.clusters[9]  #TODO: own view file    
+      @main.clusters[7..8].reverse_each { |c| render "cluster", :cluster => c }
       render "cluster_v", :cluster => @main.clusters[6]
     end
     flow(:spacing=>3) {

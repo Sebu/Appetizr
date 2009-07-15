@@ -5,12 +5,13 @@ require 'rexml/document'
 require 'open3'
 
   class PrinterJob
-    attr_reader :id, :size, :user, :printer
+    attr_reader :id, :size, :user, :printer, :time
 
-    def initialize(id, user, size, printer)
+    def initialize(id, user, size, time, printer)
       @id = id
       @size = size
       @user = user
+      @time = time
       @printer = printer
     end
     def cancel
@@ -118,7 +119,8 @@ require 'open3'
         id = infos[0]
         user = infos[1]
         size = infos[2]
-        PrinterJob.new(id, user, size, self)
+        time = infos[6]
+        PrinterJob.new(id, user, size, time, self)
       end
     end
     

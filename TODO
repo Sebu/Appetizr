@@ -21,9 +21,9 @@ TODO before first usefull release
 * speed! ( ruby1.9 + thread safty + gobject for signaling )
 
 demo app TODO (before release)
+* fix other equiv table error (institutsaccount)
 * send text
 * correct pc positions
-* fix other equiv table error (institutsaccount)
 * I18n
 * dnd copy ( key-press key-release )
 * belegung ( List with String,String hash.to_a etc. )

@@ -11,7 +11,7 @@ box {
 
     
     ignore_next #TODO remove need for it
-    exp.label_widget = flow(:width=>170) {
+    exp.label_widget = flow(:width=>120) {
       tool_tip_observe @printer, :display
       box {
         background_observe @printer, :accepts do |state| color_please(state) end
