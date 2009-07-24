@@ -19,6 +19,7 @@ class Computer < ActiveRecord::Base
 
   before_update do |record|
     record.Color = CONFIG['color_mapping'][ Account.gen_color(record.user.split(" ")) ]
+    Debug.log.debug "color change #{record.Cname} #{record.User} color is #{record.Color}"
   end
   
   before_update do |record|

@@ -237,8 +237,8 @@ class MainController < Indigo::Controller
         comps.each do |computer| 
           cache_computer = Main.active.computers_cache[computer.id]
           if cache_computer
-            cache_computer.user = computer.user 
-            cache_computer.color = computer.color
+            cache_computer.User = computer.user 
+            cache_computer.Color = computer.color
           end
         end
         session[:old_timestamp] = Time.now.strftime("%j%H%M%S")
