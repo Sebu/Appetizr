@@ -1,6 +1,5 @@
 
 #TODO change to require 'indigo'
-ENV['INDIGO_ENV'] ||= "production"
 require 'vendor/indigo'
 
 #Rails::Initializer.run do |config|

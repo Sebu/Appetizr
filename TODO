@@ -1,7 +1,6 @@
 
 
 TODO before first usefull release
-* rewrite signaling! (more clean syntax please)
 * auto generade fields for forms from model like 
   like, entry, spinbox, checkbox etc. for certain models (Active-Rercord/Resource/Node)
     field :name (auto get modelname)
@@ -9,6 +8,7 @@ TODO before first usefull release
     field do
       field  will 
     end 
+* rewrite signaling! (more clean syntax please)
 * better routing (not like rails! we don't need pretty routes. but more like in shoes)
 * get locale infos from user locale (allow change of locale and rEval)
 * dnd more response from dnd methods

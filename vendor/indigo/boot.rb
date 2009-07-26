@@ -5,8 +5,8 @@
 # setup path and some environment variables
 #Dir.chdir "#{File.dirname(__FILE__)}/../.."
 APP_DIR = Dir.pwd
-INDIGO_ENV = ENV['INDIGO_ENV']
-INDIGO_APP_NAME = APP_DIR.split("/")[-1]
+INDIGO_APP_NAME = APP_DIR.split("/")[-1].to_s.upcase
+INDIGO_ENV = ENV["#{INDIGO_APP_NAME}_ENV"] ||= "production"
 CONFIG = {}
 
 

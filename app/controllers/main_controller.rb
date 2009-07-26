@@ -168,7 +168,7 @@ class MainController < Indigo::Controller
     elsif m = /'^UP-([A-Z]{1})-[a-zA-Z0-9]+-[0-9]{4}$/.match(scan)
       return :card, m[1]
     else
-      return :card, scan.chomp!
+      return :matrikel, scan.chomp!
     end
   end
   

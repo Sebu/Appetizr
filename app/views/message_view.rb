@@ -1,10 +1,10 @@
 
 dialog t"sendtext.title" do
-#  flow {
-#     check true, t("westsaal")
-#     check true, t("hauptsaal")
-#     check false, t("schulungsraum")
-#  }
+  flow {
+     check true, t("westsaal")
+     check true, t("hauptsaal")
+     check false, t("schulungsraum")
+  }
   textview {
     text t("sendtext.default")
   }
