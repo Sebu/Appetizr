@@ -69,10 +69,10 @@ module Signaling
   def emit(name,*args, &pr)
     @dirty ||= false
     @connections ||= nil
-    return if @dirty
-    return unless @connections
+    return false if @dirty
+    return nil unless @connections
     connected_slots = @connections[name]
-    return if !connected_slots or connected_slots.empty?
+    return nil if !connected_slots or connected_slots.empty?
     @dirty = true
     connected_slots.each do |obj, method, more|
 		  if method == nil
@@ -82,5 +82,6 @@ module Signaling
 		  end
     end
     @dirty = false
+    return true
   end
 end
