@@ -128,7 +128,7 @@ module Indigo
           Gtk::Drag.dest_set(self, Gtk::Drag::DEST_DEFAULT_ALL,  [['application/json', 0, 0]], Gdk::DragContext::ACTION_MOVE | Gdk::DragContext::ACTION_COPY )
           signal_connect("drag-data-received") do |w, context, x, y, selection_data, info, time|
             data = ActiveSupport::JSON.decode(selection_data.data)
-            context.drop_finish(@controller.send(method,*(args+[data])), time) 
+            context.drop_finish(@controller.send(method,*(args+data)), time) 
           end
         end
         

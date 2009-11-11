@@ -1,4 +1,4 @@
-module Indigo
+  module Indigo
   class Controller
     def self.helper(name)
       include name
