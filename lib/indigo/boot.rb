@@ -32,19 +32,17 @@ module Indigo
       require 'activesupport'
       require 'indigo/core_ext'
     end
-    
+
+    # add paths to lib and ActiveSupport::Dependecies
     def self.init_paths
-      # add paths to lib and ActiveSupport::Dependecies
-      puts APP_DIR
-      $:.unshift APP_DIR + '/vendor'
-      $:.unshift APP_DIR + '/vendor/indigo'
-      $:.unshift APP_DIR + '/resources'
+      extra_paths = ['/vendor','/vendor/indigo', '/resources']
+      extra_paths.each { |path| $:.unshift << APP_DIR + path }
     end
-    
     def self.init_dependencies
       extra_paths = ['', '/app','/app/controllers', '/app/models', '/app/helpers']
       extra_paths.each { |path| ActiveSupport::Dependencies.load_paths << APP_DIR + path }
     end
+
 
     def self.init_config
       config_files = ["#{APP_DIR}/config/config_defaults.yml",   # defaults
@@ -67,7 +65,7 @@ module Indigo
           class << self
             attr_accessor :log
           end
-          @log = ActiveSupport::BufferedLogger.new STDOUT #INDIGO_ENV =='development' ? STDOUT : "log/main.log"
+          @log = ActiveSupport::BufferedLogger.new STDOUT 
         end
       }
       ActiveRecord::Base.logger = Debug.log
@@ -75,12 +73,12 @@ module Indigo
     
 
     def self.init_plugins
-      require 'indigo/some_gui/platform/gtk_backend' # read from config or default
+      require 'indigo/some_gui/gtk_backend' # read from config or default
     end
 
         
     def self.init_locale
-      I18n.load_path = Dir[File.join(APP_DIR, 'config', 'locales', '*.{rb,yml}')]
+      I18n.load_path = Dir[File.join(APP_DIR, 'resources', 'locales', '*.{rb,yml}')]
       I18n.default_locale = :de 
       I18n.locale = CONFIG["locale"]
     end
