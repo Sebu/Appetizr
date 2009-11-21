@@ -326,6 +326,7 @@ module Indigo
         end      
       end  
 
+
       class Gtk::TextView
         include Widget
         include ObserveAttr
@@ -619,6 +620,12 @@ module Indigo
         end
       end
       
+      class Form < Stack
+        def initialize(p, model)  
+          super('form')
+          self.add(check false, "test")
+        end
+      end
 
       class Gtk::Dialog
         include Widget

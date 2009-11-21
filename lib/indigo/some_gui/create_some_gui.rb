@@ -41,8 +41,10 @@ module Indigo
           }
         end 
       end
-      creates_widget :Expander, :TrayIcon, :Box, :Link, :Dock, :Menu, :Notification, :TextView, :GlArea, :Dialog, :Svg, :Spin, :Combo
-      creates_widget :Tabs, :VSlider, :HSlider, :Radio, :Check, :Window, :Flow, :Stack, :Entry, :Label, :Button, :Group, :Table
+
+
+creates_widget :Form, :Expander, :TrayIcon, :Box, :Link, :Dock, :Menu, :Notification, :TextView, :GlArea, :Dialog, :Svg, :Spin, :Combo
+    creates_widget :Tabs, :VSlider, :HSlider, :Radio, :Check, :Window, :Flow, :Stack, :Entry, :Label, :Button, :Group, :Table
 
       def ignore_next
         self.autolayout = false
