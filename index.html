@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Appetizr by Sebu</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Appetizr</h1>
+        <p>Rails meets shoes and some_gui - An MVC approach inspired by RoR </p>
+
+        <p class="view"><a href="https://github.com/Sebu/Appetizr">View the Project on GitHub <small>Sebu/Appetizr</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/Sebu/Appetizr/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/Sebu/Appetizr/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/Sebu/Appetizr">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p>Appetizr (aka indigo) - (rapid) application framework inspired by RoR and Shoes</p>
+
+<p>USAGE OF DEMO APP/FRAMEWORK</p>
+
+<ul>
+<li>'rake db:migrate'</li>
+<li>'bin/start'</li>
+</ul><p>Differences to Rails
+1. Appetizr is not RAILS
+2. Appetizr uses multiple databases by default so
+    schema.rb is db/schemas/db<em>name.rb
+    migrations is db/migration/db_name/[0-9]*</em>*.rb
+3. explicit rather then implicit render
+4. controller generates gui directly
+5. besides indirect/dispatched action calls, direct action calls are also possible
+6. more </p>
+
+<p>Appetizr uses ...
+  ... a DSL to create/format view similar to the DSL of shoes ( <a href="http://github.com/why/shoes/">http://github.com/why/shoes/</a> ).
+  ... active_support for nice ruby extensions and I18n
+  ... active_record/resource for db and webservice access
+  ... gtk2 for the underlying widget rendering
+  ... rubigen to create app templaes
+  ... some other extensions (dbus) and ideas from RoR</p>
+
+<p>How it should work(but does not right now):
+  appetize my_app
+  cd my_app
+  script/generate window/model/controller .. create models and views
+  bin/start ... test
+  rake appetize  (-&gt; create app + installer)</p>
+
+<p>Simple Controller</p>
+
+<p>class SimpleController  &lt; Indigo::Controller</p>
+
+<p>def show
+    render do
+      window {
+        <a href="https://github.com/text" class="user-mention">@text</a> = label "Hallo Wald!"
+        button(:ok).click { @text.text= "Hallo Wurst!" }
+        end
+      }
+    end.show_all
+  end</p>
+
+<p>end  </p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Sebu">Sebu</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
