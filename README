@@ -1,7 +1,7 @@
 Appetizr (aka indigo) - (rapid) application framework inspired by RoR and Shoes
 
 Appetizr uses ...
-  ... a DSL to create/format view similar to the DSL of shoes ( http://github.com/why/shoes/ ).
+  ... a DSL to create/format view similar to the DSL of shoes ( http://shoesrb.com/ ).
   ... active_support for nice ruby extensions and I18n
   ... active_record/resource for db and webservice access
   ... gtk2 for the underlying widget rendering
