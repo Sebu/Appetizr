@@ -1,14 +1,16 @@
 Appetizr (aka indigo) - (rapid) application framework inspired by RoR and Shoes
 
-Experimental GUI/APP Framework created by lending ideas from Rails (Active Record) and Shoes (UI DSL and routing)
+Appetizr uses ...
+  ... a DSL to create/format view similar to the DSL of shoes ( http://github.com/why/shoes/ ).
+  ... active_support for nice ruby extensions and I18n
+  ... active_record/resource for db and webservice access
+  ... gtk2 for the underlying widget rendering
+  ... rubigen to create app templaes
+  ... some other extensions (dbus) and ideas from RoR
 
 currently used in
 http://github.com/Sebu/appetizrTest (simple text example)
 http://github.com/Sebu/frontDesk (clone of a simple administrative tool)
-
-USAGE OF DEMO APP/FRAMEWORK
-* 'rake db:migrate'
-* 'bin/start'
 
 Differences to Rails
 1. Appetizr is not RAILS
@@ -21,14 +23,6 @@ Differences to Rails
 6. more 
 
 
-Appetizr uses ...
-  ... a DSL to create/format view similar to the DSL of shoes ( http://github.com/why/shoes/ ).
-  ... active_support for nice ruby extensions and I18n
-  ... active_record/resource for db and webservice access
-  ... gtk2 for the underlying widget rendering
-  ... rubigen to create app templaes
-  ... some other extensions (dbus) and ideas from RoR
- 
 
 How it should work(but does not right now):
   appetize my_app
@@ -36,7 +30,10 @@ How it should work(but does not right now):
   script/generate window/model/controller .. create models and views
   bin/start ... test
   rake appetize  (-> create app + installer)
-  
+
+USAGE OF DEMO APP/FRAMEWORK
+* 'rake db:migrate'
+* 'bin/start'
   
 Simple Controller
 
