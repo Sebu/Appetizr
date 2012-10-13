@@ -1,5 +1,8 @@
-
 Appetizr (aka indigo) - (rapid) application framework inspired by RoR and Shoes
+
+USED IN
+http://github.com/Sebu/frontDesk
+http://github.com/Sebu/appetizrTest
 
 USAGE OF DEMO APP/FRAMEWORK
 * 'rake db:migrate'
